@@ -5,3 +5,8 @@ torch
 torchmetrics
 torchvision
 pytorch_lightning
+scipy
+scikit-learn
+py-pde
+tqdm
+h5py
