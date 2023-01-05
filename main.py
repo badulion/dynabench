@@ -1,44 +1,58 @@
-from pde import FieldCollection, PDEBase, PlotTracker, ScalarField, UnitGrid, VectorField, CartesianGrid
+from torch.utils.data import DataLoader as DataLoader_pytorch
+from torch_geometric.loader import DataLoader as DataLoader_graph
+from tqdm import tqdm
+import pytorch_lightning as pl
+from typing import Any
+from torch.nn.functional import mse_loss
+
+import torch
+
+from src.model.mlp import MLP
+from src.dataset.dataset_graph import DynaBench
+from src.model.gat import GATNet
 
 
-class GasDynamics(PDEBase):
-    """Gas Dynamics simulating weather"""
+class Model(pl.LightningModule):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.net = GATNet(34, 4, 128, 5)
+        self.loss = mse_loss
 
-    def __init__(self, a=1, b=3, diffusivity=[1, 0.1], bc="auto_periodic_neumann"):
-        super().__init__()
-        self.a = a
-        self.b = b
-        self.diffusivity = diffusivity  # spatial mobility
-        self.bc = bc  # boundary condition
+    def forward(self, x):
+        return self.net(x)
 
-    def get_initial_state(self, grid):
-        """prepare a useful initial state"""
-        u = ScalarField(grid, self.a, label="Field $u$")
-        T = ScalarField()
-        v = VectorField
-        v = self.b / self.a + 0.1 * ScalarField.random_normal(grid, label="Field $v$")
-        return FieldCollection([u, v])
+    def training_step(self, batch, batch_idx):
+        x, y, points = batch
+        y_hat = self(x)
+        loss = self.loss(y_hat, y.x)
+        self.log('train_loss', loss)
+        return loss
 
-    def evolution_rate(self, state, t=0):
-        """pure python implementation of the PDE"""
-        u, v = state
-        rhs = state.copy()
-        d0, d1 = self.diffusivity
-        rhs[0] = d0 * u.laplace(self.bc) + self.a - (self.b + 1) * u + u**2 * v
-        rhs[1] = d1 * v.laplace(self.bc) + self.b * u - u**2 * v
-        return rhs
+    def validation_step(self, batch, batch_idx):
+        x, y, points = batch
+        y_hat = self(x)
+        loss = self.loss(y_hat, y.x)
+        self.log('val_loss', loss)
+        return loss
 
+    def test_step(self, batch, batch_idx):
+        x, y, points = batch
+        y_hat = self(x)
+        loss = self.loss(y_hat, y.x)
+        self.log('test_loss', loss)
+        return loss
 
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.net.parameters(), lr=1e-3)
 
-# initialize state
-grid = CartesianGrid([(0,64), (0, 64)], [128, 128])
-eq = BrusselatorPDE(diffusivity=[1, 0.1])
-state = eq.get_initial_state(grid)
+if __name__ == '__main__':
+    ds = DynaBench(equation="gas_dynamics", lookback=8, task="evolution", mode="train")
+    data = DataLoader_graph(ds, batch_size=64, num_workers=4, shuffle=True)
+    
+    trainer = pl.Trainer(accelerator='cpu', devices=1, default_root_dir="results")
+    model = Model()
 
-#print(eq.evolution_rate(state)[0].data)
+    trainer.fit(model, data)
+    #trainer.test(model, data)
 
-# simulate the pde
-tracker = PlotTracker(interval=1, plot_args={"vmin": 0, "vmax": 5})
-sol = eq.solve(state, t_range=5, dt=1e-3, tracker=tracker)
-
-sol.plot()
+    

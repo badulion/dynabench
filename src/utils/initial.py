@@ -4,37 +4,16 @@ import matplotlib.pyplot as plt
 
 def sum_of_gaussians(x, y, components=1, zero_level = 0.0):
 
-    mx = [np.random.uniform(0, 1) for i in range(components)]
-    my = [np.random.uniform(0, 1) for i in range(components)]
+    mx = [np.random.choice(x.shape[1]) for i in range(components)]
+    my = [np.random.choice(y.shape[0]) for i in range(components)]
+
+    squared_distance_to_center = (x-0.5)**2 + (y-0.5)**2
+    gaussian = np.exp(-40*squared_distance_to_center)
 
     u = zero_level+np.zeros_like(x)
     for i in range(components):
-        component = np.exp(-(30*(x-mx[i])**2 + 30*(y-my[i])**2))
-
-        u = u + np.random.uniform(-1, 1) * component
         
-    #smoothing filter
-    a = 5
-    smoothing_filter = np.ones((2*a+1, 2*a+1))
-    smoothing_filter/= np.sum(smoothing_filter)
-    u = convolve2d(u, smoothing_filter, mode='same', boundary='symm')
-
-    return u
-
-
-def sum_of_gaussians_periodic(x, y, components=1, zero_level = 0.0):
-
-    mx = [np.random.uniform(0, 1) for i in range(components)]
-    my = [np.random.uniform(0, 1) for i in range(components)]
-
-    gaussian = np.exp(-(20*(x-0.5)**2 + 20*(y-0.5)**2))
-
-    u = zero_level+np.zeros_like(x)
-    for i in range(components):
-        shift_x = np.argmin(np.abs(x[:,0]-mx[i]))-np.argmin(np.abs(x[:,0]-np.mean(x)))
-        shift_y = np.argmin(np.abs(y[0,:]-my[i]))-np.argmin(np.abs(y[0,:]-np.mean(y)))
-        
-        component = np.roll(gaussian, (shift_y,shift_x), axis=(0,1))
+        component = np.roll(gaussian, (mx[i],my[i]), axis=(0,1))
 
         u = u + np.random.uniform(-1, 1) * component
         
@@ -45,3 +24,83 @@ def sum_of_gaussians_periodic(x, y, components=1, zero_level = 0.0):
     u = convolve2d(u, smoothing_filter, mode='same', boundary='wrap')
 
     return u
+
+def sum_of_sines(x, y, components=1, zero_level = 0.0):
+
+    mx = [np.random.choice(x.shape[1]) for i in range(components)]
+    my = [np.random.choice(y.shape[0]) for i in range(components)]
+
+    distance_to_center = np.sqrt((x-0.5)**2 + (y-0.5)**2)
+    threshold = 0.2
+
+    wave = 0.5 + 0.5*np.cos((1/threshold)*np.pi*distance_to_center)
+    wave[distance_to_center>threshold] = zero_level
+
+    u = zero_level+np.zeros_like(x)
+    for i in range(components):
+        component = np.roll(wave, (mx[i],my[i]), axis=(0,1))
+
+        u = u + np.random.uniform(-1, 1) * component
+        
+    #smoothing filter
+    a = 50
+    smoothing_filter = np.ones((2*a+1, 2*a+1))
+    smoothing_filter/= np.sum(smoothing_filter)
+    u = convolve2d(u, smoothing_filter, mode='same', boundary='wrap')
+
+    return u
+
+def sum_of_smoothsteps(x, y, components=1, zero_level=0.0):
+
+    mx = [np.random.choice(x.shape[1]) for i in range(components)]
+    my = [np.random.choice(y.shape[0]) for i in range(components)]
+
+    distance_to_center = np.sqrt((x-0.5)**2 + (y-0.5)**2)
+    threshold = 0.2
+
+    bell_curve = smootherstep((1/threshold)*distance_to_center)
+
+    u = zero_level+np.zeros_like(x)
+    for i in range(components):
+        component = np.roll(bell_curve, (mx[i],my[i]), axis=(0,1))
+
+        u = u + np.random.uniform(-1, 1) * component
+        
+    #smoothing filter
+    a = 50
+    smoothing_filter = np.ones((2*a+1, 2*a+1))
+    smoothing_filter/= np.sum(smoothing_filter)
+    #u = convolve2d(u, smoothing_filter, mode='same', boundary='wrap')
+
+    return u
+
+def sum_of_gaussians_tan(x, y, components=1, zero_level=0.0):
+
+    mx = [np.random.choice(x.shape[1]) for i in range(components)]
+    my = [np.random.choice(y.shape[0]) for i in range(components)]
+
+    squared_distance_to_center = (x-0.5)**2 + (y-0.5)**2
+    squared_distance_to_center *= 10
+    squared_distance_to_center = np.clip(squared_distance_to_center, 0, 0.49)
+    gaussian = np.exp(-np.tan(np.pi*squared_distance_to_center))
+
+    u = zero_level+np.zeros_like(x)
+    for i in range(components):
+        
+        component = np.roll(gaussian, (mx[i],my[i]), axis=(0,1))
+
+        u = u + np.random.uniform(-1, 1) * component
+        
+    #smoothing filter
+    a = 5
+    smoothing_filter = np.ones((2*a+1, 2*a+1))
+    smoothing_filter/= np.sum(smoothing_filter)
+    u = convolve2d(u, smoothing_filter, mode='same', boundary='wrap')
+
+    return u
+
+def smootherstep(x):
+    x = np.clip(x, -1, 1)
+
+    x = np.abs(x)
+    return -x * x * x * (x * (x * 6 - 15) + 10)
