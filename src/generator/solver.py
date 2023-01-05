@@ -66,7 +66,7 @@ class PDESolver:
         self._postprocess()
 
     def make_movie(self, path):
-        sfp = ScalarFieldPlot(self.state_with_dyn)
+        sfp = ScalarFieldPlot(self.state)
         sfp.make_movie(self.storage, os.path.join("figures", path))
         self.storage.close()
 
@@ -90,7 +90,6 @@ class PDESolver:
         std = np.std(data_grid, axis=(-1, -2), keepdims=True)
         std[std < 1e-10] = 1
         data_grid = (data_grid - mean) / std
-        data = np.split(data_grid, 2, axis=1)
 
         # save graph sampled points
         f.create_dataset('indices_low', data=indices_low)
@@ -100,10 +99,7 @@ class PDESolver:
         f.create_dataset('points', data=points)
 
 
-        del f['data']
-        f['data'] = data[0]
-        f['data_evo'] = data[1]
-
+        f['data'][...] = data_grid
 
         f.close()
 
