@@ -28,6 +28,7 @@ It is recommended to first create a virtual environment with:
     python -m venv venv
     source venv/bin/activate
 
+If you have troubles installing the pytorch geometric library, follow the instructions on [their website](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html).
 
 > To setup the environment with all necessary requirements simply run
 > python setup.py

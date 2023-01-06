@@ -8,3 +8,8 @@ tqdm
 h5py
 gin-config
 tornado
+torch-scatter
+torch-sparse
+torch-cluster
+pyg-lib
+torch-geometric
