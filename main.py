@@ -49,7 +49,7 @@ if __name__ == '__main__':
     ds = DynaBench(equation="gas_dynamics", lookback=8, task="evolution", mode="train")
     data = DataLoader_graph(ds, batch_size=64, num_workers=4, shuffle=True)
     
-    trainer = pl.Trainer(accelerator='cpu', devices=1, default_root_dir="results")
+    trainer = pl.Trainer(accelerator='gpu', devices=1, default_root_dir="results")
     model = Model()
 
     trainer.fit(model, data)

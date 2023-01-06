@@ -5,7 +5,6 @@ import sys
 import argparse
 from src.utils.logging import create_logger
 
-np.random.seed(42)
 logger = create_logger(__name__)
 parser = argparse.ArgumentParser(
             prog = 'Data Generator',
@@ -14,9 +13,11 @@ parser = argparse.ArgumentParser(
             epilog = 'Thank you!')
 
 parser.add_argument('-n', '--num', type=int, default=1, help="Number of times each equation is simulated.")
+parser.add_argument('-s', '--seed', type=int, default=42, help="The seed to use for generating.")
 args = parser.parse_args()
 
 
+np.random.seed(args.seed)
 logger.info(f"Starting to generate equations.")
 logger.info(f"Each equation will be solved {args.num} times.")
 
@@ -26,7 +27,6 @@ for i in range(args.num):
     eq = GasDynamicsPDE()
     solver = PDESolver(eq, "data/gas_dynamics", grid_size=64, t_range=100)
     solver.solve()
-
 
 logger.info("Generating data for the Brusslator equation.")
 for i in range(args.num):
