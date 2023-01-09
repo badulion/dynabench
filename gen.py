@@ -21,7 +21,7 @@ np.random.seed(args.seed)
 logger.info(f"Starting to generate equations.")
 logger.info(f"Each equation will be solved {args.num} times.")
 
-
+"""
 logger.info("Generating data for the Gas Dynamics equation.")
 for i in range(args.num):
     eq = GasDynamicsPDE()
@@ -33,7 +33,7 @@ for i in range(args.num):
     eq = BrusselatorPDE()
     solver = PDESolver(eq, "data/brusselator", grid_size=64, t_range=100)
     solver.solve()
-
+"""
 
 logger.info("Generating data for the Wave equation.")
 for i in range(args.num):
@@ -41,7 +41,7 @@ for i in range(args.num):
     solver = PDESolver(eq, "data/wave", grid_size=64, t_range=100)
     solver.solve()
 
-
+quit()
 logger.info("Generating data for the Kuramoto-Sivashinsky equation.")
 for i in range(args.num):
     eq = KuramotoSivashinskyPDE()

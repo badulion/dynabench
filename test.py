@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 import h5py
 from sklearn.neighbors import KNeighborsRegressor
 import matplotlib
+import zipfile
+from src.dataset.dataset_base import DynaBenchBase
+from tqdm import tqdm
 
+ds = DynaBenchBase(equation="wave")
 
-f = h5py.File("data/gas_dynamics/data_0.hdf5")
-print(f.keys())
-print(f['indices_full'].shape)
+for el in tqdm(ds):
+    el

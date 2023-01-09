@@ -105,13 +105,9 @@ class DynaBenchBase(Dataset):
 
         # do it nicer (perhaps not here?)
         if not os.path.exists(self.path):
-            os.makedirs(self.path, exist_ok=True)
+            raise RuntimeError(f"Data not found. Did you generate the data?")
         if len(os.listdir(self.path)) == 0:
-            EQ_MODULE = equation_selector(self.equation)
-            eq = EQ_MODULE()
-            solver = PDESolver(eq, self.path)
-            solver.solve()
-            solver.postprocess()
+            raise RuntimeError(f"Data not found. Did you generate the data?")
 
 
         file_paths_all = os.listdir(self.path)
@@ -123,11 +119,11 @@ class DynaBenchBase(Dataset):
         self.file_numbers_val = [8]
         self.file_numbers_test = [9]
         if mode == "train":
-            self.file_paths = [f"data_{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_train]
+            self.file_paths = [f"{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_train]
         elif mode == "val":
-            self.file_paths = [f"data_{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_val]
+            self.file_paths = [f"{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_val]
         elif mode == "test":
-            self.file_paths = [f"data_{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_test]
+            self.file_paths = [f"{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_test]
 
         self.files = [h5py.File(os.path.join(self.path, file_path)) for file_path in self.file_paths]
         self.raw_lengths = [len(file['data']) for file in self.files]

@@ -43,7 +43,7 @@ class PDESolver:
             os.makedirs(save_dir, exist_ok=True)
             
         sample_n = len(os.listdir(save_dir))
-        self.path = os.path.join(save_dir, f"data_{sample_n}.hdf5")
+        self.path = os.path.join(save_dir, f"{sample_n}.hdf5")
         self.storage = FileStorage(self.path)
         
         
