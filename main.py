@@ -15,7 +15,7 @@ from src.model.gat import GATNet
 class Model(pl.LightningModule):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.net = GATNet(34, 4, 128, 5)
+        self.net = GATNet(8, 1, 128, 5)
         self.loss = mse_loss
 
     def forward(self, x):
@@ -46,13 +46,14 @@ class Model(pl.LightningModule):
         return torch.optim.Adam(self.net.parameters(), lr=1e-3)
 
 if __name__ == '__main__':
-    ds = DynaBench(equation="gas_dynamics", lookback=8, task="evolution", mode="train")
+    ds = DynaBench(equation="wave", lookback=8, rollout=16,task="forecast", mode="train")
     data = DataLoader_graph(ds, batch_size=64, num_workers=4, shuffle=True)
-    
-    trainer = pl.Trainer(accelerator='gpu', devices=1, default_root_dir="results")
-    model = Model()
+    print(ds[0][0])
 
-    trainer.fit(model, data)
+    #trainer = pl.Trainer(accelerator='cpu', devices=1, default_root_dir="results")
+    #model = Model()
+
+    #trainer.fit(model, data)
     #trainer.test(model, data)
 
     

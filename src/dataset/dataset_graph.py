@@ -6,7 +6,7 @@ import torch
 from src.dataset.dataset_base import DynaBenchBase
 
 class DynaBench(DynaBenchBase):
-    def __init__(self, name="dyna-benchmark", mode="train", equation="gas_dynamics", support="high", task="forecast", base_path="data", lookback=0, rollout=1):
+    def __init__(self, name="dyna-benchmark", mode="train", equation="gas_dynamics", support="high", task="forecast", base_path="data", lookback=0, rollout=1, k=10):
         super().__init__(name=name, 
                          mode=mode,
                          equation=equation, 
@@ -15,6 +15,7 @@ class DynaBench(DynaBenchBase):
                          base_path=base_path,
                          lookback=lookback, 
                          rollout=rollout)
+        self.k = k
 
     def additional_transforms(self, x, y, points):
         # transform to tensors
@@ -27,7 +28,7 @@ class DynaBench(DynaBenchBase):
         y_graph = Data(x=y, pos=points)
 
         # generate knn edges
-        transformation = KNNGraph(k=10)
+        transformation = KNNGraph(k=self.k)
         x_graph = transformation(x_graph)
         y_graph = transformation(y_graph)
         

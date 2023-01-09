@@ -111,7 +111,7 @@ class DynaBenchBase(Dataset):
 
 
         file_paths_all = os.listdir(self.path)
-        file_numbers = [file[5:-5] for file in file_paths_all]
+        file_numbers = [file[:-5] for file in file_paths_all]
 
         # filter by train/val/test
         num_files = len(file_numbers)
@@ -155,8 +155,7 @@ class DynaBenchBase(Dataset):
         x = x.reshape(new_shape)
 
         # permute axes
-        x = np.transpose(x, axes=(1, 0))
-        y = np.transpose(y, axes=(-1, -2))
+        x, y, points = self._permute_axes(x, y, points)
 
 
         # additional transforms
@@ -189,12 +188,12 @@ class DynaBenchBase(Dataset):
 
     def get_item_evolution(self, file, file_idx):
         data_x = np.split(file['data'][file_idx:file_idx+self.lookback], 2, axis=1)[0]
-        data_y = np.split(file['data'][file_idx], 2, axis=1)[1]
+        data_y = np.split(file['data'][file_idx], 2, axis=0)[1]
         points = file['points'][:]
 
         if self.equation == "wave":
             data_x = data_x[:, 0]
-            data_y = data_y[:, 0]
+            data_y = data_y[0]
 
         if self.support != "grid":
             points = points.reshape(-1, 2)
@@ -220,6 +219,18 @@ class DynaBenchBase(Dataset):
         else:
             suffix = ""
         return "data"+suffix, "points"+suffix
+
+    def _permute_axes(self, x, y, points):
+        if self.support == "grid":
+            return x, y, points
+
+        # else:
+        x = np.transpose(x, axes=[1, 0])
+        if self.task == "evolution":
+            y = np.transpose(y, axes=[1, 0])
+        else:
+            y = np.transpose(y, axes=[0, 2, 1])
+        return x, y, points
 
     def additional_transforms(self, x, y, points):
         return x, y, points

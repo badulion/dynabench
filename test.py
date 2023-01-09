@@ -9,5 +9,4 @@ from tqdm import tqdm
 
 ds = DynaBenchBase(equation="wave")
 
-for el in tqdm(ds):
-    el
+print(ds[1][0].shape)
