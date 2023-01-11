@@ -115,9 +115,9 @@ class DynaBenchBase(Dataset):
 
         # filter by train/val/test
         num_files = len(file_numbers)
-        self.file_numbers_train = range(8)
-        self.file_numbers_val = [8]
-        self.file_numbers_test = [9]
+        self.file_numbers_train = range(20)
+        self.file_numbers_val = range(20,25)
+        self.file_numbers_test = range(25,30)
         if mode == "train":
             self.file_paths = [f"{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_train]
         elif mode == "val":

@@ -10,7 +10,7 @@ The dataset consists of four different equations selected to be both sufficientl
 
 An example (wave equation) of a simulated system is shown below:
 
-![Wave example gif](figures/equation_example_wave.gif)
+![Wave example gif](demos/equation_example_wave.gif)
 
 ## Task description
 ToDo
@@ -19,7 +19,16 @@ ToDo
 ToDo
 
 ## Setup
-Right now the dependencies need to be installed manually from the `requirements.txt` file:
+### Automated setup
+If needed create a virtual environment.
+You can then install all dependencies by running 
+
+    source scripts/install_requirements.sh
+
+from the main project directory
+
+### Manual installation
+Alternatively you can manually install the dependencies from the `requirements.txt` file:
 
     pip install -r requirements.txt
 
@@ -28,12 +37,8 @@ It is recommended to first create a virtual environment with:
     python -m venv venv
     source venv/bin/activate
 
-If you have troubles installing the pytorch geometric library, follow the instructions on [their website](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html).
+Additionally you need to install pytorch geometric, following the instructions on [their website](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html).
 
-> To setup the environment with all necessary requirements simply run
-> python setup.py
-> This creates a new 
-### Currently not working!
 
 
 ## Generation

@@ -14,38 +14,29 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-n', '--num', type=int, default=1, help="Number of times each equation is simulated.")
 parser.add_argument('-s', '--seed', type=int, default=42, help="The seed to use for generating.")
+parser.add_argument('-e', '--equation', type=str, default='gas_dynamics', choices=['gas_dynamics', 'brusselator', 'wave', 'kuramoto_sivashinsky'], help="The equation to be solved.")
+
 args = parser.parse_args()
-
-
 np.random.seed(args.seed)
-logger.info(f"Starting to generate equations.")
-logger.info(f"Each equation will be solved {args.num} times.")
 
-"""
-logger.info("Generating data for the Gas Dynamics equation.")
+
+logger.info(f"Starting to generate data.")
+logger.info(f"The selected equation will be solved {args.num} times.")
+
+if args.equation == 'gas_dynamics':
+    equationModule = GasDynamicsPDE
+elif args.equation == 'brusselator':
+    equationModule = BrusselatorPDE
+elif args.equation == 'wave':
+    equationModule = WavePDE
+else:
+    equationModule = KuramotoSivashinskyPDE
+
+
+
+logger.info(f"Generating data for the {args.equation} equation.")
 for i in range(args.num):
-    eq = GasDynamicsPDE()
-    solver = PDESolver(eq, "data/gas_dynamics", grid_size=64, t_range=100)
+    eq = equationModule()
+    solver = PDESolver(eq, f"data/{args.equation}", grid_size=64, t_range=100)
     solver.solve()
-
-logger.info("Generating data for the Brusslator equation.")
-for i in range(args.num):
-    eq = BrusselatorPDE()
-    solver = PDESolver(eq, "data/brusselator", grid_size=64, t_range=100)
-    solver.solve()
-"""
-
-logger.info("Generating data for the Wave equation.")
-for i in range(args.num):
-    eq = WavePDE()
-    solver = PDESolver(eq, "data/wave", grid_size=64, t_range=100)
-    solver.solve()
-
-quit()
-logger.info("Generating data for the Kuramoto-Sivashinsky equation.")
-for i in range(args.num):
-    eq = KuramotoSivashinskyPDE()
-    solver = PDESolver(eq, "data/kuramoto_sivashinsky", grid_size=64, t_range=100)
-    solver.solve()
-
-logger.info(f"Finished generating equations.")
+logger.info(f"Finished generating data.")
