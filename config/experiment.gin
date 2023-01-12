@@ -1,0 +1,14 @@
+equation = "gas_dynamics"
+task = "forecast"
+support = "high"
+
+input_features = 4
+
+input_size = 32 # input_features*lookback
+
+
+lookback = 8
+batch_size = 32
+learning_rate = 0.001
+
+spatial_dimensions = 2

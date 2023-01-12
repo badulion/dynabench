@@ -1,0 +1,5 @@
+GATNet.input_size = %input_size
+GATNet.output_size = %input_features
+GATNet.hidden_size = 128
+GATNet.hidden_layers = 4
+GATNet.spatial_dimensions = %spatial_dimensions

@@ -1,0 +1,29 @@
+include 'config/experiment.gin'
+include 'config/experimental_setup.gin'
+include 'config/model/gat.gin'
+include 'config/model/point_net.gin'
+include 'config/model/point_gnn.gin'
+include 'config/model/point_transformer.gin'
+
+
+
+
+Model.batch_size = %batch_size
+Model.lr = %learning_rate
+Model.net = @PointTransformer()
+
+
+TensorBoardLogger.save_dir="results/tb_logs"
+TensorBoardLogger.name="my_model"
+
+Trainer.accelerator = "gpu"
+Trainer.devices = 1
+Trainer.logger = @TensorBoardLogger()
+Trainer.max_epochs=300
+Trainer.default_root_dir="results"
+
+DynaBenchDataModule.equation = %equation
+DynaBenchDataModule.task = %task
+DynaBenchDataModule.support = %support
+DynaBenchDataModule.lookback = %lookback
+DynaBenchDataModule.structure = "graph"
