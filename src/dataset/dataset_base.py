@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 import os
 import h5py
 import numpy as np
+from math import ceil
 
 from src.generator.solver import PDESolver
 from src.generator.equations import equation_selector
@@ -73,6 +74,10 @@ class DynaBenchBase(Dataset):
         base_path="data",
         lookback=1,
         rollout=1,
+        test_ratio=0.1,
+        val_ratio=0.1,
+        *args,
+        **kwargs,
     ):
         super(DynaBenchBase, self).__init__()
         self.name = name
@@ -115,9 +120,16 @@ class DynaBenchBase(Dataset):
 
         # filter by train/val/test
         num_files = len(file_numbers)
-        self.file_numbers_train = range(20)
-        self.file_numbers_val = range(20,25)
-        self.file_numbers_test = range(25,30)
+        if num_files < 3 and mode == "train":
+            raise RuntimeError(f"Not enough data to split")
+        else:
+            num_files_test = ceil(num_files*test_ratio)
+            num_files_val = ceil(num_files*val_ratio)
+
+        self.file_numbers_train = range(num_files-num_files_test-num_files_val)
+        self.file_numbers_val = range(num_files-num_files_test-num_files_val,num_files-num_files_test)
+        self.file_numbers_test = range(num_files-num_files_test,num_files)
+
         if mode == "train":
             self.file_paths = [f"{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_train]
         elif mode == "val":
@@ -157,10 +169,9 @@ class DynaBenchBase(Dataset):
         # permute axes
         x, y, points = self._permute_axes(x, y, points)
 
-
         # additional transforms
         x, y, points = self.additional_transforms(x, y, points)
-
+        
         return x, y, points
 
     
@@ -229,7 +240,8 @@ class DynaBenchBase(Dataset):
         if self.task == "evolution":
             y = np.transpose(y, axes=[1, 0])
         else:
-            y = np.transpose(y, axes=[0, 2, 1])
+            y = np.transpose(y, axes=[2, 1, 0])
+            
         return x, y, points
 
     def additional_transforms(self, x, y, points):

@@ -6,7 +6,7 @@ import matplotlib
 import zipfile
 from src.dataset.dataset_base import DynaBenchBase
 from tqdm import tqdm
+import torch
 
-ds = DynaBenchBase(equation="wave")
-
-print(ds[1][0].shape)
+x = torch.rand(10, 10, 1)
+print(x)

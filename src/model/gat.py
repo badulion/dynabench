@@ -1,23 +1,25 @@
 from torch_geometric.nn import GATv2Conv
 from torch import nn
-import torch.functional as F
+import torch
 
 
 class GATNet(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size, hidden_layers=1) -> None:
+    def __init__(self, input_size, output_size, hidden_size, hidden_layers=1, spatial_dimensions=2) -> None:
         super().__init__()
         self.input_size = input_size
         self.output_size = output_size
         self.hidden_size = hidden_size
         self.hidden_layers = hidden_layers
+        self.spatial_dimensions = spatial_dimensions
 
-        self.input_layer = GATv2Conv(input_size, hidden_size)
+        self.input_layer = GATv2Conv(input_size+spatial_dimensions, hidden_size)
         self.hidden_layers = nn.ModuleList([GATv2Conv(hidden_size, hidden_size) for _ in range(hidden_layers-1)])
         self.output_layer = GATv2Conv(hidden_size, output_size)
         self.activation = nn.ReLU()
 
     def forward(self, data):
-        x, edge_index = data.x, data.edge_index
+        x, pos, edge_index = data.x, data.pos, data.edge_index
+        x = torch.hstack([x, pos])
 
         x = self.input_layer(x, edge_index)
         x = self.activation(x)
@@ -27,4 +29,5 @@ class GATNet(nn.Module):
             x = self.activation(x)
 
         x = self.output_layer(x, edge_index)
-        return x
+        data.x = x
+        return data
