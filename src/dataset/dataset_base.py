@@ -53,7 +53,7 @@ class DynaBenchBase(Dataset):
     """
 
     available_equations = ["gas_dynamics", "wave", "kuramoto_sivashinsky", "brusselator"]
-    available_supports = ["low", "high", "full", "grid"]
+    available_supports = ["low", "mid", "high", "full", "grid"]
     available_tasks = ["forecast", "evolution"]
     available_modes = ["train", "val", "test"]
     num_fields_dict = {
