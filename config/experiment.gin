@@ -1,10 +1,9 @@
-equation = "gas_dynamics"
+equation = "kuramoto_sivashinsky"
 task = "forecast"
 support = "high"
 
-input_features = 4
-
-input_size = 32 # input_features*lookback
+input_features = 1
+input_size = 8 # input_features*lookback
 
 
 lookback = 8

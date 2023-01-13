@@ -9,6 +9,8 @@ from src.dataset.dataloader import DynaBenchDataModule
 
 # models
 from src.model.gat import GATNet
+from src.model.gcn import GCN
+from src.model.feast import FeaStNet
 from src.model.point_net import PointNet
 from src.model.point_gnn import PointGNN
 from src.model.point_transformer import PointTransformer
@@ -26,18 +28,23 @@ if __name__ == '__main__':
     DynaBenchDataModule = gin.external_configurable(DynaBenchDataModule)
 
     GATNet = gin.external_configurable(GATNet)
+    GCN = gin.external_configurable(GCN)
+    FeaStNet = gin.external_configurable(FeaStNet)
     PointNet = gin.external_configurable(PointNet)
     PointGNN = gin.external_configurable(PointGNN)
     PointTransformer = gin.external_configurable(PointTransformer)
     gin.parse_config_file('config/config.gin')
+    gin.finalize()
 
-
+    gin.macro()
+    quit()
     # train the model
     datamodule = DynaBenchDataModule()
     trainer = Trainer()
     model = Model()
 
     trainer.fit(model, datamodule)
+    trainer.test()
 
 
     
