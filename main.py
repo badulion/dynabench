@@ -3,8 +3,6 @@ import pytorch_lightning as pl
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import TensorBoardLogger
 
-
-
 from src.dataset.dataloader import DynaBenchDataModule
 
 # models
@@ -15,12 +13,17 @@ from src.model.point_net import PointNet
 from src.model.point_gnn import PointGNN
 from src.model.point_transformer import PointTransformer
 
+from src.model.baseline_persistence import BaselinePersistence
+from src.model.baseline_zero import BaselineZero
+
 from src.model.lightningmodule import Model
 import gin
 
+def make_gin_config():
+    global Model, TensorBoardLogger, Trainer, DynaBenchDataModule
+    global GATNet, GCN, FeaStNet, PointNet, PointGNN, PointTransformer
+    global BaselinePersistence, BaselineZero
 
-
-if __name__ == '__main__':
     # register external objects and parse gin config tree
     Model = gin.external_configurable(Model)
     TensorBoardLogger = gin.external_configurable(TensorBoardLogger)
@@ -33,9 +36,15 @@ if __name__ == '__main__':
     PointNet = gin.external_configurable(PointNet)
     PointGNN = gin.external_configurable(PointGNN)
     PointTransformer = gin.external_configurable(PointTransformer)
+
+    BaselinePersistence = gin.external_configurable(BaselinePersistence)
+
     gin.parse_config_file('config/config.gin')
     gin.finalize()
 
+
+if __name__ == '__main__':
+    make_gin_config()
 
     # train the model
     datamodule = DynaBenchDataModule()
@@ -43,7 +52,4 @@ if __name__ == '__main__':
     model = Model()
 
     trainer.fit(model, datamodule)
-    trainer.test()
-
-
-    
+    trainer.test(datamodule=datamodule)
