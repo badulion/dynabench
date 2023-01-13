@@ -36,8 +36,7 @@ if __name__ == '__main__':
     gin.parse_config_file('config/config.gin')
     gin.finalize()
 
-    gin.macro()
-    quit()
+
     # train the model
     datamodule = DynaBenchDataModule()
     trainer = Trainer()
