@@ -3,12 +3,15 @@ from pde import CallbackTracker, ProgressTracker
 from pde.trackers.base import TrackerCollection
 
 from pde.visualization.plotting import ScalarFieldPlot
+from pde.visualization.movies import Movie
 
 import gin
 import os
 import h5py
 import numpy as np
 
+import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 @gin.configurable
 class PDESolver:
@@ -69,6 +72,34 @@ class PDESolver:
         sfp = ScalarFieldPlot(self.state)
         sfp.make_movie(self.storage, os.path.join("figures", path))
         self.storage.close()
+
+    def make_movie_frame_by_frame(self, path):
+        movie = Movie(path)
+        for frame, t in zip(tqdm(self.storage.data), self.storage.times):
+            fig, ax = plt.subplots(1,2, dpi=150)
+            fig.set_layout_engine("tight")
+            fig.suptitle(f"Time {int(t)}")
+            fig.set_figwidth(0.75*fig.get_figwidth())
+            fig.set_figheight(0.75*fig.get_figheight())
+
+
+            # first subplot
+            hm = ax[0].imshow(frame[0,:,:], interpolation="bilinear", vmin=-2.5, vmax=2.5)
+            fig.colorbar(hm, ax=ax[0], location="bottom", shrink=1, pad=0.05)
+            ax[0].set_xticks([])
+            ax[0].set_yticks([])
+            ax[0].set_title("Wave")
+
+            # second subplot
+            hm = ax[1].imshow(frame[1,:,:], interpolation="bilinear", vmin=-2.5, vmax=2.5)
+            fig.colorbar(hm, ax=ax[1], location="bottom", shrink=1, pad=0.05)
+            ax[1].set_xticks([])
+            ax[1].set_yticks([])
+            ax[1].set_title("First Derivative")
+
+            movie.add_figure(fig)
+            plt.close(fig)
+        movie.save()
 
     def _postprocess(self):
         # select points
