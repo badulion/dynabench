@@ -1,29 +1,37 @@
-include 'config/experiment.gin'
-include 'config/experimental_setup.gin'
-include 'config/model/gat.gin'
-include 'config/model/gcn.gin'
-include 'config/model/feast.gin'
-include 'config/model/point_net.gin'
-include 'config/model/point_gnn.gin'
-include 'config/model/point_transformer.gin'
+# overall config for experiments
+lookback = 8
 
+batch_size = 32
+learning_rate = 0.001
 
-Model.batch_size = %batch_size
-Model.lr = %learning_rate
-Model.net = @PointGNN()
+spatial_dimensions = 2
 
-
-TensorBoardLogger.save_dir="results/tb_logs"
-TensorBoardLogger.name="my_model"
-
-Trainer.accelerator = "gpu"
-Trainer.devices = 1
-Trainer.logger = @TensorBoardLogger()
-Trainer.max_epochs= 1
-Trainer.default_root_dir="results"
-
+# config of the dataset
 DynaBenchDataModule.equation = %equation
 DynaBenchDataModule.task = %task
 DynaBenchDataModule.support = %support
 DynaBenchDataModule.lookback = %lookback
 DynaBenchDataModule.structure = "graph"
+
+# config of the lightning trainer
+logging_dir.equation = %equation
+logging_dir.support = %support
+logging_dir.task = %task
+
+TensorBoardLogger.save_dir="results/tb_logs"
+TensorBoardLogger.name=@logging_dir()
+
+Trainer.accelerator = "gpu"
+Trainer.devices = 1
+Trainer.logger = @TensorBoardLogger()
+Trainer.max_epochs= 1
+Trainer.max_steps = 1
+Trainer.default_root_dir="results"
+
+# overall config for models
+calc_input_features.equation = %equation
+calc_input_size.equation = %equation
+calc_input_size.lookback = %lookback
+
+input_size = @calc_input_size()
+input_features = @calc_input_features()

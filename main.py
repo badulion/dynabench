@@ -18,6 +18,43 @@ from src.model.baseline_zero import BaselineZero
 
 from src.model.lightningmodule import Model
 import gin
+import argparse
+
+@gin.configurable
+def logging_dir(equation, support, task):
+    return f"{equation}/{task}/{support}"
+
+@gin.configurable
+def calc_input_features(equation):
+    if equation == "gas_dynamics":
+        return 4
+    else:
+        return 1
+
+@gin.configurable
+def calc_input_size(equation, lookback):
+    return calc_input_features(equation) * lookback
+
+
+def parse_args():
+    global args, parser
+    parser = argparse.ArgumentParser(
+                prog = 'Training and Evaluation Script',
+                description = 'This program runs the experiments for the DynaBench Dataset.',
+                epilog = 'Thank you!')
+
+    parser.add_argument('-e', '--equation', type=str, default='wave', help="Equation to use.", 
+                        choices=['wave', 'gas_dynamics', 'brusselator', 'kuramoto_sivashinsky'])
+    parser.add_argument('-s', '--support', type=str, default='high', help="Support (number of points) to use.", 
+                        choices=['low', 'mid', 'high', 'full'])
+    parser.add_argument('-t', '--task', type=str, default='forecast', help="Task to solve.", 
+                        choices=['forecast', 'evolution'])
+    parser.add_argument('-m', '--model', type=str, default='point_gnn', help="Model to train.", 
+                        choices=['feast', 'gat', 'gcn', 'point_gnn', 'point_net', 'point_transformer'])
+    
+    args = parser.parse_args()
+
+
 
 def make_gin_config():
     global Model, TensorBoardLogger, Trainer, DynaBenchDataModule
@@ -39,11 +76,17 @@ def make_gin_config():
 
     BaselinePersistence = gin.external_configurable(BaselinePersistence)
 
+
+    gin.constant("equation", args.equation)
+    gin.constant("support", args.support)
+    gin.constant("task", args.task)
+
     gin.parse_config_file('config/config.gin')
+    gin.parse_config_file(f'config/model/{args.model}.gin')
     gin.finalize()
 
-
 if __name__ == '__main__':
+    parse_args()
     make_gin_config()
 
     # train the model
@@ -52,4 +95,4 @@ if __name__ == '__main__':
     model = Model()
 
     trainer.fit(model, datamodule)
-    trainer.test(datamodule=datamodule)
+    #trainer.test(datamodule=datamodule)

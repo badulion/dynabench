@@ -15,3 +15,7 @@ PointGNN.global_nn_hidden_size = 64
 PointGNN.global_nn_hidden_layers = 2
 PointGNN.hidden_layers = 4
 PointGNN.spatial_dimensions = %spatial_dimensions
+
+Model.batch_size = %batch_size
+Model.lr = %learning_rate
+Model.net = @PointGNN()
