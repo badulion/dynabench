@@ -1,4 +1,4 @@
-# Dynabench: A benchmark dataset for learning dynamical systems from data
+# Dynabench: A benchmark dataset for learning dynamical systems from mesh data
 
 This is the repository containing the data generation algorithms as well as all baseline models for the __Dynabench: A benchmark dataset for learning dynamical systems from data__ paper (not out yet!)
 
@@ -15,8 +15,15 @@ An example (wave equation) of a simulated system is shown below:
 ## Task description
 ToDo
 
-## Equationns
-ToDo
+## Equations
+There are four different equations in the dataset, each with different characteristics summarized in the following table:
+
+| Equation             | Components | Time Order | Spatial Order |
+|----------------------|------------|------------|---------------|
+| Gas Dynamics         | 4          | 1          | 2             |
+| Wave                 | 1          | 2          | 2             |
+| Brusselator          | 1          | 1          | 2             |
+| Kuramoto Sivashinsky | 1          | 1          | 4             |
 
 ## Setup
 ### Automated setup
