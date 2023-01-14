@@ -17,7 +17,6 @@ class Model(LightningModule):
     def forward(self, x, rollout: Optional[int] = 1):
         return self.net(x)
 
-
     def training_step(self, batch, batch_idx):
         x, y, points = batch
         y_hat = self(x)

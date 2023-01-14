@@ -20,12 +20,28 @@ logging_dir.task = %task
 
 TensorBoardLogger.save_dir="results/tb_logs"
 TensorBoardLogger.name=@logging_dir()
+TensorBoardLogger.max_queue=100
+TensorBoardLogger.flush_secs=120
+
+CSVLogger.save_dir="results/csv_logs"
+CSVLogger.name=@logging_dir()
+CSVLogger.flush_logs_every_n_steps = 100
+
+ModelCheckpoint.monitor = "val_loss"
+ModelCheckpoint.save_last = True
+ModelCheckpoint.save_top_k = 1
+ModelCheckpoint.mode = "min"
+
+EarlyStopping.monitor = "val_loss"
+EarlyStopping.min_delta = 0.0
+EarlyStopping.patience = 5
+EarlyStopping.mode = "min"
 
 Trainer.accelerator = "gpu"
 Trainer.devices = 1
-Trainer.logger = @TensorBoardLogger()
-Trainer.max_epochs= 1
-Trainer.max_steps = 1
+Trainer.logger = [@TensorBoardLogger(), @CSVLogger()]
+Trainer.callbacks = [@ModelCheckpoint(), @EarlyStopping()]
+Trainer.max_epochs= 2
 Trainer.default_root_dir="results"
 
 # overall config for models

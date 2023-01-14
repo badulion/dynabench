@@ -2,3 +2,5 @@ venv/
 figures/
 data/
 results/
+demos/
+.git

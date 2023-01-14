@@ -1,7 +1,9 @@
 
 import pytorch_lightning as pl
 from pytorch_lightning import Trainer
-from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.loggers import TensorBoardLogger, CSVLogger
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from src.dataset.dataloader import DynaBenchDataModule
 
@@ -57,14 +59,20 @@ def parse_args():
 
 
 def make_gin_config():
-    global Model, TensorBoardLogger, Trainer, DynaBenchDataModule
+    global Model, TensorBoardLogger, CSVLogger, Trainer, DynaBenchDataModule
+    global ModelCheckpoint, EarlyStopping
     global GATNet, GCN, FeaStNet, PointNet, PointGNN, PointTransformer
     global BaselinePersistence, BaselineZero
 
     # register external objects and parse gin config tree
-    Model = gin.external_configurable(Model)
     TensorBoardLogger = gin.external_configurable(TensorBoardLogger)
+    CSVLogger = gin.external_configurable(CSVLogger)
+    ModelCheckpoint = gin.external_configurable(ModelCheckpoint)
+    EarlyStopping = gin.external_configurable(EarlyStopping)
     Trainer = gin.external_configurable(Trainer)
+
+
+    Model = gin.external_configurable(Model)
     DynaBenchDataModule = gin.external_configurable(DynaBenchDataModule)
 
     GATNet = gin.external_configurable(GATNet)
@@ -95,4 +103,4 @@ if __name__ == '__main__':
     model = Model()
 
     trainer.fit(model, datamodule)
-    #trainer.test(datamodule=datamodule)
+    trainer.test(datamodule=datamodule)
