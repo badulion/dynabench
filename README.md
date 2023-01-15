@@ -64,3 +64,16 @@ The repository contains two dataset classes to handle the generated data.
 
 2. A graph dataset, specifically used for Message Passing Neural Networks implemented using the pytorch geometric module
 
+
+## Benchmark Results (will be updated)
+
+| equation\model    |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |        wave |
+|:------------------|--------------:|---------------:|-----------------------:|------------:|
+| feast             |   0.000708671 |    0.000586686 |            0.000104922 | 3.05878e-05 |
+| gat               |   0.0370567   |    0.0429969   |            0.0967137   | 0.0116138   |
+| gcn               |   0.284355    |    0.181616    |            0.484141    | 0.0392228   |
+| persistence       |   0.0404166   |    0.0089862   |            0.00136208  | 0.000278237 |
+| point_gnn         |   0.000164287 |    0.000201561 |            3.13238e-05 | 8.14812e-06 |
+| point_net         |   1.00087     |    0.171653    |            1.00321     | 0.988587    |
+| point_transformer |   0.000556881 |    0.000220286 |            0.000213371 | 1.84354e-05 |
+| zero              |   1.00087     |    0.993006    |            1.00318     | 0.988589    |

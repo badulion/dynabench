@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# run baselines
+python baseline.py -e brusselator -b zero -t forecast -s high
+python baseline.py -e kuramoto_sivashinsky -b zero -t forecast -s high
+python baseline.py -e gas_dynamics -b zero -t forecast -s high
+python baseline.py -e wave -b zero -t forecast -s high
+
+python baseline.py -e brusselator -b persistence -t forecast -s high
+python baseline.py -e kuramoto_sivashinsky -b persistence -t forecast -s high
+python baseline.py -e gas_dynamics -b persistence -t forecast -s high
+python baseline.py -e wave -b persistence -t forecast -s high
+
+# run models
 python main.py -e gas_dynamics -m point_net -t forecast -s high
 python main.py -e gas_dynamics -m point_gnn -t forecast -s high
 python main.py -e gas_dynamics -m point_transformer -t forecast -s high

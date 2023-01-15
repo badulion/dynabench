@@ -53,7 +53,7 @@ def parse_args():
     parser.add_argument('-t', '--task', type=str, default='forecast', help="Task to solve.", 
                         choices=['forecast', 'evolution'])
     parser.add_argument('-b', '--baseline', type=str, default='persistence', help="Which baseline to use.", 
-                        choices=['feast', 'gat', 'gcn', 'point_gnn', 'point_net', 'point_transformer'])
+                        choices=['zero', 'persistence'])
     
     args = parser.parse_args()
 
