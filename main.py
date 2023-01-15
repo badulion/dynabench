@@ -23,8 +23,9 @@ import gin
 import argparse
 
 @gin.configurable
-def logging_dir(equation, support, task):
-    return f"{equation}/{task}/{support}"
+def logging_dir(equation, support, task, model):
+    return f"{equation}/{task}/{support}/{model}"
+
 
 @gin.configurable
 def calc_input_features(equation):
@@ -88,6 +89,7 @@ def make_gin_config():
     gin.constant("equation", args.equation)
     gin.constant("support", args.support)
     gin.constant("task", args.task)
+    gin.constant("model", args.model)
 
     gin.parse_config_file('config/config.gin')
     gin.parse_config_file(f'config/model/{args.model}.gin')

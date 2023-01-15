@@ -17,13 +17,14 @@ DynaBenchDataModule.structure = "graph"
 logging_dir.equation = %equation
 logging_dir.support = %support
 logging_dir.task = %task
+logging_dir.model = %model
 
-TensorBoardLogger.save_dir="results/tb_logs"
+TensorBoardLogger.save_dir="output/tb_logs"
 TensorBoardLogger.name=@logging_dir()
 TensorBoardLogger.max_queue=100
 TensorBoardLogger.flush_secs=120
 
-CSVLogger.save_dir="results/csv_logs"
+CSVLogger.save_dir="output/csv_logs"
 CSVLogger.name=@logging_dir()
 CSVLogger.flush_logs_every_n_steps = 100
 
@@ -41,8 +42,8 @@ Trainer.accelerator = "gpu"
 Trainer.devices = 1
 Trainer.logger = [@TensorBoardLogger(), @CSVLogger()]
 Trainer.callbacks = [@ModelCheckpoint(), @EarlyStopping()]
-Trainer.max_epochs= 2
-Trainer.default_root_dir="results"
+Trainer.max_epochs= 10
+Trainer.default_root_dir="output"
 
 # overall config for models
 calc_input_features.equation = %equation

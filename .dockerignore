@@ -1,6 +1,6 @@
 venv/
 figures/
 data/
-results/
+output/
 demos/
 .git
