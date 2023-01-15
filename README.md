@@ -49,11 +49,11 @@ Additionally you need to install pytorch geometric, following the instructions o
 
 
 ## Generation
-To generate data simply run
+To generate data  simply run
 
-    python gen.py --num NUM_SIMULATIONS [OPTIONAL --seed SEED]
+    python generate.py --num NUM_SIMULATIONS --equation EQUATION [OPTIONAL --seed SEED]
 
-Where `NUM_SIMULATIONS` indicates how many times each equation is simulated. A reasonable value for testing and debugging should be 10. The full benchmark dataset should be used with the default seed and 100 simulations.
+Where `NUM_SIMULATIONS` indicates how many times each equation is simulated and `EQUATION` is one of (brusselator, gas_dynamics, kuramoto_sivashinsky, wave). A reasonable number of simulations for testing and debugging should be 10. The full benchmark dataset should be used with the default seed and 30 simulations.
 
 Warning! Depending on your CPU speed this can take a long time (~30 minutes for NUM_SIMULATIONS=10)
 
