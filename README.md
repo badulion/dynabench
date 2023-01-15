@@ -67,6 +67,8 @@ The repository contains two dataset classes to handle the generated data.
 
 ## Benchmark Results (will be updated)
 
+The following table shows the results for the forecast task in a high support setting:
+
 | equation\model    |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |        wave |
 |:------------------|--------------:|---------------:|-----------------------:|------------:|
 | feast             |   0.000708671 |    0.000586686 |            0.000104922 | 3.05878e-05 |
@@ -77,3 +79,16 @@ The repository contains two dataset classes to handle the generated data.
 | point_net         |   1.00087     |    0.171653    |            1.00321     | 0.988587    |
 | point_transformer |   0.000556881 |    0.000220286 |            0.000213371 | 1.84354e-05 |
 | zero              |   1.00087     |    0.993006    |            1.00318     | 0.988589    |
+
+Results for the evolution task:
+
+| equation\model    |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |     wave |
+|:------------------|--------------:|---------------:|-----------------------:|---------:|
+| feast             |    0.0273074  |      0.0855186 |               0.208168 | 0.217426 |
+| gat               |    0.173189   |      0.133655  |               0.380099 | 0.288436 |
+| gcn               |    0.647265   |      0.612268  |               0.74179  | 0.296789 |
+| persistence       |    1.06286    |      1.15573   |               1.32792  | 1.85519  |
+| point_gnn         |    0.00789755 |      0.0479233 |               0.188708 | 0.190367 |
+| point_net         |    1.00227    |      1.00262   |               1.00145  | 0.989913 |
+| point_transformer |    0.0108111  |      0.0447914 |               0.197253 | 0.196311 |
+| zero              |    1.00227    |      1.00262   |               1.00125  | 0.989917 |

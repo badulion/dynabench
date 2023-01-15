@@ -24,21 +24,21 @@ class Model(LightningModule):
         x.x += self.training_noise * randn_like(x.x) # add gaussian noise during training
 
         y_hat = self(x)
-        loss = self.loss(y_hat.x, y.x[:,:,0])
+        loss = self.loss(y_hat.x, y.x)
         self.log('train_loss', loss, batch_size=self.batch_size)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y, points = batch
         y_hat = self(x)
-        loss = self.loss(y_hat.x, y.x[:,:,0])
+        loss = self.loss(y_hat.x, y.x)
         self.log('val_loss', loss, batch_size=self.batch_size, prog_bar=True)
         return loss
 
     def test_step(self, batch, batch_idx):
         x, y, points = batch
         y_hat = self(x)
-        loss = self.loss(y_hat.x, y.x[:,:,0])
+        loss = self.loss(y_hat.x, y.x)
         self.log('test_loss', loss, batch_size=self.batch_size)
 
         return loss

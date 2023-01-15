@@ -105,4 +105,4 @@ if __name__ == '__main__':
     model = Model()
 
     trainer.fit(model, datamodule)
-    trainer.test(datamodule=datamodule)
+    trainer.test(datamodule=datamodule, ckpt_path='best')
