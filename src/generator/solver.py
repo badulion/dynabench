@@ -73,7 +73,8 @@ class PDESolver:
         sfp.make_movie(self.storage, os.path.join("figures", path))
         self.storage.close()
 
-    def make_movie_frame_by_frame(self, path):
+    def make_movie_frame_by_frame(self, filename):
+        path = os.path.join('figures', filename)
         movie = Movie(path)
         for frame, t in zip(tqdm(self.storage.data), self.storage.times):
             fig, ax = plt.subplots(1,2, dpi=150)
@@ -88,7 +89,7 @@ class PDESolver:
             fig.colorbar(hm, ax=ax[0], location="bottom", shrink=1, pad=0.05)
             ax[0].set_xticks([])
             ax[0].set_yticks([])
-            ax[0].set_title("Wave")
+            ax[0].set_title("Brusselator")
 
             # second subplot
             hm = ax[1].imshow(frame[1,:,:], interpolation="bilinear", vmin=-2.5, vmax=2.5)
