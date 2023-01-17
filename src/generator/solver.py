@@ -116,14 +116,19 @@ class PDESolver:
 
         def interpolate_cloud(interpolator, points):
             num_points = points.shape[0]
-            return interpolator(points)
+            interpolated_values = interpolator(points)
+            interpolated_values = interpolated_values.transpose((2, 0, 1))
+            return interpolated_values
 
         def interpolate_grid(interpolator, points):
             num_grid_points = points.shape[0]
             points_reshaped = points.reshape((-1, 2))
             interpolated_values = interpolator(points_reshaped)
-            return interpolated_values.reshape((num_grid_points, num_grid_points)+interpolated_values.shape[1:])
-
+            interpolated_values = interpolated_values.reshape((num_grid_points, num_grid_points)+interpolated_values.shape[1:])
+            interpolated_values = interpolated_values.transpose((2,3,0,1))
+            return interpolated_values
+                        
+                        
         # select points for grid
         points_grid_low = generate_grid(self.grid_dim_low)
         points_grid_mid = generate_grid(self.grid_dim_mid)
@@ -149,7 +154,7 @@ class PDESolver:
         data_grid_full = (data_grid - mean) / std
 
         # interpolate the data at selected points
-        interpolation_values = data_grid_full.transpose((2,3,0,1)).reshape((self.grid_size**2, -1))
+        interpolation_values = data_grid_full.transpose((2,3,0,1)).reshape((self.grid_size**2,)+data_grid_full.shape[:2])
         interpolator = RBFInterpolator(points_cloud_full, interpolation_values, neighbors=16)
 
         data_grid_low = interpolate_grid(interpolator, points_grid_low)
