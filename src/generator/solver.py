@@ -5,6 +5,8 @@ from pde.trackers.base import TrackerCollection
 from pde.visualization.plotting import ScalarFieldPlot
 from pde.visualization.movies import Movie
 
+from scipy.interpolate import RBFInterpolator
+
 import gin
 import os
 import h5py
@@ -22,9 +24,9 @@ class PDESolver:
         t_range=100,
         dt=1e-3,
         save_interval=0.1,
-        graph_points_low=100,
-        graph_points_mid=500,
-        graph_points_high=900,
+        grid_dim_low=15,
+        grid_dim_mid=23,
+        grid_dim_high=30,
         ) -> None:
 
         # attributes
@@ -33,9 +35,9 @@ class PDESolver:
         self.t_range = t_range
         self.dt = dt
         self.save_interval = save_interval
-        self.graph_points_low = graph_points_low
-        self.graph_points_mid = graph_points_mid
-        self.graph_points_high = graph_points_high
+        self.grid_dim_low = grid_dim_low
+        self.grid_dim_mid = grid_dim_mid
+        self.grid_dim_high = grid_dim_high
 
         self.grid = UnitGrid([grid_size, grid_size], periodic=[True, True])
         self.state = equation.get_initial_state(self.grid)
@@ -103,35 +105,86 @@ class PDESolver:
         movie.save()
 
     def _postprocess(self):
-        # select points
-        indices_low = np.random.choice(self.grid_size*self.grid_size, size=self.graph_points_low, replace=False)
-        indices_mid = np.random.choice(self.grid_size*self.grid_size, size=self.graph_points_mid, replace=False)
-        indices_high = np.random.choice(self.grid_size*self.grid_size, size=self.graph_points_high, replace=False)
-        indices_full = np.arange(self.grid_size*self.grid_size)
+        def generate_grid(num_points=30):
+            points = np.linspace(0.5/num_points, 1-0.5/num_points, num_points, endpoint=True)
+            y, x = np.meshgrid(points, points)
+            return np.stack([x, y], axis=-1)
 
-        points = self.grid.cell_coords/self.grid_size
-        points_full = points.reshape(-1, 2)
+        def generate_pointcloud(num_points=900):
+            points = np.random.uniform(0, 1, size=(num_points, 2))
+            return points
+
+        def interpolate_cloud(interpolator, points):
+            num_points = points.shape[0]
+            return interpolator(points)
+
+        def interpolate_grid(interpolator, points):
+            num_grid_points = points.shape[0]
+            points_reshaped = points.reshape((-1, 2))
+            interpolated_values = interpolator(points_reshaped)
+            return interpolated_values.reshape((num_grid_points, num_grid_points)+interpolated_values.shape[1:])
+
+        # select points for grid
+        points_grid_low = generate_grid(self.grid_dim_low)
+        points_grid_mid = generate_grid(self.grid_dim_mid)
+        points_grid_high = generate_grid(self.grid_dim_high)
+        points_grid_full = self.grid.cell_coords/self.grid_size
+
+        # select points for cloud
+        points_cloud_low = generate_pointcloud(self.grid_dim_low**2)
+        points_cloud_mid = generate_pointcloud(self.grid_dim_mid**2)
+        points_cloud_high = generate_pointcloud(self.grid_dim_high**2)
+        points_cloud_full = points_grid_full.reshape(-1, 2)
 
 
         # extract graph points
         f = h5py.File(self.path, 'a')
         data_grid = f['data'][:]
+        num_samples = data_grid.shape[2:]
 
         # standardise the data
         mean = np.mean(data_grid, axis=(-1, -2), keepdims=True)
         std = np.std(data_grid, axis=(-1, -2), keepdims=True)
         std[std < 1e-10] = 1
-        data_grid = (data_grid - mean) / std
+        data_grid_full = (data_grid - mean) / std
+
+        # interpolate the data at selected points
+        interpolation_values = data_grid_full.transpose((2,3,0,1)).reshape((self.grid_size**2, -1))
+        interpolator = RBFInterpolator(points_cloud_full, interpolation_values, neighbors=16)
+
+        data_grid_low = interpolate_grid(interpolator, points_grid_low)
+        data_grid_mid = interpolate_grid(interpolator, points_grid_mid)
+        data_grid_high = interpolate_grid(interpolator, points_grid_high)
+
+        data_cloud_full = data_grid_full.reshape((-1,)+num_samples)
+        data_cloud_low = interpolate_cloud(interpolator, points_cloud_low)
+        data_cloud_mid = interpolate_cloud(interpolator, points_cloud_mid)
+        data_cloud_high = interpolate_cloud(interpolator, points_cloud_high)
+        
+
 
         # save graph sampled points
-        f.create_dataset('indices_low', data=indices_low)
-        f.create_dataset('indices_mid', data=indices_mid)
-        f.create_dataset('indices_high', data=indices_high)
-        f.create_dataset('indices_full', data=indices_full)
-        f.create_dataset('points', data=points)
+        f.create_dataset('points_grid_low', data=points_grid_low)
+        f.create_dataset('points_grid_mid', data=points_grid_mid)
+        f.create_dataset('points_grid_high', data=points_grid_high)
+        f.create_dataset('points_grid_full', data=points_grid_full)
 
+        f.create_dataset('data_grid_low', data=data_grid_low)
+        f.create_dataset('data_grid_mid', data=data_grid_mid)
+        f.create_dataset('data_grid_high', data=data_grid_high)
+        f.create_dataset('data_grid_full', data=data_grid_full)
 
-        f['data'][...] = data_grid
+        f.create_dataset('points_cloud_low', data=points_cloud_low)
+        f.create_dataset('points_cloud_mid', data=points_cloud_mid)
+        f.create_dataset('points_cloud_high', data=points_cloud_high)
+        f.create_dataset('points_cloud_full', data=points_cloud_full)
+
+        f.create_dataset('data_cloud_low', data=data_cloud_low)
+        f.create_dataset('data_cloud_mid', data=data_cloud_mid)
+        f.create_dataset('data_cloud_high', data=data_cloud_high)
+        f.create_dataset('data_cloud_full', data=data_cloud_full)
+
+        del f["data"]
 
         f.close()
 
