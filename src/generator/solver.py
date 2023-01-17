@@ -24,9 +24,8 @@ class PDESolver:
         t_range=100,
         dt=1e-3,
         save_interval=0.1,
-        grid_dim_low=15,
-        grid_dim_mid=23,
-        grid_dim_high=30,
+        num_points=[15, 30],
+        num_points_names=["low", "high"]
         ) -> None:
 
         # attributes
@@ -35,9 +34,8 @@ class PDESolver:
         self.t_range = t_range
         self.dt = dt
         self.save_interval = save_interval
-        self.grid_dim_low = grid_dim_low
-        self.grid_dim_mid = grid_dim_mid
-        self.grid_dim_high = grid_dim_high
+        self.num_points = num_points
+        self.num_points_names = num_points_names
 
         self.grid = UnitGrid([grid_size, grid_size], periodic=[True, True])
         self.state = equation.get_initial_state(self.grid)
@@ -130,17 +128,12 @@ class PDESolver:
                         
                         
         # select points for grid
-        points_grid_low = generate_grid(self.grid_dim_low)
-        points_grid_mid = generate_grid(self.grid_dim_mid)
-        points_grid_high = generate_grid(self.grid_dim_high)
+        points_grid = [generate_grid(sup) for sup in self.num_points]
         points_grid_full = self.grid.cell_coords/self.grid_size
 
         # select points for cloud
-        points_cloud_low = generate_pointcloud(self.grid_dim_low**2)
-        points_cloud_mid = generate_pointcloud(self.grid_dim_mid**2)
-        points_cloud_high = generate_pointcloud(self.grid_dim_high**2)
+        points_cloud = [generate_pointcloud(sup**2) for sup in self.num_points]
         points_cloud_full = points_grid_full.reshape(-1, 2)
-
 
         # extract graph points
         f = h5py.File(self.path, 'a')
@@ -157,37 +150,30 @@ class PDESolver:
         interpolation_values = data_grid_full.transpose((2,3,0,1)).reshape((self.grid_size**2,)+data_grid_full.shape[:2])
         interpolator = RBFInterpolator(points_cloud_full, interpolation_values, neighbors=16)
 
-        data_grid_low = interpolate_grid(interpolator, points_grid_low)
-        data_grid_mid = interpolate_grid(interpolator, points_grid_mid)
-        data_grid_high = interpolate_grid(interpolator, points_grid_high)
+        data_grid = [interpolate_grid(interpolator, points) for points in points_grid]
 
         data_cloud_full = data_grid_full.reshape((-1,)+num_samples)
-        data_cloud_low = interpolate_cloud(interpolator, points_cloud_low)
-        data_cloud_mid = interpolate_cloud(interpolator, points_cloud_mid)
-        data_cloud_high = interpolate_cloud(interpolator, points_cloud_high)
+        data_cloud = [interpolate_cloud(interpolator, points) for points in points_cloud]
         
 
-
-        # save graph sampled points
-        f.create_dataset('points_grid_low', data=points_grid_low)
-        f.create_dataset('points_grid_mid', data=points_grid_mid)
-        f.create_dataset('points_grid_high', data=points_grid_high)
+        # save sampled points
         f.create_dataset('points_grid_full', data=points_grid_full)
+        for points, name in zip(points_grid, self.num_points_names):
+            f.create_dataset(f'points_grid_{name}', data=points)
 
-        f.create_dataset('data_grid_low', data=data_grid_low)
-        f.create_dataset('data_grid_mid', data=data_grid_mid)
-        f.create_dataset('data_grid_high', data=data_grid_high)
-        f.create_dataset('data_grid_full', data=data_grid_full)
-
-        f.create_dataset('points_cloud_low', data=points_cloud_low)
-        f.create_dataset('points_cloud_mid', data=points_cloud_mid)
-        f.create_dataset('points_cloud_high', data=points_cloud_high)
         f.create_dataset('points_cloud_full', data=points_cloud_full)
+        for points, name in zip(points_cloud, self.num_points_names):
+            f.create_dataset(f'points_cloud_{name}', data=points)
+        
 
-        f.create_dataset('data_cloud_low', data=data_cloud_low)
-        f.create_dataset('data_cloud_mid', data=data_cloud_mid)
-        f.create_dataset('data_cloud_high', data=data_cloud_high)
+        # save graph
+        f.create_dataset('data_grid_full', data=data_grid_full)
+        for data, name in zip(data_grid, self.num_points_names):
+            f.create_dataset(f'data_grid_{name}', data=data)
+
         f.create_dataset('data_cloud_full', data=data_cloud_full)
+        for points, name in zip(data_cloud, self.num_points_names):
+            f.create_dataset(f'data_cloud_{name}', data=points)
 
         del f["data"]
 
