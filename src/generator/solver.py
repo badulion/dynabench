@@ -130,7 +130,7 @@ class PDESolver:
 
         def interpolate_cloud(interpolator, points):
             interpolated_values = interpolator(points)
-            interpolated_values = interpolated_values.transpose((2, 0, 1))
+            interpolated_values = interpolated_values.transpose((1, 2, 0))
             return interpolated_values
 
         def interpolate_grid(interpolator, points):
