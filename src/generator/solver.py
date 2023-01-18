@@ -40,7 +40,7 @@ class PDESolver:
             equationModule = BrusselatorPDE
         elif equation == 'wave':
             equationModule = WavePDE
-        elif equation == 'kuramoto_sivashinky':
+        elif equation == 'kuramoto_sivashinsky':
             equationModule = KuramotoSivashinskyPDE
         else:
             raise NotImplementedError()
