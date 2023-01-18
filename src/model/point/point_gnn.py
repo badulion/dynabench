@@ -1,9 +1,8 @@
 #from torch_geometric.nn.conv import PointGNNConv
-from src.model.point_gnn_conv import PointGNNConv
 from torch import nn
 import torch.functional as F
 
-from src.model.mlp import MLP
+from ..components import MLP, PointGNNConv
 
 
 class PointGNN(nn.Module):

@@ -1,5 +1,6 @@
 # overall config for experiments
 lookback = 8
+rollout = 16
 
 batch_size = 32
 learning_rate = 0.001
@@ -12,6 +13,7 @@ DynaBenchDataModule.task = %task
 DynaBenchDataModule.support = %support
 DynaBenchDataModule.num_points = %num_points
 DynaBenchDataModule.lookback = %lookback
+DynaBenchDataModule.rollout = %rollout
 DynaBenchDataModule.structure = "graph"
 
 # config of the lightning trainer
@@ -40,14 +42,15 @@ EarlyStopping.min_delta = 0.0
 EarlyStopping.patience = 5
 EarlyStopping.mode = "min"
 
-Trainer.accelerator = "cpu"
+Trainer.accelerator = "gpu"
 Trainer.devices = 1
 Trainer.logger = [@TensorBoardLogger(), @CSVLogger()]
 Trainer.callbacks = [@ModelCheckpoint(), @EarlyStopping()]
-Trainer.max_epochs= 10
+Trainer.max_epochs= 1
 Trainer.default_root_dir="output"
 
 # overall config for models
+Model.training_noise = 0.1
 calc_input_features.equation = %equation
 calc_input_size.equation = %equation
 calc_input_size.lookback = %lookback

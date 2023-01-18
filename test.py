@@ -2,8 +2,7 @@ import numpy as np
 from scipy.interpolate import RBFInterpolator
 import matplotlib.pyplot as plt
 import h5py
-from src.dataset.dataset_base import DynaBenchBase
-from src.dataset.dataset_graph import DynaBenchGraph
+from src.dataset import DynaBenchBase
 from tqdm import tqdm
 
 # f = h5py.File("data/wave/0.hdf5")
@@ -19,6 +18,7 @@ def plot_comparison(ds_low, ds_high):
     plt.show()
 
 
-ds = DynaBenchGraph(equation="wave", support="grid", num_points="low")
-for i in tqdm(ds):
-    i
+ds1 = DynaBenchBase(equation="brusselator", task="evolution",support="cloud", num_points="high", lookback=8)
+
+x, y, p = ds1[10]
+print(y.shape)

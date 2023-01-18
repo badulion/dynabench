@@ -37,8 +37,10 @@ class DynaBenchGraph(DynaBenchBase):
             x = x.reshape((x.shape[0], -1))
             y = y.reshape((y.shape[0], y.shape[1], -1))
             points = points.reshape((-1, 2))
-        x = x.transpose((1,0))
-        y = y.transpose((2,1,0))
+
+            x = x.transpose((1,0))
+            y = y.transpose((2,1,0)) if self.task == "forecast" else y.transpose((1,0))
+
         # transform to tensors
         x = torch.tensor(x, dtype=torch.float32)
         y = torch.tensor(y, dtype=torch.float32)

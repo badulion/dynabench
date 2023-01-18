@@ -8,15 +8,9 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from src.dataset.dataloader import DynaBenchDataModule
 
 # models
-from src.model.gat import GATNet
-from src.model.gcn import GCN
-from src.model.feast import FeaStNet
-from src.model.point_net import PointNet
-from src.model.point_gnn import PointGNN
-from src.model.point_transformer import PointTransformer
-
-from src.model.baseline_persistence import BaselinePersistence
-from src.model.baseline_zero import BaselineZero
+from src.model.gnn import GATNet, GCN
+from src.model.point import FeaStNet, PointNet, PointGNN, PointTransformer
+from src.model.baseline import BaselinePersistence, BaselineZero
 
 from src.model.lightningmodule import Model
 import gin
@@ -40,6 +34,11 @@ def calc_input_features(equation):
 def calc_input_size(equation, lookback):
     return calc_input_features(equation) * lookback
 
+def is_baseline(model: str):
+    if model in ['zero', 'persistence']:
+        return True
+    else:
+        return False
 
 def parse_args():
     global args, parser
@@ -57,7 +56,7 @@ def parse_args():
     parser.add_argument('-t', '--task', type=str, default='forecast', help="Task to solve.", 
                         choices=['forecast', 'evolution'])
     parser.add_argument('-m', '--model', type=str, default='point_gnn', help="Model to train.", 
-                        choices=['feast', 'gat', 'gcn', 'point_gnn', 'point_net', 'point_transformer'])
+                        choices=['feast', 'gat', 'gcn', 'point_gnn', 'point_net', 'point_transformer', 'zero', 'persistence'])
     
     args = parser.parse_args()
 
@@ -86,8 +85,8 @@ def make_gin_config():
     PointNet = gin.external_configurable(PointNet)
     PointGNN = gin.external_configurable(PointGNN)
     PointTransformer = gin.external_configurable(PointTransformer)
-
     BaselinePersistence = gin.external_configurable(BaselinePersistence)
+    BaselineZero = gin.external_configurable(BaselineZero)
 
 
     gin.constant("equation", args.equation)
@@ -97,7 +96,10 @@ def make_gin_config():
     gin.constant("model", args.model)
 
     gin.parse_config_file('config/config.gin')
-    gin.parse_config_file(f'config/model/{args.model}.gin')
+    if is_baseline(args.model):
+        gin.parse_config_file(f'config/baseline/{args.model}.gin')
+    else:
+        gin.parse_config_file(f'config/model/{args.model}.gin')
     gin.finalize()
 
 if __name__ == '__main__':
@@ -109,5 +111,8 @@ if __name__ == '__main__':
     trainer = Trainer()
     model = Model()
 
-    trainer.fit(model, datamodule)
-    trainer.test(datamodule=datamodule, ckpt_path='best')
+    if is_baseline(args.model):
+        trainer.test(model, datamodule=datamodule)
+    else:
+        trainer.fit(model, datamodule)
+        trainer.test(datamodule=datamodule, ckpt_path='best')

@@ -62,7 +62,7 @@ class DynaBenchBase(Dataset):
         "gas_dynamics": 4, 
         "wave": 1, 
         "kuramoto_sivashinsky": 1, 
-        "brusselator": 1
+        "brusselator": 2
     }
 
     def __init__(
@@ -167,13 +167,16 @@ class DynaBenchBase(Dataset):
         
         # select data
         if self.task == "forecast":
-            x, y = self.get_item_forecast(file, file_idx)
+            x, y = self._get_item_forecast(file, file_idx)
         else:
-            x, y = self.get_item_evolution(file, file_idx)
+            x, y = self._get_item_evolution(file, file_idx)
 
         # join lookback as channels
         new_shape = (-1, ) + x.shape[2:]
         x = x.reshape(new_shape)
+
+        # permute axis for cloud data
+        x, y = self._permute_axis(x, y)
 
         # get points
         points = file[self.points_selector][:]
@@ -184,11 +187,9 @@ class DynaBenchBase(Dataset):
         return x, y, points
 
     
-    def get_item_forecast(self, file, file_idx):
+    def _get_item_forecast(self, file, file_idx):
         data_x = np.split(file[self.data_selector][file_idx:file_idx+self.lookback], 2, axis=1)[0]
         data_y = np.split(file[self.data_selector][file_idx+self.lookback:file_idx+self.lookback+self.rollout], 2, axis=1)[0]
-
-        t = file[self.data_selector][file_idx:file_idx+self.lookback]
         
         if self.equation == "wave":
             data_x = data_x[:, [0]]
@@ -196,7 +197,7 @@ class DynaBenchBase(Dataset):
 
         return data_x, data_y
 
-    def get_item_evolution(self, file, file_idx):
+    def _get_item_evolution(self, file, file_idx):
         data_x = np.split(file[self.data_selector][file_idx:file_idx+self.lookback], 2, axis=1)[0]
         data_y = np.split(file[self.data_selector][file_idx], 2, axis=0)[1]
 
@@ -205,21 +206,18 @@ class DynaBenchBase(Dataset):
             data_y = data_y[0]
 
         return data_x, data_y
+
+    def _permute_axis(self, x, y):
+        # before permutation dimensions are num_channels x num_points
+        # should be num_points x num_channels
+        if self.support == "cloud":
+            x = x.transpose((1,0))
+            y = y.transpose((2,1,0)) if self.task == "forecast" else y.transpose((1,0))
+        return x, y
+
     
     def __len__(self):
         return sum(self.real_lengths)
 
-    def _support_selector(self, support):
-        if support == "high":
-            suffix = "_high"
-        elif support == "low":
-            suffix = "_low"
-        else:
-            suffix = ""
-        return "data"+suffix, "points"+suffix
-
     def additional_transforms(self, x, y, points):
-        if self.support == "cloud":
-            x = x.transpose((1,0))
-            y = y.transpose((2,1,0))
         return x, y, points

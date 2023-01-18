@@ -3,6 +3,7 @@ from torch import nn
 import torch
 
 
+
 class GATNet(nn.Module):
     def __init__(self, input_size, output_size, hidden_size, hidden_layers=1, spatial_dimensions=2) -> None:
         super().__init__()

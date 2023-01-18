@@ -2,7 +2,7 @@ from torch_geometric.nn import PointTransformerConv
 from torch import nn
 import torch.functional as F
 
-from src.model.mlp import MLP
+from ..components import MLP
 
 
 class PointTransformer(nn.Module):

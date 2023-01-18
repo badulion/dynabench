@@ -1,5 +1,5 @@
 from pde import FieldCollection, PDEBase, ScalarField, VectorField
-from src.utils.initial import sum_of_gaussians as initial_function
+from ..utils.initial import sum_of_gaussians as initial_function
 
 class GasDynamicsPDE(PDEBase):
     """Gas Dynamics simulating weather"""

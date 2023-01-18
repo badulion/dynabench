@@ -15,8 +15,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-@gin.configurable
+from .equations import WavePDE, GasDynamicsPDE, BrusselatorPDE, KuramotoSivashinskyPDE
+
 class PDESolver:
+    available_equations = ['wave', 'gas_dynamics', 'brusselator', 'kuramoto_sivashinsky']
     def __init__(self,
         equation,
         save_dir,
@@ -32,8 +34,21 @@ class PDESolver:
         save_grid_points=True,
         ) -> None:
 
+        if equation == 'gas_dynamics':
+            equationModule = GasDynamicsPDE
+        elif equation == 'brusselator':
+            equationModule = BrusselatorPDE
+        elif equation == 'wave':
+            equationModule = WavePDE
+        elif equation == 'kuramoto_sivashinky':
+            equationModule = KuramotoSivashinskyPDE
+        else:
+            raise NotImplementedError()
+
+
         # attributes
-        self.equation = equation
+        self.equation_name = equation
+        self.equation = equationModule()
         self.grid_size = grid_size
         self.t_range = t_range
         self.dt = dt
@@ -50,8 +65,8 @@ class PDESolver:
             UserWarning("No data will be saved, are you sure?")
 
         self.grid = UnitGrid([grid_size, grid_size], periodic=[True, True])
-        self.state = equation.get_initial_state(self.grid)
-        self.state_with_dyn = FieldCollection([*self.state, *equation.evolution_rate(self.state)])
+        self.state = self.equation.get_initial_state(self.grid)
+        self.state_with_dyn = FieldCollection([*self.state, *self.equation.evolution_rate(self.state)])
         
         # create storage
         if not os.path.exists(save_dir):

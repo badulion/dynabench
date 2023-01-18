@@ -44,7 +44,7 @@ class DynaBenchDataModule(LightningDataModule):
 
     def setup(self, stage: str):
         self.train = self.Dataset(name=self.name, mode="train", equation=self.equation, support=self.support, task=self.task, base_path=self.base_path, lookback=self.lookback, rollout=1, test_ratio=self.test_ratio, val_ratio=self.val_ratio, k=self.k)
-        self.val = self.Dataset(name=self.name, mode="val", equation=self.equation, support=self.support, task=self.task, base_path=self.base_path, lookback=self.lookback, rollout=self.rollout, test_ratio=self.test_ratio, val_ratio=self.val_ratio, k=self.k)
+        self.val = self.Dataset(name=self.name, mode="val", equation=self.equation, support=self.support, task=self.task, base_path=self.base_path, lookback=self.lookback, rollout=1, test_ratio=self.test_ratio, val_ratio=self.val_ratio, k=self.k)
         self.test = self.Dataset(name=self.name, mode="test", equation=self.equation, support=self.support, task=self.task, base_path=self.base_path, lookback=self.lookback, rollout=self.rollout, test_ratio=self.test_ratio, val_ratio=self.val_ratio, k=self.k)
 
 
