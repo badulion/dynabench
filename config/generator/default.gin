@@ -1,0 +1,15 @@
+# general settings
+# SHOULD NOT BE CHANGED
+PDESolver.grid_size=64
+PDESolver.t_range=100
+PDESolver.dt=1e-3
+PDESolver.save_interval=0.1
+PDESolver.num_points=[15, 30]
+PDESolver.num_points_names=["low", "high"]
+
+# save settings
+# can be changed if only part of the dataset is needed
+PDESolver.save_full_grid=True
+PDESolver.save_full_cloud=True # probably unnecessary since only reshaped full grid
+PDESolver.save_cloud_points=True
+PDESolver.save_grid_points=True

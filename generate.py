@@ -4,6 +4,8 @@ import numpy as np
 import sys
 import argparse
 from src.utils.logging import create_logger
+import gin
+
 
 logger = create_logger(__name__)
 parser = argparse.ArgumentParser(
@@ -32,11 +34,14 @@ elif args.equation == 'wave':
 else:
     equationModule = KuramotoSivashinskyPDE
 
+gin.parse_config_file("config/generator/default.gin") # can be changed 
+PDESolver = gin.external_configurable(PDESolver)
+gin.finalize()
 
 
 logger.info(f"Generating data for the {args.equation} equation.")
 for i in range(args.num):
     eq = equationModule()
-    solver = PDESolver(eq, f"data/{args.equation}", grid_size=64, t_range=100)
+    solver = PDESolver(eq, f"data/{args.equation}")
     solver.solve()
 logger.info(f"Finished generating data.")
