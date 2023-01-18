@@ -23,14 +23,16 @@ import gin
 import argparse
 
 @gin.configurable
-def logging_dir(equation, support, task, model):
-    return f"{equation}/{task}/{support}/{model}"
+def logging_dir(equation, support, num_points, task, model):
+    return f"{task}/{support}/{num_points}/{equation}/{model}"
 
 
 @gin.configurable
 def calc_input_features(equation):
     if equation == "gas_dynamics":
         return 4
+    elif equation == "brusselator":
+        return 2
     else:
         return 1
 
@@ -48,8 +50,10 @@ def parse_args():
 
     parser.add_argument('-e', '--equation', type=str, default='wave', help="Equation to use.", 
                         choices=['wave', 'gas_dynamics', 'brusselator', 'kuramoto_sivashinsky'])
-    parser.add_argument('-s', '--support', type=str, default='high', help="Support (number of points) to use.", 
-                        choices=['low', 'mid', 'high', 'full'])
+    parser.add_argument('-s', '--support', type=str, default='cloud', help="Support type (grid or cloud) to use.", 
+                        choices=['grid', 'cloud'])
+    parser.add_argument('-n', '--num-points', type=str, default='high', help="Number of points to use.", 
+                        choices=['low', 'high'])
     parser.add_argument('-t', '--task', type=str, default='forecast', help="Task to solve.", 
                         choices=['forecast', 'evolution'])
     parser.add_argument('-m', '--model', type=str, default='point_gnn', help="Model to train.", 
@@ -88,6 +92,7 @@ def make_gin_config():
 
     gin.constant("equation", args.equation)
     gin.constant("support", args.support)
+    gin.constant("num_points", args.num_points)
     gin.constant("task", args.task)
     gin.constant("model", args.model)
 

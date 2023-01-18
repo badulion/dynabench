@@ -10,10 +10,11 @@ class DynaBenchGraph(DynaBenchBase):
                  name="dyna-benchmark", 
                  mode="train", 
                  equation="gas_dynamics", 
-                 support="high", 
+                 support="cloud",
+                 num_points="high",
                  task="forecast", 
                  base_path="data", 
-                 lookback=0, 
+                 lookback=1, 
                  rollout=1,
                  test_ratio=0.1,
                  val_ratio=0.1,
@@ -22,6 +23,7 @@ class DynaBenchGraph(DynaBenchBase):
                          mode=mode,
                          equation=equation, 
                          support=support,
+                         num_points=num_points,
                          task=task, 
                          base_path=base_path,
                          lookback=lookback, 
@@ -31,6 +33,12 @@ class DynaBenchGraph(DynaBenchBase):
         self.k = k
 
     def additional_transforms(self, x, y, points):
+        if self.support == "grid":
+            x = x.reshape((x.shape[0], -1))
+            y = y.reshape((y.shape[0], y.shape[1], -1))
+            points = points.reshape((-1, 2))
+        x = x.transpose((1,0))
+        y = y.transpose((2,1,0))
         # transform to tensors
         x = torch.tensor(x, dtype=torch.float32)
         y = torch.tensor(y, dtype=torch.float32)

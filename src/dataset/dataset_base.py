@@ -54,7 +54,8 @@ class DynaBenchBase(Dataset):
     """
 
     available_equations = ["gas_dynamics", "wave", "kuramoto_sivashinsky", "brusselator"]
-    available_supports = ["low", "mid", "high", "full", "grid"]
+    available_supports = ["cloud", "grid"]
+    available_num_points = ["low", "high"]
     available_tasks = ["forecast", "evolution"]
     available_modes = ["train", "val", "test"]
     num_fields_dict = {
@@ -70,7 +71,8 @@ class DynaBenchBase(Dataset):
         mode="train",
         equation="gas_dynamics",
         task="forecast",
-        support="high",
+        support="grid",
+        num_points="high",
         base_path="data",
         lookback=1,
         rollout=1,
@@ -84,13 +86,15 @@ class DynaBenchBase(Dataset):
         self.equation = equation
         self.base_path = base_path
         self.support = support
+        self.num_points = num_points
         self.task = task
         self.mode = mode
 
         if not mode in self.available_modes:
             raise KeyError(f"Mode not available. Select from {self.available_mode}")
 
-
+        if lookback < 1:
+            raise RuntimeError("Lookback cannot be smaller than 1")
 
         self.lookback = lookback
         self.rollout = rollout
@@ -98,7 +102,12 @@ class DynaBenchBase(Dataset):
         # support selector
         if not support in self.available_supports:
             raise KeyError(f"Support not available. Select from {self.available_supports}")
-        self.data_support, self.points_support = self._support_selector(self.support)
+
+        if not num_points in self.available_num_points:
+            raise KeyError(f"Num points not available. Select from {self.available_num_points}")
+
+        self.data_selector = f"data_{support}_{num_points}"
+        self.points_selector = f"points_{support}_{num_points}"
 
         # read files
         if not equation in self.available_equations:
@@ -138,7 +147,7 @@ class DynaBenchBase(Dataset):
             self.file_paths = [f"{i}.hdf5" for i in file_numbers if int(i) in self.file_numbers_test]
 
         self.files = [h5py.File(os.path.join(self.path, file_path)) for file_path in self.file_paths]
-        self.raw_lengths = [len(file['data']) for file in self.files]
+        self.raw_lengths = [len(file['times']) for file in self.files]
         self.real_lengths = [length - self.lookback - self.rollout+1 for length in self.raw_lengths]
         self.indices_end = np.cumsum(self.real_lengths)
         self.indices_start = self.indices_end - self.real_lengths[0]
@@ -158,16 +167,16 @@ class DynaBenchBase(Dataset):
         
         # select data
         if self.task == "forecast":
-            x, y, points = self.get_item_forecast(file, file_idx)
+            x, y = self.get_item_forecast(file, file_idx)
         else:
-            x, y, points = self.get_item_evolution(file, file_idx)
+            x, y = self.get_item_evolution(file, file_idx)
 
         # join lookback as channels
         new_shape = (-1, ) + x.shape[2:]
         x = x.reshape(new_shape)
 
-        # permute axes
-        x, y, points = self._permute_axes(x, y, points)
+        # get points
+        points = file[self.points_selector][:]
 
         # additional transforms
         x, y, points = self.additional_transforms(x, y, points)
@@ -176,48 +185,26 @@ class DynaBenchBase(Dataset):
 
     
     def get_item_forecast(self, file, file_idx):
-        data_x = np.split(file['data'][file_idx:file_idx+self.lookback], 2, axis=1)[0]
-        data_y = np.split(file['data'][file_idx+self.lookback:file_idx+self.lookback+self.rollout], 2, axis=1)[0]
-        points = file['points'][:]
+        data_x = np.split(file[self.data_selector][file_idx:file_idx+self.lookback], 2, axis=1)[0]
+        data_y = np.split(file[self.data_selector][file_idx+self.lookback:file_idx+self.lookback+self.rollout], 2, axis=1)[0]
 
+        t = file[self.data_selector][file_idx:file_idx+self.lookback]
+        
         if self.equation == "wave":
-            data_x = data_x[:, 0]
-            data_y = data_y[:, 0]
+            data_x = data_x[:, [0]]
+            data_y = data_y[:, [0]]
 
-        if self.support != "grid":
-            points = points.reshape(-1, 2)
-            data_x = data_x.reshape(self.lookback, self.num_fields, -1)
-            data_y = data_y.reshape(self.rollout, self.num_fields, -1)
-            indices = file[f"indices_{self.support}"]
-
-            # select points
-            points = points[indices]
-            data_x = data_x[:,:, indices]
-            data_y = data_y[:,:, indices]
-
-        return data_x, data_y, points
+        return data_x, data_y
 
     def get_item_evolution(self, file, file_idx):
-        data_x = np.split(file['data'][file_idx:file_idx+self.lookback], 2, axis=1)[0]
-        data_y = np.split(file['data'][file_idx], 2, axis=0)[1]
-        points = file['points'][:]
+        data_x = np.split(file[self.data_selector][file_idx:file_idx+self.lookback], 2, axis=1)[0]
+        data_y = np.split(file[self.data_selector][file_idx], 2, axis=0)[1]
 
         if self.equation == "wave":
             data_x = data_x[:, 0]
             data_y = data_y[0]
 
-        if self.support != "grid":
-            points = points.reshape(-1, 2)
-            data_x = data_x.reshape(self.lookback, self.num_fields, -1)
-            data_y = data_y.reshape(self.num_fields, -1)
-            indices = file[f"indices_{self.support}"]
-
-            # select points
-            points = points[indices]
-            data_x = data_x[:,:, indices]
-            data_y = data_y[:, indices]
-
-        return data_x, data_y, points
+        return data_x, data_y
     
     def __len__(self):
         return sum(self.real_lengths)
@@ -231,18 +218,8 @@ class DynaBenchBase(Dataset):
             suffix = ""
         return "data"+suffix, "points"+suffix
 
-    def _permute_axes(self, x, y, points):
-        if self.support == "grid":
-            return x, y, points
-
-        # else:
-        x = np.transpose(x, axes=[1, 0])
-        if self.task == "evolution":
-            y = np.transpose(y, axes=[1, 0])
-        else:
-            y = np.transpose(y, axes=[2, 1, 0])
-            
-        return x, y, points
-
     def additional_transforms(self, x, y, points):
+        if self.support == "cloud":
+            x = x.transpose((1,0))
+            y = y.transpose((2,1,0))
         return x, y, points

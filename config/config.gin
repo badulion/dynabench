@@ -10,12 +10,14 @@ spatial_dimensions = 2
 DynaBenchDataModule.equation = %equation
 DynaBenchDataModule.task = %task
 DynaBenchDataModule.support = %support
+DynaBenchDataModule.num_points = %num_points
 DynaBenchDataModule.lookback = %lookback
 DynaBenchDataModule.structure = "graph"
 
 # config of the lightning trainer
 logging_dir.equation = %equation
 logging_dir.support = %support
+logging_dir.num_points = %num_points
 logging_dir.task = %task
 logging_dir.model = %model
 
@@ -38,7 +40,7 @@ EarlyStopping.min_delta = 0.0
 EarlyStopping.patience = 5
 EarlyStopping.mode = "min"
 
-Trainer.accelerator = "gpu"
+Trainer.accelerator = "cpu"
 Trainer.devices = 1
 Trainer.logger = [@TensorBoardLogger(), @CSVLogger()]
 Trainer.callbacks = [@ModelCheckpoint(), @EarlyStopping()]
