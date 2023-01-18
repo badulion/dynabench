@@ -25,7 +25,11 @@ class PDESolver:
         dt=1e-3,
         save_interval=0.1,
         num_points=[15, 30],
-        num_points_names=["low", "high"]
+        num_points_names=["low", "high"],
+        save_full_grid=True,
+        save_full_cloud=True,
+        save_cloud_points=True,
+        save_grid_points=True,
         ) -> None:
 
         # attributes
@@ -37,6 +41,14 @@ class PDESolver:
         self.num_points = num_points
         self.num_points_names = num_points_names
 
+        # save settings
+        self.save_full_grid = save_full_grid
+        self.save_full_cloud = save_full_cloud
+        self.save_cloud_points = save_cloud_points
+        self.save_grid_points = save_grid_points
+        if not save_full_cloud*save_cloud_points*save_full_grid*save_grid_points:
+            UserWarning("No data will be saved, are you sure?")
+
         self.grid = UnitGrid([grid_size, grid_size], periodic=[True, True])
         self.state = equation.get_initial_state(self.grid)
         self.state_with_dyn = FieldCollection([*self.state, *equation.evolution_rate(self.state)])
@@ -47,13 +59,17 @@ class PDESolver:
             
         sample_n = len(os.listdir(save_dir))
         self.path = os.path.join(save_dir, f"{sample_n}.hdf5")
-        self.storage = FileStorage(self.path)
+        self.data = []
+        self.times = []
         
         
     def solve(self):
+        self.data = []
+        self.times = []
         def save_state(state, time):
             state_with_dyn = FieldCollection([*state.copy(), *self.equation.evolution_rate(state)])
-            self.storage.append(state_with_dyn)
+            self.data.append(state_with_dyn.data)
+            self.times.append(time)
 
         # setup
         tracker_callback = CallbackTracker(save_state, interval=self.save_interval)
@@ -61,9 +77,9 @@ class PDESolver:
         tracker = TrackerCollection([tracker_callback, tracker_progress])
 
         # solve
-        self.storage.start_writing(self.state_with_dyn)
         sol = self.equation.solve(self.state, t_range=self.t_range, tracker=tracker)
-        self.storage.close()
+        self.data = np.stack(self.data)
+        self.times = np.stack(self.times)
 
         # sample data and save indices
         self._postprocess()
@@ -113,7 +129,6 @@ class PDESolver:
             return points
 
         def interpolate_cloud(interpolator, points):
-            num_points = points.shape[0]
             interpolated_values = interpolator(points)
             interpolated_values = interpolated_values.transpose((2, 0, 1))
             return interpolated_values
@@ -135,47 +150,50 @@ class PDESolver:
         points_cloud = [generate_pointcloud(sup**2) for sup in self.num_points]
         points_cloud_full = points_grid_full.reshape(-1, 2)
 
-        # extract graph points
-        f = h5py.File(self.path, 'a')
-        data_grid = f['data'][:]
-        num_samples = data_grid.shape[2:]
+        # write hdf5 file
+        f = h5py.File(self.path, 'w')
+        f.create_dataset('times', data=self.times)
+        num_samples = len(self.times)
+
 
         # standardise the data
-        mean = np.mean(data_grid, axis=(-1, -2), keepdims=True)
-        std = np.std(data_grid, axis=(-1, -2), keepdims=True)
+        mean = np.mean(self.data, axis=(-1, -2), keepdims=True)
+        std = np.std(self.data, axis=(-1, -2), keepdims=True)
         std[std < 1e-10] = 1
-        data_grid_full = (data_grid - mean) / std
+        data_grid_full = (self.data - mean) / std
 
         # interpolate the data at selected points
         interpolation_values = data_grid_full.transpose((2,3,0,1)).reshape((self.grid_size**2,)+data_grid_full.shape[:2])
         interpolator = RBFInterpolator(points_cloud_full, interpolation_values, neighbors=16)
 
+        # grid part of the dataset
         data_grid = [interpolate_grid(interpolator, points) for points in points_grid]
+        # save data
+        if self.save_full_grid:
+            f.create_dataset('data_grid_full', data=data_grid_full)
+            f.create_dataset('points_grid_full', data=points_grid_full)
+            
+        if self.save_grid_points:
+            # save sampled subgrids:
+            for points, name in zip(points_grid, self.num_points_names):
+                f.create_dataset(f'points_grid_{name}', data=points)
+            for data, name in zip(data_grid, self.num_points_names):
+                f.create_dataset(f'data_grid_{name}', data=data)
 
-        data_cloud_full = data_grid_full.reshape((-1,)+num_samples)
+        # point cloud part of the dataset
+        data_cloud_full = data_grid_full.reshape(data_grid_full.shape[:2]+(-1,))
         data_cloud = [interpolate_cloud(interpolator, points) for points in points_cloud]
-        
-
-        # save sampled points
-        f.create_dataset('points_grid_full', data=points_grid_full)
-        for points, name in zip(points_grid, self.num_points_names):
-            f.create_dataset(f'points_grid_{name}', data=points)
-
-        f.create_dataset('points_cloud_full', data=points_cloud_full)
-        for points, name in zip(points_cloud, self.num_points_names):
-            f.create_dataset(f'points_cloud_{name}', data=points)
-        
-
-        # save graph
-        f.create_dataset('data_grid_full', data=data_grid_full)
-        for data, name in zip(data_grid, self.num_points_names):
-            f.create_dataset(f'data_grid_{name}', data=data)
-
-        f.create_dataset('data_cloud_full', data=data_cloud_full)
-        for points, name in zip(data_cloud, self.num_points_names):
-            f.create_dataset(f'data_cloud_{name}', data=points)
-
-        del f["data"]
+    
+        if self.save_full_cloud:
+            f.create_dataset('points_cloud_full', data=points_cloud_full)
+            f.create_dataset('data_cloud_full', data=data_cloud_full)
+            
+        if self.save_cloud_points:
+            # save sampled points
+            for points, name in zip(points_cloud, self.num_points_names):
+                f.create_dataset(f'points_cloud_{name}', data=points)
+            for points, name in zip(data_cloud, self.num_points_names):
+                f.create_dataset(f'data_cloud_{name}', data=points)
 
         f.close()
 
