@@ -1,1 +1,1 @@
-
+from .lightningmodule import Model

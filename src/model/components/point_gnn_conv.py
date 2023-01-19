@@ -5,9 +5,7 @@ from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.typing import Adj
 
 from torch_geometric.nn.inits import reset
-import gin
 
-@gin.configurable
 class PointGNNConv(MessagePassing):
     r"""The PointGNN operator from the `"Point-GNN: Graph Neural Network for
     3D Object Detection in a Point Cloud" <https://arxiv.org/abs/2003.01251>`_

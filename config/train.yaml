@@ -1,0 +1,24 @@
+defaults:
+  - model: point_transformer
+  - datamodule: graph
+  - equation: wave
+  - task: forecast
+  - support: cloud
+  - num_points: high
+  - trainer: default
+  - _self_
+
+lookback: 8
+rollout: 16
+batch_size: 32
+learning_rate: 0.001
+training_noise: 0.1
+spatial_dimensions: 2
+input_size: ${equation.num_fields}
+
+experiment:
+  equation: ${hydra:runtime.choices.equation}
+  task: ${hydra:runtime.choices.task}
+  support: ${hydra:runtime.choices.support}
+  num_points: ${hydra:runtime.choices.high}
+  model: ${hydra:runtime.choices.model}

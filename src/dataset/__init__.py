@@ -1,2 +1,2 @@
 from .dataset_base import DynaBenchBase
-from .dataloader import DataLoaderBase, DataLoaderGraph
+from .dataloader import DynaBenchDataModule

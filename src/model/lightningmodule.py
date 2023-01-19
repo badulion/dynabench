@@ -6,9 +6,7 @@ from torch import stack, concat, randn_like, sum, mean
 
 from typing import Any, Optional
 from copy import copy
-import gin
 
-@gin.configurable
 class Model(LightningModule):
     def __init__(self, net: Module, lr: float = 1e-3, training_noise=0.0, batch_size: Optional[int]=None, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)

@@ -1,15 +1,11 @@
 from torch_geometric.nn import PointTransformerConv
 from torch import nn
-import torch.functional as F
-
 from ..components import MLP
-import gin
 
-@gin.configurable
 class PointTransformer(nn.Module):
     def __init__(self, 
                  input_size, 
-                 output_size, 
+                 lookback, 
                  hidden_size, 
                  pos_nn_hidden_size,
                  pos_nn_hidden_layers,
@@ -20,11 +16,11 @@ class PointTransformer(nn.Module):
 
         super().__init__()
         self.input_size = input_size
-        self.output_size = output_size
+        self.lookback = lookback
         self.hidden_size = hidden_size
         self.hidden_layers = hidden_layers
 
-        self.input_layer = PointTransformerConv(in_channels=input_size, out_channels=hidden_size,
+        self.input_layer = PointTransformerConv(in_channels=input_size*lookback, out_channels=hidden_size,
                                                 pos_nn=MLP(input_size=spatial_dimensions, output_size=hidden_size, hidden_size=pos_nn_hidden_size, hidden_layers=pos_nn_hidden_layers), 
                                                 attn_nn=MLP(input_size=hidden_size, output_size=hidden_size, hidden_size=attn_nn_hidden_size, hidden_layers=attn_nn_hidden_layers))
 
@@ -34,9 +30,9 @@ class PointTransformer(nn.Module):
                                  attn_nn=MLP(input_size=hidden_size, output_size=hidden_size, hidden_size=attn_nn_hidden_size, hidden_layers=attn_nn_hidden_layers))
         for _ in range(hidden_layers-1)])
 
-        self.output_layer = PointTransformerConv(in_channels=hidden_size, out_channels=output_size,
-                                                 pos_nn=MLP(input_size=spatial_dimensions, output_size=output_size, hidden_size=pos_nn_hidden_size, hidden_layers=pos_nn_hidden_layers), 
-                                                 attn_nn=MLP(input_size=output_size, output_size=output_size, hidden_size=attn_nn_hidden_size, hidden_layers=attn_nn_hidden_layers))
+        self.output_layer = PointTransformerConv(in_channels=hidden_size, out_channels=input_size,
+                                                 pos_nn=MLP(input_size=spatial_dimensions, output_size=input_size, hidden_size=pos_nn_hidden_size, hidden_layers=pos_nn_hidden_layers), 
+                                                 attn_nn=MLP(input_size=input_size, output_size=input_size, hidden_size=attn_nn_hidden_size, hidden_layers=attn_nn_hidden_layers))
         self.activation = nn.ReLU()
 
     def forward(self, data):

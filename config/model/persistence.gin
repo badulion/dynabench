@@ -1,3 +1,0 @@
-BaselinePersistence.output_size = %input_features
-
-Model.net = @BaselinePersistence()

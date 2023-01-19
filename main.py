@@ -8,8 +8,8 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from src.dataset.dataloader import DynaBenchDataModule
 
 # models
-from src.model.gnn import GATNet, GCN
-from src.model.point import FeaStNet, PointNet, PointGNN, PointTransformer
+from src.model.graph import GATNet, GCN
+from src.model.cloud import FeaStNet, PointNet, PointGNN, PointTransformer
 from src.model.baseline import BaselinePersistence, BaselineZero
 
 from src.model.lightningmodule import Model

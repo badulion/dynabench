@@ -1,15 +1,11 @@
 #from torch_geometric.nn.conv import PointGNNConv
 from torch import nn
-import torch.functional as F
-
 from ..components import MLP, PointGNNConv
-import gin
 
-@gin.configurable
 class PointGNN(nn.Module):
     def __init__(self, 
                  input_size, 
-                 output_size, 
+                 lookback, 
                  intermediate_hidden_size,
                  hidden_size, 
                  encoder_nn_hidden_size,
@@ -27,11 +23,11 @@ class PointGNN(nn.Module):
 
         super().__init__()
         self.input_size = input_size
-        self.output_size = output_size
+        self.lookback = lookback
         self.hidden_size = hidden_size
         self.hidden_layers = hidden_layers
 
-        self.input_layer = MLP(input_size=input_size, output_size=hidden_size, hidden_size=encoder_nn_hidden_size, hidden_layers=encoder_nn_hidden_layers)
+        self.input_layer = MLP(input_size=input_size*lookback, output_size=hidden_size, hidden_size=encoder_nn_hidden_size, hidden_layers=encoder_nn_hidden_layers)
 
         self.hidden_layers = nn.ModuleList([
             PointGNNConv(mlp_h=MLP(input_size=hidden_size, output_size=spatial_dimensions, hidden_size=offset_nn_hidden_size, hidden_layers=offset_nn_hidden_layers),
@@ -39,7 +35,7 @@ class PointGNN(nn.Module):
                          mlp_g=MLP(input_size=intermediate_hidden_size, output_size=hidden_size, hidden_size=global_nn_hidden_size, hidden_layers=global_nn_hidden_layers))
         for _ in range(hidden_layers-1)])
 
-        self.output_layer = MLP(input_size=hidden_size, output_size=output_size, hidden_size=decoder_nn_hidden_size, hidden_layers=decoder_nn_hidden_layers)
+        self.output_layer = MLP(input_size=hidden_size, output_size=input_size, hidden_size=decoder_nn_hidden_size, hidden_layers=decoder_nn_hidden_layers)
 
         self.activation = nn.ReLU()
 

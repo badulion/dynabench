@@ -6,6 +6,7 @@ venv/
 figures/
 data/
 output/
+outputs/
 **/local/*
 
 kubernetes/

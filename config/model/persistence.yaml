@@ -1,0 +1,10 @@
+_target_: src.model.Model
+lr: ${learning_rate}
+training_noise: ${training_noise}
+batch_size: ${batch_size}
+
+net: 
+  _target_: src.model.baseline.BaselinePersistence
+  input_size: ${input_size}
+  lookback: ${lookback}
+  spatial_dimensions: ${spatial_dimensions}

@@ -1,8 +1,0 @@
-# config of the dataset
-DynaBenchDataModule.equation = %equation
-DynaBenchDataModule.task = %task
-DynaBenchDataModule.support = %support
-DynaBenchDataModule.num_points = %num_points
-DynaBenchDataModule.lookback = %lookback
-DynaBenchDataModule.rollout = %rollout
-DynaBenchDataModule.structure = "graph"
