@@ -11,7 +11,7 @@ class DynaBenchDataModule(LightningDataModule):
                 task="forecast",
                 support="high",
                 base_path="data",
-                structure="points",
+                structure="torch",
                 lookback=1,
                 rollout=1,
                 test_ratio=0.1,
