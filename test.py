@@ -18,7 +18,7 @@ def plot_comparison(ds_low, ds_high):
     plt.show()
 
 
-ds1 = DynaBenchBase(equation="brusselator", task="evolution",support="cloud", num_points="high", lookback=8)
+ds1 = DynaBenchBase(equation="wave", task="evolution",support="grid", num_points="high", lookback=8)
 
-x, y, p = ds1[10]
-print(y.shape)
+for _ in tqdm(ds1):
+    _

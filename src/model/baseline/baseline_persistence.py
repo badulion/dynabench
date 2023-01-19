@@ -1,5 +1,7 @@
 from torch import nn
+import gin
 
+@gin.configurable
 class BaselinePersistence(nn.Module):
     def __init__(self, output_size) -> None:
         super().__init__()

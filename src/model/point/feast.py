@@ -1,8 +1,9 @@
 from torch_geometric.nn import FeaStConv
 from torch import nn
 import torch
+import gin
 
-
+@gin.configurable
 class FeaStNet(nn.Module):
     def __init__(self, input_size, output_size, 
                  input_layer_heads, hidden_layer_heads, output_layer_heads,

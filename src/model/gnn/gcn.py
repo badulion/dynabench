@@ -1,8 +1,9 @@
 from torch_geometric.nn import GCNConv
 from torch import nn
 import torch
+import gin
 
-
+@gin.configurable
 class GCN(nn.Module):
     def __init__(self, input_size, output_size, hidden_size, hidden_layers=1, spatial_dimensions=2) -> None:
         super().__init__()

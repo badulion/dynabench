@@ -17,6 +17,7 @@ from tqdm import tqdm
 
 from .equations import WavePDE, GasDynamicsPDE, BrusselatorPDE, KuramotoSivashinskyPDE
 
+@gin.configurable
 class PDESolver:
     available_equations = ['wave', 'gas_dynamics', 'brusselator', 'kuramoto_sivashinsky']
     def __init__(self,

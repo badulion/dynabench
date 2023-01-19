@@ -17,6 +17,10 @@ import gin
 import argparse
 
 @gin.configurable
+def experiment(model: pl.LightningModule, datamodule: pl.LightningDataModule):
+    return model, datamodule
+
+@gin.configurable
 def logging_dir(equation, support, num_points, task, model):
     return f"{task}/{support}/{num_points}/{equation}/{model}"
 
@@ -65,8 +69,6 @@ def parse_args():
 def make_gin_config():
     global Model, TensorBoardLogger, CSVLogger, Trainer, DynaBenchDataModule
     global ModelCheckpoint, EarlyStopping
-    global GATNet, GCN, FeaStNet, PointNet, PointGNN, PointTransformer
-    global BaselinePersistence, BaselineZero
 
     # register external objects and parse gin config tree
     TensorBoardLogger = gin.external_configurable(TensorBoardLogger)
@@ -75,18 +77,6 @@ def make_gin_config():
     EarlyStopping = gin.external_configurable(EarlyStopping)
     Trainer = gin.external_configurable(Trainer)
 
-
-    Model = gin.external_configurable(Model)
-    DynaBenchDataModule = gin.external_configurable(DynaBenchDataModule)
-
-    GATNet = gin.external_configurable(GATNet)
-    GCN = gin.external_configurable(GCN)
-    FeaStNet = gin.external_configurable(FeaStNet)
-    PointNet = gin.external_configurable(PointNet)
-    PointGNN = gin.external_configurable(PointGNN)
-    PointTransformer = gin.external_configurable(PointTransformer)
-    BaselinePersistence = gin.external_configurable(BaselinePersistence)
-    BaselineZero = gin.external_configurable(BaselineZero)
 
 
     gin.constant("equation", args.equation)
@@ -107,9 +97,8 @@ if __name__ == '__main__':
     make_gin_config()
 
     # train the model
-    datamodule = DynaBenchDataModule()
     trainer = Trainer()
-    model = Model()
+    model, datamodule = experiment()
 
     if is_baseline(args.model):
         trainer.test(model, datamodule=datamodule)

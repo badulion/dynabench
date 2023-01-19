@@ -190,7 +190,7 @@ class DynaBenchBase(Dataset):
     def _get_item_forecast(self, file, file_idx):
         data_x = np.split(file[self.data_selector][file_idx:file_idx+self.lookback], 2, axis=1)[0]
         data_y = np.split(file[self.data_selector][file_idx+self.lookback:file_idx+self.lookback+self.rollout], 2, axis=1)[0]
-        
+
         if self.equation == "wave":
             data_x = data_x[:, [0]]
             data_y = data_y[:, [0]]
@@ -202,8 +202,8 @@ class DynaBenchBase(Dataset):
         data_y = np.split(file[self.data_selector][file_idx], 2, axis=0)[1]
 
         if self.equation == "wave":
-            data_x = data_x[:, 0]
-            data_y = data_y[0]
+            data_x = data_x[:, [0]]
+            data_y = data_y[[0]]
 
         return data_x, data_y
 

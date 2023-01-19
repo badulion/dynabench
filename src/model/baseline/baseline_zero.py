@@ -1,7 +1,8 @@
 from torch import nn
 import torch
+import gin
 
-
+@gin.configurable
 class BaselineZero(nn.Module):
     def __init__(self, output_size) -> None:
         super().__init__()

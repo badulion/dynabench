@@ -24,9 +24,6 @@ args = parser.parse_args()
 logger.info(f"Starting to generate data.")
 logger.info(f"The selected equation will be solved {args.num} times.")
 
-
-
-PDESolver = gin.external_configurable(PDESolver)
 gin.parse_config_file("config/generator/default.gin") # can be changed 
 gin.finalize()
 

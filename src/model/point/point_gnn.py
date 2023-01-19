@@ -3,8 +3,9 @@ from torch import nn
 import torch.functional as F
 
 from ..components import MLP, PointGNNConv
+import gin
 
-
+@gin.configurable
 class PointGNN(nn.Module):
     def __init__(self, 
                  input_size, 

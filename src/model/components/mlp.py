@@ -1,5 +1,7 @@
 import torch.nn as nn
+import gin
 
+@gin.configurable
 class MLP(nn.Module):
     def __init__(self, input_size, output_size, hidden_size, hidden_layers=1) -> None:
         super().__init__()

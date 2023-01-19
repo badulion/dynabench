@@ -3,9 +3,9 @@ from src.dataset.dataset_base import DynaBenchBase
 from src.dataset.dataset_graph import DynaBenchGraph
 from torch.utils.data import DataLoader as DataLoaderBase
 from torch_geometric.loader import DataLoader as DataLoaderGraph
+import gin
 
-
-
+@gin.external_configurable
 class DynaBenchDataModule(LightningDataModule):
     def __init__(self,
                 name="dyna-benchmark",
