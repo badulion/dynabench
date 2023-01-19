@@ -7,6 +7,4 @@ FeaStNet.hidden_layer_heads = 10
 FeaStNet.output_layer_heads = 10
 FeaStNet.spatial_dimensions = %spatial_dimensions
 
-Model.batch_size = %batch_size
-Model.lr = %learning_rate
 Model.net = @FeaStNet()

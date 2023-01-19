@@ -13,36 +13,10 @@ from src.model.point import FeaStNet, PointNet, PointGNN, PointTransformer
 from src.model.baseline import BaselinePersistence, BaselineZero
 
 from src.model.lightningmodule import Model
+from src.utils import ExperimentConfig, Experiment
 import gin
 import argparse
 
-@gin.configurable
-def experiment(model: pl.LightningModule, datamodule: pl.LightningDataModule):
-    return model, datamodule
-
-@gin.configurable
-def logging_dir(equation, support, num_points, task, model):
-    return f"{task}/{support}/{num_points}/{equation}/{model}"
-
-
-@gin.configurable
-def calc_input_features(equation):
-    if equation == "gas_dynamics":
-        return 4
-    elif equation == "brusselator":
-        return 2
-    else:
-        return 1
-
-@gin.configurable
-def calc_input_size(equation, lookback):
-    return calc_input_features(equation) * lookback
-
-def is_baseline(model: str):
-    if model in ['zero', 'persistence']:
-        return True
-    else:
-        return False
 
 def parse_args():
     global args, parser
@@ -67,7 +41,7 @@ def parse_args():
 
 
 def make_gin_config():
-    global Model, TensorBoardLogger, CSVLogger, Trainer, DynaBenchDataModule
+    global TensorBoardLogger, CSVLogger, Trainer
     global ModelCheckpoint, EarlyStopping
 
     # register external objects and parse gin config tree
@@ -78,7 +52,6 @@ def make_gin_config():
     Trainer = gin.external_configurable(Trainer)
 
 
-
     gin.constant("equation", args.equation)
     gin.constant("support", args.support)
     gin.constant("num_points", args.num_points)
@@ -86,10 +59,7 @@ def make_gin_config():
     gin.constant("model", args.model)
 
     gin.parse_config_file('config/config.gin')
-    if is_baseline(args.model):
-        gin.parse_config_file(f'config/baseline/{args.model}.gin')
-    else:
-        gin.parse_config_file(f'config/model/{args.model}.gin')
+    gin.parse_config_file(f'config/model/{args.model}.gin')
     gin.finalize()
 
 if __name__ == '__main__':
@@ -97,11 +67,5 @@ if __name__ == '__main__':
     make_gin_config()
 
     # train the model
-    trainer = Trainer()
-    model, datamodule = experiment()
-
-    if is_baseline(args.model):
-        trainer.test(model, datamodule=datamodule)
-    else:
-        trainer.fit(model, datamodule)
-        trainer.test(datamodule=datamodule, ckpt_path='best')
+    experiment = Experiment()
+    experiment.run() 

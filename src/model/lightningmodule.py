@@ -26,7 +26,7 @@ class Model(LightningModule):
                 x_old = copy(x)
                 pred = self.net(x)
                 predictions.append(pred.x)
-                x.x = concat([x_old.x[:,2:], pred.x], dim=1)
+                x.x = concat([x_old.x[:,pred.x.size(1):], pred.x], dim=1)
             x_graph.x = stack(predictions, dim=-1)
             return x_graph
         else:

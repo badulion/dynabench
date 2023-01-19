@@ -1,6 +1,3 @@
-
 BaselinePersistence.output_size = %input_features
 
-Model.batch_size = %batch_size
-Model.lr = %learning_rate
 Model.net = @BaselinePersistence()

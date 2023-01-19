@@ -1,9 +1,5 @@
-# config of the lightning trainer
-logging_dir.equation = %equation
-logging_dir.support = %support
-logging_dir.num_points = %num_points
-logging_dir.task = %task
-logging_dir.model = %model
+# # config of the lightning trainer
+
 
 TensorBoardLogger.save_dir="output/tb_logs"
 TensorBoardLogger.name=@logging_dir()

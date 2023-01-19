@@ -4,6 +4,4 @@ GCN.hidden_size = 256
 GCN.hidden_layers = 3
 GCN.spatial_dimensions = %spatial_dimensions
 
-Model.batch_size = %batch_size
-Model.lr = %learning_rate
 Model.net = @GCN()

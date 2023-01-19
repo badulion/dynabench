@@ -1,4 +1,3 @@
-
 PointNet.input_size = %input_size
 PointNet.output_size = %input_features
 PointNet.intermediate_hidden_size = 64
@@ -10,6 +9,4 @@ PointNet.global_nn_hidden_layers = 2
 PointNet.hidden_layers = 4
 PointNet.spatial_dimensions = %spatial_dimensions
 
-Model.batch_size = %batch_size
-Model.lr = %learning_rate
 Model.net = @PointNet()

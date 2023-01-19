@@ -1,5 +1,6 @@
-# trainer
+include "config/set_parameters.gin"
 include "config/trainer.gin"
+include "config/dataset.gin"
 
 # overall config for experiments
 lookback = 8
@@ -10,20 +11,15 @@ learning_rate = 0.001
 
 spatial_dimensions = 2
 
-# config of the dataset
-DynaBenchDataModule.equation = %equation
-DynaBenchDataModule.task = %task
-DynaBenchDataModule.support = %support
-DynaBenchDataModule.num_points = %num_points
-DynaBenchDataModule.lookback = %lookback
-DynaBenchDataModule.rollout = %rollout
-DynaBenchDataModule.structure = "graph"
+Experiment.trainer = @Trainer()
+Experiment.model = @Model()
+Experiment.datamodule = @DynaBenchDataModule()
+
 
 # overall config for models
 Model.training_noise = 0.1
-calc_input_features.equation = %equation
-calc_input_size.equation = %equation
-calc_input_size.lookback = %lookback
+Model.batch_size = %batch_size
+Model.lr = %learning_rate
 
 input_size = @calc_input_size()
 input_features = @calc_input_features()
