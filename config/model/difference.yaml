@@ -4,11 +4,7 @@ training_noise: ${training_noise}
 batch_size: ${batch_size}
 
 net: 
-  _target_: src.model.gnn.GATNet
+  _target_: src.model.baseline.BaselineDifference
   input_size: ${input_size}
   lookback: ${lookback}
-  hidden_size: 128
-  hidden_layers: 4
   spatial_dimensions: ${spatial_dimensions}
-
-

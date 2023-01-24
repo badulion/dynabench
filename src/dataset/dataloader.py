@@ -9,7 +9,8 @@ class DynaBenchDataModule(LightningDataModule):
                 name="dyna-benchmark",
                 equation="gas_dynamics",
                 task="forecast",
-                support="high",
+                support="cloud",
+                num_points="high",
                 base_path="data",
                 structure="torch",
                 lookback=1,
@@ -27,6 +28,7 @@ class DynaBenchDataModule(LightningDataModule):
         self.equation=equation
         self.task=task
         self.support=support
+        self.num_points=num_points
         self.base_path=base_path
         self.lookback=lookback
         self.rollout=rollout
@@ -42,9 +44,44 @@ class DynaBenchDataModule(LightningDataModule):
 
 
     def setup(self, stage: str):
-        self.train = self.Dataset(name=self.name, mode="train", equation=self.equation, support=self.support, task=self.task, base_path=self.base_path, lookback=self.lookback, rollout=1, test_ratio=self.test_ratio, val_ratio=self.val_ratio, k=self.k)
-        self.val = self.Dataset(name=self.name, mode="val", equation=self.equation, support=self.support, task=self.task, base_path=self.base_path, lookback=self.lookback, rollout=1, test_ratio=self.test_ratio, val_ratio=self.val_ratio, k=self.k)
-        self.test = self.Dataset(name=self.name, mode="test", equation=self.equation, support=self.support, task=self.task, base_path=self.base_path, lookback=self.lookback, rollout=self.rollout, test_ratio=self.test_ratio, val_ratio=self.val_ratio, k=self.k)
+        self.train = self.Dataset(name=self.name, 
+                                  mode="train", 
+                                  equation=self.equation, 
+                                  support=self.support, 
+                                  num_points=self.num_points,
+                                  task=self.task, 
+                                  base_path=self.base_path, 
+                                  lookback=self.lookback, 
+                                  rollout=1, 
+                                  test_ratio=self.test_ratio, 
+                                  val_ratio=self.val_ratio, 
+                                  k=self.k)
+        
+        self.val = self.Dataset(name=self.name, 
+                                mode="val", 
+                                equation=self.equation, 
+                                support=self.support, 
+                                num_points=self.num_points,
+                                task=self.task, 
+                                base_path=self.base_path, 
+                                lookback=self.lookback, 
+                                rollout=1, 
+                                test_ratio=self.test_ratio, 
+                                val_ratio=self.val_ratio, 
+                                k=self.k)
+
+        self.test = self.Dataset(name=self.name, 
+                                 mode="test", 
+                                 equation=self.equation, 
+                                 support=self.support, 
+                                 num_points=self.num_points,
+                                 task=self.task, 
+                                 base_path=self.base_path, 
+                                 lookback=self.lookback, 
+                                 rollout=self.rollout, 
+                                 test_ratio=self.test_ratio, 
+                                 val_ratio=self.val_ratio, 
+                                 k=self.k)
 
 
     def train_dataloader(self):

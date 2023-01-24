@@ -15,10 +15,17 @@ learning_rate: 0.001
 training_noise: 0.1
 spatial_dimensions: 2
 input_size: ${equation.num_fields}
+output_dir: output
+
+logdir: ${experiment.task}/${experiment.support}/${experiment.num_points}/${experiment.equation}/${experiment.model}
 
 experiment:
   equation: ${hydra:runtime.choices.equation}
   task: ${hydra:runtime.choices.task}
   support: ${hydra:runtime.choices.support}
-  num_points: ${hydra:runtime.choices.high}
+  num_points: ${hydra:runtime.choices.num_points}
   model: ${hydra:runtime.choices.model}
+
+hydra:
+  run:
+    dir: ./${output_dir}/hydra/${logdir}/${now:%Y-%m-%d}_${now:%H-%M-%S}

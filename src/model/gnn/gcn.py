@@ -3,17 +3,17 @@ from torch import nn
 import torch
 
 class GCN(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size, hidden_layers=1, spatial_dimensions=2) -> None:
+    def __init__(self, input_size, lookback, hidden_size, hidden_layers=1, spatial_dimensions=2) -> None:
         super().__init__()
         self.input_size = input_size
-        self.output_size = output_size
+        self.lookback = lookback
         self.hidden_size = hidden_size
         self.hidden_layers = hidden_layers
         self.spatial_dimensions = spatial_dimensions
 
-        self.input_layer = GCNConv(input_size+spatial_dimensions, hidden_size)
+        self.input_layer = GCNConv(input_size*lookback+spatial_dimensions, hidden_size)
         self.hidden_layers = nn.ModuleList([GCNConv(hidden_size+spatial_dimensions, hidden_size) for _ in range(hidden_layers-1)])
-        self.output_layer = GCNConv(hidden_size+spatial_dimensions, output_size)
+        self.output_layer = GCNConv(hidden_size+spatial_dimensions, input_size)
         self.activation = nn.ReLU()
 
     def forward(self, data):

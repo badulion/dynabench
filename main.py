@@ -9,8 +9,8 @@ def main(cfg : DictConfig) -> None:
     model = instantiate(cfg.model)
     datamodule = instantiate(cfg.datamodule)
     trainer = instantiate(cfg.trainer)
-
-    if cfg.experiment.model in ['zero', 'baseline']:
+    
+    if cfg.experiment.model in ['zero', 'persistence', 'difference']:
         trainer.test(model=model, datamodule=datamodule)
     else:
         trainer.fit(model=model, datamodule=datamodule)

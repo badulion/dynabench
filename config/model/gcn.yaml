@@ -4,7 +4,7 @@ training_noise: ${training_noise}
 batch_size: ${batch_size}
 
 net: 
-  _target_: src.model.graph.GATNet
+  _target_: src.model.gnn.GCN
   input_size: ${input_size}
   lookback: ${lookback}
   hidden_size: 256
