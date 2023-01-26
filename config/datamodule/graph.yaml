@@ -6,3 +6,4 @@ num_points: ${experiment.num_points}
 lookback: ${lookback}
 rollout: ${rollout}
 structure: graph
+num_workers: 16
