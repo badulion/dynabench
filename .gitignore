@@ -6,6 +6,8 @@ venv/
 figures/
 data/
 output/
-**/local/
+outputs/
+**/local/*
 
 kubernetes/
+.vscode/

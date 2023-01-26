@@ -1,10 +1,10 @@
 from pde import FieldCollection, PDEBase, ScalarField, VectorField
-from src.utils.initial import sum_of_gaussians as initial_function
+from ..utils.initial import sum_of_gaussians as initial_function
 
 class GasDynamicsPDE(PDEBase):
     """Gas Dynamics simulating weather"""
 
-    def __init__(self, parameters=[0.01, 0.01, 1, 1], rate=1, bc="auto_periodic_neumann"):
+    def __init__(self, parameters=[0.01, 0.01, 1, 1], rate=1, bc="auto_periodic_neumann", *args, **kwargs):
         super().__init__()
         self.parameters = parameters  # spatial mobility
         self.bc = bc  # boundary condition
@@ -37,7 +37,7 @@ class GasDynamicsPDE(PDEBase):
 class BrusselatorPDE(PDEBase):
     """Brusselator with diffusive mobility"""
 
-    def __init__(self, parameters=[1, 3, 1, 0.1], rate = 1, bc="auto_periodic_neumann"):
+    def __init__(self, parameters=[1, 3, 1, 0.1], rate = 1, bc="auto_periodic_neumann", *args, **kwargs):
         super().__init__()
         self.a = parameters[0]
         self.b = parameters[1]
@@ -63,7 +63,7 @@ class BrusselatorPDE(PDEBase):
 class KuramotoSivashinskyPDE(PDEBase):
     """Implementation of the normalized Kuramoto–Sivashinsky equation"""
 
-    def __init__(self, rate = 1, bc="auto_periodic_neumann"):
+    def __init__(self, parameters=[], rate = 1, bc="auto_periodic_neumann", *args, **kwargs):
         super().__init__()
         self.bc = bc
         self.rate = rate
@@ -84,12 +84,12 @@ class KuramotoSivashinskyPDE(PDEBase):
 
 
 class WavePDE(PDEBase):
-    """Implementation of the normalized Kuramoto–Sivashinsky equation"""
+    """Implementation of the Wave equation"""
 
-    def __init__(self, prop_speed=1, rate=1, bc="auto_periodic_neumann"):
+    def __init__(self, parameters=[1], rate=1, bc="auto_periodic_neumann", *args, **kwargs):
         super().__init__()
         self.bc = bc
-        self.prop_speed = prop_speed
+        self.prop_speed = parameters[0]
         self.rate = rate # evolution rate
 
     def get_initial_state(self, grid):
@@ -114,16 +114,33 @@ class WavePDE(PDEBase):
         rhs[1] = (self.prop_speed ** 2) * u.laplace(self.bc)
         return self.rate*rhs
 
+class Advection(PDEBase):
+    """Implementation of the Advection equation"""
 
-def equation_selector(equation):
-    available_equations = ["wave", "gas_dynamics", "brusselator", "kuramoto-sivashinsky"]
-    if equation == "wave":
-        return WavePDE
-    elif equation == "gas_dynamics":
-        return GasDynamicsPDE
-    elif equation == "brusselator":
-        return BrusselatorPDE
-    elif equation == "kuramoto-sivashinsky":
-        return KuramotoSivashinskyPDE
-    else:
-        raise KeyError(f"Equation not valid. Select from {available_equations}")
+    def __init__(self, parameters=[1, 1], rate=1, bc="auto_periodic_neumann", *args, **kwargs):
+        super().__init__()
+        self.bc = bc
+        self.travel_speed_x = parameters[0]
+        self.travel_speed_y = parameters[1]
+        self.rate = rate # evolution rate
+
+    def get_initial_state(self, grid):
+        """prepare a useful initial state"""
+        # extract grid points
+        shape = grid.shape
+        x_bounds = grid.axes_bounds[0]
+        y_bounds = grid.axes_bounds[1]
+        x = (grid.cell_coords[:,:,0]-x_bounds[0])/(x_bounds[1]-x_bounds[0])
+        y = (grid.cell_coords[:,:,1]-y_bounds[0])/(y_bounds[1]-y_bounds[0])
+
+        # initialize fields
+        u = ScalarField(grid, initial_function(x, y, components=5, zero_level=0), label="advection")
+        return FieldCollection([u])
+
+    def evolution_rate(self, state, t=0):
+        """implement the python version of the evolution equation"""
+        u, = state
+        rhs = state.copy()
+        grd = - u.gradient(self.bc)
+        rhs[0] = grd[0]*self.travel_speed_x + grd[1]*self.travel_speed_y
+        return self.rate*rhs

@@ -1,0 +1,1 @@
+from .lightningmodule import ModelPyG

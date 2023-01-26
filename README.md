@@ -66,29 +66,41 @@ The repository contains two dataset classes to handle the generated data.
 
 
 ## Benchmark Results (will be updated)
+The following tables show the results of our experiments
 
-The following table shows the results for the forecast task in a high support setting:
+- forecast task, high number of points (1-step MSE):
 
-| equation\model    |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |        wave |
+| model             |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |        wave |
 |:------------------|--------------:|---------------:|-----------------------:|------------:|
-| feast             |   0.000708671 |    0.000586686 |            0.000104922 | 3.05878e-05 |
-| gat               |   0.0370567   |    0.0429969   |            0.0967137   | 0.0116138   |
-| gcn               |   0.284355    |    0.181616    |            0.484141    | 0.0392228   |
-| persistence       |   0.0404166   |    0.0089862   |            0.00136208  | 0.000278237 |
-| point_gnn         |   0.000164287 |    0.000201561 |            3.13238e-05 | 8.14812e-06 |
-| point_net         |   1.00087     |    0.171653    |            1.00321     | 0.988587    |
-| point_transformer |   0.000556881 |    0.000220286 |            0.000213371 | 1.84354e-05 |
-| zero              |   1.00087     |    0.993006    |            1.00318     | 0.988589    |
+| feast             |    0.00242319 |     0.0021791  |             0.00128176 | 0.000484132 |
+| gat               |    0.0281436  |     0.0367549  |             0.069632   | 0.0118712   |
+| gcn               |    0.282337   |     0.140523   |             0.461607   | 0.0422273   |
+| persistence       |    0.0332305  |     0.00561406 |             0.00129482 | 0.000264883 |
+| point_gnn         |    0.00141922 |     0.00167125 |             0.00120295 | 0.000375454 |
+| point_net         |    0.998704   |     0.0384901  |             0.99871    | 0.999058    |
+| point_transformer |    0.0017799  |     0.00131779 |             0.00125645 | 0.000419147 |
 
-Results for the evolution task:
+- forecast task, high number of points (16-step rollout MSE):
 
-| equation\model    |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |     wave |
+| model             |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |      wave |
+|:------------------|--------------:|---------------:|-----------------------:|----------:|
+| feast             |   0.227424    |       0.255952 |            0.134562    | 0.0339035 |
+| gat               |   1.29767     |      43.9229   |            1.31319     | 1.7413    |
+| gcn               |   2.46631e+08 |     326.2      |            2.78559e+15 | 8.68158   |
+| persistence       |   2.29927     |       0.797735 |            0.28452     | 0.0670084 |
+| point_gnn         |   0.133019    |       0.298848 |            0.110021    | 0.0503421 |
+| point_net         |   0.999038    |       2.67773  |            0.998887    | 0.998901  |
+| point_transformer |   0.166213    |       0.163016 |            0.117403    | 0.0253431 |
+
+- evolution task, high number of points:
+
+
+| model             |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |     wave |
 |:------------------|--------------:|---------------:|-----------------------:|---------:|
-| feast             |    0.0273074  |      0.0855186 |               0.208168 | 0.217426 |
-| gat               |    0.173189   |      0.133655  |               0.380099 | 0.288436 |
-| gcn               |    0.647265   |      0.612268  |               0.74179  | 0.296789 |
-| persistence       |    1.06286    |      1.15573   |               1.32792  | 1.85519  |
-| point_gnn         |    0.00789755 |      0.0479233 |               0.188708 | 0.190367 |
-| point_net         |    1.00227    |      1.00262   |               1.00145  | 0.989913 |
-| point_transformer |    0.0108111  |      0.0447914 |               0.197253 | 0.196311 |
-| zero              |    1.00227    |      1.00262   |               1.00125  | 0.989917 |
+| difference        |     0.966056  |      0.937047  |              0.813676  | 0.967245 |
+| feast             |     0.0209256 |      0.103211  |              0.132971  | 0.247774 |
+| gat               |     0.335062  |      0.169115  |              0.255142  | 0.300955 |
+| gcn               |     0.54936   |      0.553218  |              0.598326  | 0.309449 |
+| point_gnn         |     0.0124441 |      0.0769728 |              0.110405  | 0.248534 |
+| point_net         |     0.930219  |      0.993493  |              0.861911  | 0.994931 |
+| point_transformer |     0.0136373 |      0.0649107 |              0.0959964 | 0.238254 |
