@@ -1,4 +1,4 @@
-_target_: src.generator.equations.WavePDE
+_target_: src.generator.equations.AdvectionPDE
 parameters: [1]
 rate: 1
 bc: auto_periodic_neumann

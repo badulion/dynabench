@@ -32,21 +32,9 @@ class PDESolver:
         save_grid_points=True,
         ) -> None:
 
-        if equation == 'gas_dynamics':
-            equationModule = GasDynamicsPDE
-        elif equation == 'brusselator':
-            equationModule = BrusselatorPDE
-        elif equation == 'wave':
-            equationModule = WavePDE
-        elif equation == 'kuramoto_sivashinsky':
-            equationModule = KuramotoSivashinskyPDE
-        else:
-            raise NotImplementedError()
-
 
         # attributes
-        self.equation_name = equation
-        self.equation = equationModule()
+        self.equation = equation
         self.grid_size = grid_size
         self.t_range = t_range
         self.dt = dt
