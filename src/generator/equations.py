@@ -1,5 +1,5 @@
 from pde import FieldCollection, PDEBase, ScalarField, VectorField
-from ..utils.initial import sum_of_gaussians as initial_function
+from .initial import sum_of_gaussians as initial_function
 
 class GasDynamicsPDE(PDEBase):
     """Gas Dynamics simulating weather"""
@@ -114,7 +114,7 @@ class WavePDE(PDEBase):
         rhs[1] = (self.prop_speed ** 2) * u.laplace(self.bc)
         return self.rate*rhs
 
-class Advection(PDEBase):
+class AdvectionPDE(PDEBase):
     """Implementation of the Advection equation"""
 
     def __init__(self, parameters=[1, 1], rate=1, bc="auto_periodic_neumann", *args, **kwargs):
