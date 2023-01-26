@@ -1,4 +1,4 @@
-_target_: src.model.Model
+_target_: src.model.ModelPyG
 lr: ${learning_rate}
 training_noise: ${training_noise}
 batch_size: ${batch_size}

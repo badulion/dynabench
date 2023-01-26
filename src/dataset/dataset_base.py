@@ -75,6 +75,7 @@ class DynaBenchBase(Dataset):
         rollout=1,
         test_ratio=0.1,
         val_ratio=0.1,
+        merge_lookback=True,
         *args,
         **kwargs,
     ):
@@ -86,6 +87,7 @@ class DynaBenchBase(Dataset):
         self.num_points = num_points
         self.task = task
         self.mode = mode
+        self.merge_lookback = merge_lookback
 
         if not mode in self.available_modes:
             raise KeyError(f"Mode not available. Select from {self.available_mode}")
@@ -168,19 +170,23 @@ class DynaBenchBase(Dataset):
         else:
             x, y = self._get_item_evolution(file, file_idx)
 
-        # join lookback as channels
-        new_shape = (-1, ) + x.shape[2:]
-        x = x.reshape(new_shape)
-
         # permute axis for cloud data
         x, y = self._permute_axis(x, y)
 
         # get points
         points = file[self.points_selector][:]
 
+        # merge lookback if necessary
+        if self.merge_lookback:
+            x = x.transpose((1, 0, 2))
+            x = x.reshape((x.shape[0], -1))
+            
+
         # additional transforms
         x, y, points = self.additional_transforms(x, y, points)
-        
+        """
+        # join lookback as channels
+        """
         return x, y, points
 
     
@@ -205,11 +211,11 @@ class DynaBenchBase(Dataset):
         return data_x, data_y
 
     def _permute_axis(self, x, y):
-        # before permutation dimensions are num_channels x num_points
-        # should be num_points x num_channels
+        # before permutation dimensions are lookback x num_channels x num_points
+        # should be lookback x num_points x num_channels for cloud
         if self.support == "cloud":
-            x = x.transpose((1,0))
-            y = y.transpose((2,1,0)) if self.task == "forecast" else y.transpose((1,0))
+            x = x.transpose((0, 2, 1))
+            y = y.transpose((0, 2, 1)) if self.task == "forecast" else y.transpose((1,0))
         return x, y
 
     

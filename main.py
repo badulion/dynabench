@@ -1,6 +1,8 @@
 import hydra
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
+import torch
+torch.multiprocessing.set_sharing_strategy('file_system')
 
 
 @hydra.main(version_base=None, config_path="config", config_name="train")

@@ -18,6 +18,7 @@ class DynaBenchGraph(DynaBenchBase):
                  rollout=1,
                  test_ratio=0.1,
                  val_ratio=0.1,
+                 merge_lookback=True,
                  k=10):
         super().__init__(name=name, 
                          mode=mode,
@@ -29,8 +30,11 @@ class DynaBenchGraph(DynaBenchBase):
                          lookback=lookback, 
                          rollout=rollout,
                          test_ratio=test_ratio,
-                         val_ratio=val_ratio)
+                         val_ratio=val_ratio,
+                         merge_lookback=merge_lookback)
         self.k = k
+        if not self.merge_lookback:
+            UserWarning("Using the graph dataset without merging lookback and channels is not recommended!")
 
     def additional_transforms(self, x, y, points):
         if self.support == "grid":
@@ -54,5 +58,8 @@ class DynaBenchGraph(DynaBenchBase):
         transformation = KNNGraph(k=self.k)
         x_graph = transformation(x_graph)
         y_graph = transformation(y_graph)
+
+        if self.task == "forecast":
+            y_graph = [Data(x=y_graph.x[i], pos=points, edge_index=y_graph.edge_index) for i in range(self.rollout)]
         
         return x_graph, y_graph, points
