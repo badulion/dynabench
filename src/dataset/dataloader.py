@@ -1,6 +1,6 @@
 from pytorch_lightning import LightningDataModule
-from src.dataset.dataset_base import DynaBenchBase
-from src.dataset.dataset_graph import DynaBenchGraph
+from .dataset_base import DynaBenchBase
+from .dataset_graph import DynaBenchGraph
 from torch.utils.data import DataLoader as DataLoaderBase
 from torch_geometric.loader import DataLoader as DataLoaderGraph
 
