@@ -1,0 +1,3 @@
+[submodule "src/model/continuous_conv"]
+	path = src/model/continuous_conv
+	url = git@github.com:deepcodin/continuous_conv.git
