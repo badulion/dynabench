@@ -11,3 +11,4 @@ outputs/
 
 kubernetes/
 .vscode/
+logs_db/
