@@ -1,18 +1,12 @@
-_target_: src.model.Model
-lr: ${learning_rate}
-training_noise: ${training_noise}
-batch_size: ${batch_size}
-
-net: 
-  _target_: src.model.cloud.PointTransformer
-  input_size: ${input_size}
-  lookback: ${lookback}
-  hidden_size: 64
-  pos_nn_hidden_size: 64
-  pos_nn_hidden_layers: 2
-  attn_nn_hidden_size: 64
-  attn_nn_hidden_layers: 2
-  hidden_layers: 4
-  spatial_dimensions: ${spatial_dimensions}
+_target_: src.model.cloud.PointTransformer
+input_size: ${input_size}
+lookback: ${lookback}
+hidden_size: 64
+pos_nn_hidden_size: 64
+pos_nn_hidden_layers: 2
+attn_nn_hidden_size: 64
+attn_nn_hidden_layers: 2
+hidden_layers: 4
+spatial_dimensions: ${spatial_dimensions}
 
 

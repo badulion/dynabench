@@ -1,14 +1,8 @@
-_target_: src.model.Model
-lr: ${learning_rate}
-training_noise: ${training_noise}
-batch_size: ${batch_size}
-
-net: 
-  _target_: src.model.gnn.GATNet
-  input_size: ${input_size}
-  lookback: ${lookback}
-  hidden_size: 128
-  hidden_layers: 4
-  spatial_dimensions: ${spatial_dimensions}
+_target_: src.model.gnn.GATNet
+input_size: ${input_size}
+lookback: ${lookback}
+hidden_size: 128
+hidden_layers: 4
+spatial_dimensions: ${spatial_dimensions}
 
 

@@ -6,7 +6,7 @@ from omegaconf import DictConfig, OmegaConf
 @hydra.main(version_base=None, config_path="config", config_name="train")
 def main(cfg : DictConfig) -> None:
     
-    model = instantiate(cfg.model)
+    model = instantiate(cfg.task)
     datamodule = instantiate(cfg.datamodule)
     trainer = instantiate(cfg.trainer)
     

@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(
                             Gas-Dynamics, Brusselator, Wave, Kuramoto-Sivashinksy several times and postprocessing the generated solutions.',
             epilog = 'Thank you!')
 
-parser.add_argument('-n', '--num', type=int, default=1, help="Number of times each equation is simulated.")
+parser.add_argument('-n', '--num', type=int, default=3, help="Number of times each equation is simulated.")
 parser.add_argument('-s', '--seed', type=int, default=42, help="The seed to use for generating.")
 parser.add_argument('-e', '--equation', type=str, default='gas_dynamics', choices=['gas_dynamics', 'brusselator', 'wave', 'kuramoto_sivashinsky'], help="The equation to be solved.")
 
