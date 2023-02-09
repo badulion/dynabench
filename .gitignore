@@ -9,3 +9,5 @@ output/
 **/local/
 
 kubernetes/
+
+.idea/
