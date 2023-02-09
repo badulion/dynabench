@@ -29,8 +29,8 @@ class ForecastModel(LightningModule):
             pred = self.net(x)
             predictions.append(pred.x)
             x.x = concat([x_old.x[:,pred.x.size(1):], pred.x], dim=1)
-        x_graph.x = stack(predictions, dim=-1)
-        return x_graph
+        x_graph.x = stack(predictions, dim=0)
+        return x_graph.x
 
     def training_step(self, batch, batch_idx):
         x, y, points = batch
@@ -38,7 +38,8 @@ class ForecastModel(LightningModule):
         x.x += self.training_noise * randn_like(x.x) # add gaussian noise during training
         
         y_hat = self(x, rollout=1)
-        loss = self.loss(y_hat.x, y.x)
+        y = y[0].x.unsqueeze(0)
+        loss = self.loss(y_hat, y)
         self.log('train_loss', loss, batch_size=self.batch_size)
         return loss
 
@@ -46,7 +47,8 @@ class ForecastModel(LightningModule):
         x, y, points = batch
         
         y_hat = self(x, rollout=1)
-        loss = self.loss(y_hat.x, y.x)
+        y = y[0].x.unsqueeze(0)
+        loss = self.loss(y_hat, y)
         self.log('val_loss', loss, batch_size=self.batch_size, prog_bar=True)
         return loss
 
@@ -55,7 +57,8 @@ class ForecastModel(LightningModule):
         
         rollout = y.x.size(2)
         y_hat = self(x, rollout=rollout)
-        loss = mean((y_hat.x-y.x)**2, dim=(0,1))
+        y = stack([roll.x for roll in y])
+        loss = mean((y_hat-y)**2, dim=(0,1))
         
         for i in range(rollout):
             self.log(f"test_rollout_{i+1}", loss[i], batch_size=self.batch_size)
