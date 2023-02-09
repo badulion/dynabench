@@ -6,6 +6,8 @@ learning_rate = 0.001
 
 spatial_dimensions = 2
 
+num_workers = 8
+
 # config of the dataset
 DynaBenchDataModule.equation = %equation
 DynaBenchDataModule.task = %task
@@ -38,7 +40,7 @@ EarlyStopping.min_delta = 0.0
 EarlyStopping.patience = 5
 EarlyStopping.mode = "min"
 
-Trainer.accelerator = "gpu"
+Trainer.accelerator = "cpu"
 Trainer.devices = 1
 Trainer.logger = [@TensorBoardLogger(), @CSVLogger()]
 Trainer.callbacks = [@ModelCheckpoint(), @EarlyStopping()]

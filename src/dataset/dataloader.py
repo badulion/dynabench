@@ -20,7 +20,7 @@ class DynaBenchDataModule(LightningDataModule):
                 val_ratio=0.1,
                 k=10,
                 batch_size=16,
-                num_workers=16,
+                num_workers=1,  # TODO: add config option
                 *args,
                 **kwargs) -> None:
         super().__init__()
