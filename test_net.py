@@ -8,13 +8,12 @@ from src.model.continuous_conv.cconv_lightning_graph import LitModel
 # import dataloader
 from src.dataset import dataloader as DB
 
-eq = sys.argv[1]
+eq = sys.argv[1]            # equation for data
 print(f"NOW using EQUATION {eq}")
 ###### CONFIGURATION ######
 # TRAIN
 epochs      = 10            # epochs
 batch_size  = 32            # batches
-#eq          = "gas_dynamics"# equation for data
 # MODEL
 lb          = 8             # lookback
 f_in        = 1             # features_in
