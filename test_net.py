@@ -1,3 +1,4 @@
+import sys
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -7,11 +8,13 @@ from src.model.continuous_conv.cconv_lightning_graph import LitModel
 # import dataloader
 from src.dataset import dataloader as DB
 
+eq = sys.argv[1]
+print(f"NOW using EQUATION {eq}")
 ###### CONFIGURATION ######
 # TRAIN
 epochs      = 10            # epochs
 batch_size  = 32            # batches
-eq          = "wave"        # equation for data
+#eq          = "gas_dynamics"# equation for data
 # MODEL
 lb          = 8             # lookback
 f_in        = 1             # features_in
