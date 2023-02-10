@@ -1,0 +1,6 @@
+_target_: src.model.gnn.GCN
+input_size: ${input_size}
+lookback: ${lookback}
+hidden_size: 256
+hidden_layers: 3
+spatial_dimensions: ${spatial_dimensions}

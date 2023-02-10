@@ -1,0 +1,6 @@
+_target_: src.model.ForecastModel
+lr: ${learning_rate}
+training_noise: ${training_noise}
+batch_size: ${batch_size}
+
+net: ${model}

@@ -1,0 +1,13 @@
+_target_: src.model.cloud.PointNet
+input_size: ${input_size}
+lookback: ${lookback}
+intermediate_hidden_size: 64
+hidden_size: 64
+local_nn_hidden_size: 64
+local_nn_hidden_layers: 2
+global_nn_hidden_size: 64
+global_nn_hidden_layers: 2
+hidden_layers: 4
+spatial_dimensions: ${spatial_dimensions}
+
+

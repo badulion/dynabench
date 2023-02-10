@@ -6,7 +6,8 @@ venv/
 figures/
 data/
 output/
-**/local/
+outputs/
+**/local/*
 
 kubernetes/
 
@@ -15,3 +16,4 @@ kubernetes/
 venv*/
 
 *.sw[po]
+.vscode/
