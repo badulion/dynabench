@@ -11,3 +11,5 @@ output/
 kubernetes/
 
 .idea/
+
+venv*/
