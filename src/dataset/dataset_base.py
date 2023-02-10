@@ -1,6 +1,6 @@
 from torch.utils.data import Dataset
 import os
-import h5py
+import h5pickle as h5py
 import numpy as np
 from math import ceil
 
