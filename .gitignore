@@ -13,3 +13,5 @@ kubernetes/
 .idea/
 
 venv*/
+
+*.sw[po]
