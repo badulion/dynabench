@@ -13,7 +13,6 @@ from src.dataset import dataloader as DB
 PERCENT_VALID_EXAMPLES = 0.1
 EQUATION = "wave"
 EPOCHS = 8
-BATCH_SIZE = 32
 LOOKBACK = 8
 FEATURES_IN = 1
 COORDINATE_DIM = 2
@@ -22,8 +21,9 @@ KNN_NUM = 10
 def objective(trial: optuna.trial.Trial) -> float:
     # Optimize hidden cconv layers, hidden size of mlp, hidden layers of mlp
     hidden_layer = trial.suggest_int("hidden_layer", 1, 10)
-    hidden_size_mlp = trial.suggest_int("hidden_size_mlp", 32, 256, log=True)
+    hidden_size_mlp = trial.suggest_int("hidden_size_mlp", 32, 512, log=True)
     hidden_layer_mlp = trial.suggest_int("hidden_layer_mlp", 1, 3)
+    batch_size = trial.suggest_int("batch_size", 1, 32)
 
     net = ConCov(k=KNN_NUM,
              hidden_mlp=hidden_size_mlp,
@@ -33,7 +33,7 @@ def objective(trial: optuna.trial.Trial) -> float:
              hidden_size=LOOKBACK*FEATURES_IN,
              hl_mlp=hidden_layer_mlp)
     model = LitModel(net)
-    dynabench = DB.DynaBenchDataModule(batch_size=BATCH_SIZE,
+    dynabench = DB.DynaBenchDataModule(batch_size=batch_size,
                                    equation=EQUATION, base_path="data",
                                    structure="graph",
                                    lookback=LOOKBACK,
