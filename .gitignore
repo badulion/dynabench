@@ -7,6 +7,7 @@ figures/
 data/
 output/
 outputs/
+lightning_logs/
 **/local/*
 
 kubernetes/
