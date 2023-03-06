@@ -5,4 +5,5 @@ support: ${experiment.support}
 num_points: ${experiment.num_points}
 lookback: ${lookback}
 rollout: ${rollout}
+batch_size: ${batch_size}
 structure: torch

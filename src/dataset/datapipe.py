@@ -102,16 +102,18 @@ class GraphCreator(IterDataPipe):
             yield item
 
 
-
 def create_datapipes(
+        base_path: str = "data",
+        split: str = "train",
         equation: str = "wave", 
         support: str = "cloud", 
         num_points: str = "low",
         lookback: int = 1,
         rollout: int = 1,
-        as_graph: bool = False):
+        as_graph: bool = False,
+        k: int = 10):
     
-    datapipe = FileLister(f"data/{equation}", f"{support}_{num_points}.tar")
+    datapipe = FileLister(f"{base_path}/{equation}/{split}", f"{support}_{num_points}.tar")
     datapipe = FileOpener(datapipe, mode="b")
     datapipe = TarArchiveLoader(datapipe)
     datapipe = NumpyReader(datapipe)
@@ -119,9 +121,7 @@ def create_datapipes(
     datapipe = SlidingWindow(datapipe, lookback=lookback, rollout=rollout)
     datapipe = AxisPermuter(datapipe)
     datapipe = LookbackMerger(datapipe)
+    datapipe = Shuffler(datapipe, buffer_size=10000)
     if as_graph:
-        datapipe = GraphCreator(datapipe)
-    datapipe = Shuffler(datapipe)
+        datapipe = GraphCreator(datapipe, k = k)
     return datapipe
-
-

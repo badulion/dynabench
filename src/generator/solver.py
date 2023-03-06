@@ -14,18 +14,20 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from .equations import WavePDE, GasDynamicsPDE, BrusselatorPDE, KuramotoSivashinskyPDE
+from ..utils import write_np_array_to_tar
 
 class PDESolver:
     available_equations = ['wave', 'gas_dynamics', 'brusselator', 'kuramoto_sivashinsky']
     def __init__(self,
         equation,
         save_dir,
+        save_name,
         grid_size= 64,
         t_range=100,
         dt=1e-3,
         save_interval=0.1,
-        num_points=[15, 30],
-        num_points_names=["low", "high"],
+        num_points=[15, 22, 30],
+        num_points_names=["low", "med", "high"],
         save_full_grid=True,
         save_full_cloud=True,
         save_cloud_points=True,
@@ -60,6 +62,8 @@ class PDESolver:
             
         sample_n = len(os.listdir(save_dir))
         self.path = os.path.join(save_dir, f"{sample_n}.hdf5")
+        self.save_dir = save_dir
+        self.save_name = save_name
         self.data = []
         self.times = []
         
@@ -69,7 +73,7 @@ class PDESolver:
         self.times = []
         def save_state(state, time):
             state_with_dyn = FieldCollection([*state.copy(), *self.equation.evolution_rate(state)])
-            self.data.append(state_with_dyn.data)
+            self.data.append(state.copy().data)
             self.times.append(time)
 
         # setup
@@ -164,9 +168,8 @@ class PDESolver:
         points_cloud = [generate_pointcloud(sup**2) for sup in self.num_points]
         points_cloud_full = points_grid_full.reshape(-1, 2)
 
-        # write hdf5 file
-        f = h5py.File(self.path, 'w')
-        f.create_dataset('times', data=self.times)
+        # write times
+        write_np_array_to_tar(self.times, f"{self.save_name}.times", os.path.join(self.save_dir, f"times.tar"))
         num_samples = len(self.times)
 
 
@@ -184,32 +187,31 @@ class PDESolver:
         data_grid = [interpolate_grid(interpolator, points) for points in points_grid]
         # save data
         if self.save_full_grid:
-            f.create_dataset('data_grid_full', data=data_grid_full)
-            f.create_dataset('points_grid_full', data=points_grid_full)
+            write_np_array_to_tar(data_grid_full, f"{self.save_name}.data", os.path.join(self.save_dir, f"grid_full.tar"))
+            write_np_array_to_tar(points_grid_full, f"{self.save_name}.points", os.path.join(self.save_dir, f"grid_full.tar"))
             
         if self.save_grid_points:
             # save sampled subgrids:
             for points, name in zip(points_grid, self.num_points_names):
-                f.create_dataset(f'points_grid_{name}', data=points)
+                write_np_array_to_tar(points, f"{self.save_name}.points", os.path.join(self.save_dir, f"grid_{name}.tar"))
             for data, name in zip(data_grid, self.num_points_names):
-                f.create_dataset(f'data_grid_{name}', data=data)
+                write_np_array_to_tar(data, f"{self.save_name}.data", os.path.join(self.save_dir, f"grid_{name}.tar"))
 
         # point cloud part of the dataset
         data_cloud_full = data_grid_full.reshape(data_grid_full.shape[:2]+(-1,))
         data_cloud = [interpolate_cloud(interpolator, points) for points in points_cloud]
     
         if self.save_full_cloud:
-            f.create_dataset('points_cloud_full', data=points_cloud_full)
-            f.create_dataset('data_cloud_full', data=data_cloud_full)
+            write_np_array_to_tar(data_cloud_full, f"{self.save_name}.data", os.path.join(self.save_dir, f"cloud_full.tar"))
+            write_np_array_to_tar(points_cloud_full, f"{self.save_name}.points", os.path.join(self.save_dir, f"cloud_full.tar"))
+
             
         if self.save_cloud_points:
             # save sampled points
             for points, name in zip(points_cloud, self.num_points_names):
-                f.create_dataset(f'points_cloud_{name}', data=points)
-            for points, name in zip(data_cloud, self.num_points_names):
-                f.create_dataset(f'data_cloud_{name}', data=points)
-
-        f.close()
+                write_np_array_to_tar(points, f"{self.save_name}.points", os.path.join(self.save_dir, f"cloud_{name}.tar"))
+            for data, name in zip(data_cloud, self.num_points_names):
+                write_np_array_to_tar(data, f"{self.save_name}.data", os.path.join(self.save_dir, f"cloud_{name}.tar"))
 
 
 

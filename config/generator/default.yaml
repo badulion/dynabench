@@ -6,12 +6,12 @@ grid_size: 64
 t_range: 100
 dt: 1e-3
 save_interval: 0.1
-num_points: [15, 30]
-num_points_names: ["low", "high"]
+num_points: [15, 22, 30]
+num_points_names: ["low", "med", "high"]
 
 # save settings
 # can be changed if only part of the dataset is needed
-save_full_grid: False
-save_full_cloud: False
+save_full_grid: True
+save_full_cloud: True
 save_cloud_points: True
 save_grid_points: True

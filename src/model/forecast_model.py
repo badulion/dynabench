@@ -33,7 +33,7 @@ class ForecastModel(LightningModule):
         return x_graph.x
 
     def training_step(self, batch, batch_idx):
-        x, y, points = batch
+        x, y, points = batch['.x'], batch['.y'], batch['.points']
 
         x.x += self.training_noise * randn_like(x.x) # add gaussian noise during training
         
@@ -44,7 +44,7 @@ class ForecastModel(LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y, points = batch
+        x, y, points = batch['.x'], batch['.y'], batch['.points']
         
         y_hat = self(x, rollout=1)
         y = y[0].x.unsqueeze(0)

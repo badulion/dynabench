@@ -18,16 +18,16 @@ def main(cfg : DictConfig) -> None:
     logger.info(f"The selected equation will be solved {cfg.num_simulations} times.")
 
     eq_path = f"data/{cfg.equation_name}"
-    num_existing_equations = len(os.listdir(eq_path)) if os.path.exists(eq_path) else 0
+    seed_list = np.loadtxt("config/seeds.txt", dtype=int)
 
     for i in range(cfg.num_simulations):
         # make sure everything is seeded
-        seed = num_existing_equations + i + cfg.seed
+        seed = seed_list[i]
         np.random.seed(seed)
 
         # solve instance
         equation = instantiate(cfg.equation)
-        solver = instantiate(cfg.generator, equation=equation, save_dir=eq_path)
+        solver = instantiate(cfg.generator, equation=equation, save_dir=eq_path, save_name=seed)
         solver.solve()
     logger.info(f"Finished generating data.")
     

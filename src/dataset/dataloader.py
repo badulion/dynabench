@@ -3,6 +3,7 @@ from .dataset_base import DynaBenchBase
 from .dataset_graph import DynaBenchGraph
 from torch.utils.data import DataLoader as DataLoaderBase
 from torch_geometric.loader import DataLoader as DataLoaderGraph
+from .datapipe import create_datapipes
 
 class DynaBenchDataModule(LightningDataModule):
     def __init__(self,
@@ -15,8 +16,6 @@ class DynaBenchDataModule(LightningDataModule):
                 structure="torch",
                 lookback=1,
                 rollout=1,
-                test_ratio=0.1,
-                val_ratio=0.1,
                 k=10,
                 batch_size=16,
                 num_workers=0,
@@ -32,56 +31,48 @@ class DynaBenchDataModule(LightningDataModule):
         self.base_path=base_path
         self.lookback=lookback
         self.rollout=rollout
-        self.test_ratio=test_ratio
-        self.val_ratio=val_ratio
         self.batch_size=batch_size
         self.num_workers=num_workers
         self.structure=structure
         self.k=k
 
-        self.Dataset = DynaBenchGraph if structure == "graph" else DynaBenchBase
-        self.Dataloader = DataLoaderGraph if structure == "graph" else DataLoaderBase
+        self.Dataloader = DataLoaderGraph if self.structure == "graph" else DataLoaderBase
 
 
     def setup(self, stage: str):
-        self.train = self.Dataset(name=self.name, 
-                                  mode="train", 
-                                  equation=self.equation, 
-                                  support=self.support, 
-                                  num_points=self.num_points,
-                                  task=self.task, 
-                                  base_path=self.base_path, 
-                                  lookback=self.lookback, 
-                                  rollout=1, 
-                                  test_ratio=self.test_ratio, 
-                                  val_ratio=self.val_ratio, 
-                                  k=self.k)
-        
-        self.val = self.Dataset(name=self.name, 
-                                mode="val", 
-                                equation=self.equation, 
-                                support=self.support, 
-                                num_points=self.num_points,
-                                task=self.task, 
-                                base_path=self.base_path, 
-                                lookback=self.lookback, 
-                                rollout=1, 
-                                test_ratio=self.test_ratio, 
-                                val_ratio=self.val_ratio, 
-                                k=self.k)
-
-        self.test = self.Dataset(name=self.name, 
-                                 mode="test", 
-                                 equation=self.equation, 
-                                 support=self.support, 
-                                 num_points=self.num_points,
-                                 task=self.task, 
-                                 base_path=self.base_path, 
-                                 lookback=self.lookback, 
-                                 rollout=self.rollout, 
-                                 test_ratio=self.test_ratio, 
-                                 val_ratio=self.val_ratio, 
-                                 k=self.k)
+        self.train = create_datapipes(
+            base_path=self.base_path,
+            split="train",
+            equation=self.equation,
+            support=self.support, 
+            num_points=self.num_points,
+            lookback=self.lookback, 
+            rollout=1,
+            as_graph=(self.structure == "graph"),
+            k = self.k
+        )
+        self.val = create_datapipes(
+            base_path=self.base_path,
+            split="val",
+            equation=self.equation,
+            support=self.support, 
+            num_points=self.num_points,
+            lookback=self.lookback, 
+            rollout=1,
+            as_graph=(self.structure == "graph"),
+            k = self.k
+        )
+        self.test = create_datapipes(
+            base_path=self.base_path,
+            split="test",
+            equation=self.equation,
+            support=self.support, 
+            num_points=self.num_points,
+            lookback=self.lookback, 
+            rollout=1,
+            as_graph=(self.structure == "graph"),
+            k = self.k
+        )
 
 
     def train_dataloader(self):

@@ -1,7 +1,7 @@
 defaults:
   - model: point_transformer
   - datamodule: graph
-  - equation: wave
+  - equation: advection
   - task: forecast
   - support: cloud
   - num_points: high
@@ -10,7 +10,7 @@ defaults:
 
 lookback: 8
 rollout: 16
-batch_size: 32
+batch_size: 16
 learning_rate: 0.001
 training_noise: 0.1
 spatial_dimensions: 2
