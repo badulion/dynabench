@@ -38,7 +38,7 @@ class SlidingWindow(IterDataPipe):
             real_len = len(data) - self.lookback - self.rollout+1
             for i in range(real_len):
                 sample = item.copy()
-                sample['.x'] = data[np.arange(i,i+self.lookback)]
+                sample['.x'] = data[i:i+self.lookback]
                 sample['.y'] = data[i+self.lookback:i+self.lookback+self.rollout]
                 yield sample
                 

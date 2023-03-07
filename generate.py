@@ -17,8 +17,8 @@ def main(cfg : DictConfig) -> None:
     logger.info(f"Generating data for the {cfg.equation_name} equation.")
     logger.info(f"The selected equation will be solved {cfg.num_simulations} times.")
 
-    eq_path = f"data/{cfg.equation_name}"
-    seed_list = np.loadtxt("config/seeds.txt", dtype=int)
+    eq_path = f"data/{cfg.equation_name}/{cfg.split}"
+    seed_list = np.loadtxt(f"config/seeds/{cfg.split}.txt", dtype=int)
 
     for i in range(cfg.num_simulations):
         # make sure everything is seeded
