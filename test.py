@@ -1,127 +1,42 @@
 import io
 import numpy as np
-
-from torchdata.datapipes.iter import (
-    FileLister,
-    FileOpener,
-    TarArchiveLoader,
-    WebDataset,
-    IterDataPipe,
-    Shuffler
-)
-
-from torch.utils.data import DataLoader
-from torch_geometric.data import Data
-from torch_geometric.transforms import KNNGraph
-import torch
-
-class NumpyReader(IterDataPipe):
-    def __init__(self, source_dp: IterDataPipe) -> None:
-        super().__init__()
-        self.source_dp = source_dp
-    
-    def __iter__(self):
-        for file, stream in self.source_dp:
-            np_bytes = io.BytesIO(stream.read())
-            yield file, np.load(np_bytes)
-
-class SlidingWindow(IterDataPipe):
-    def __init__(self, source_dp: IterDataPipe, lookback: int = 1, rollout: int = 1) -> None:
-        super().__init__()
-        self.source_dp = source_dp
-        self.lookback = lookback
-        self.rollout = rollout
-    
-    def __iter__(self):
-        for item in self.source_dp:
-            data = item.pop('.data')
-            real_len = len(data) - self.lookback - self.rollout+1
-            for i in range(real_len):
-                sample = item.copy()
-                sample['.x'] = data[np.arange(i,i+self.lookback)]
-                sample['.y'] = data[i+self.lookback:i+self.lookback+self.rollout]
-                yield sample
-                
-
-class LookbackMerger(IterDataPipe):
-    def __init__(self, source_dp: IterDataPipe) -> None:
-        super().__init__()
-        self.source_dp = source_dp
-    
-    def __iter__(self):
-        for item in self.source_dp:
-            # ToDo: check order of items
-            item['.x'] = item['.x'].transpose((1, 0, 2))
-            item['.x'] = item['.x'].reshape((item['.x'].shape[0], -1))
-            yield item
-
-class AxisPermuter(IterDataPipe):
-    def __init__(self, source_dp: IterDataPipe) -> None:
-        super().__init__()
-        self.source_dp = source_dp
-    
-    def __iter__(self):
-        for item in self.source_dp:
-            item['.x'] = item['.x'].transpose((0, 2, 1))
-            item['.y'] = item['.y'].transpose((0, 2, 1))
-            yield item
-
-class GraphCreator(IterDataPipe):
-    def __init__(self, source_dp: IterDataPipe, k: int = 10) -> None:
-        super().__init__()
-        self.source_dp = source_dp
-        self.k = k
-    
-    def __iter__(self):
-        for item in self.source_dp:
-            # transform to tensors
-            x = torch.tensor(item['.x'], dtype=torch.float32)
-            y = torch.tensor(item['.y'], dtype=torch.float32)
-            points = torch.tensor(item['.points'], dtype=torch.float32)
-
-            # create pyg graphs
-            x_graph = Data(x=x, pos=points)
-            y_graph = Data(x=y, pos=points)
-
-            # generate knn edges
-            transformation = KNNGraph(k=self.k)
-            x_graph = transformation(x_graph)
-            y_graph = transformation(y_graph)
-
-            # edge_attribute
-            edge_attr = points[y_graph.edge_index.T].reshape((y_graph.edge_index.size(1), -1))
-            y_graph.edge_attr = edge_attr
-            x_graph.edge_attr = edge_attr
-
-            y_graph = [Data(x=y_graph.x[i], pos=points, edge_index=y_graph.edge_index, edge_attr=y_graph.edge_attr) for i in range(len(y_graph.x))]
-            
-            item['.x'] = x_graph
-            item['.y'] = y_graph
-            item['.points'] = points
-
-            yield item
+import tarfile
 
 
+EQUATION = "advection"
 
-def create_datapipes(
-        equation: str = "wave", 
-        support: str = "cloud", 
-        num_points: str = "low",
-        lookback: int = 1,
-        rollout: int = 1,
-        as_graph: bool = False):
-    
-    datapipe = FileLister(f"data/{equation}", f"{support}_{num_points}.tar")
-    datapipe = FileOpener(datapipe, mode="b")
-    datapipe = TarArchiveLoader(datapipe)
-    datapipe = NumpyReader(datapipe)
-    datapipe = WebDataset(datapipe)
-    datapipe = SlidingWindow(datapipe, lookback=lookback, rollout=rollout)
-    datapipe = AxisPermuter(datapipe)
-    datapipe = LookbackMerger(datapipe)
-    if as_graph:
-        datapipe = GraphCreator(datapipe)
-    datapipe = Shuffler(datapipe)
-    return datapipe
+with tarfile.open(f"data/{EQUATION}/train/grid_full.tar") as f:
+    files = f.getnames()
+    file = f.extractfile(files[0])
+    file_bytes = io.BytesIO(file.read())
+    X = np.load(file_bytes, encoding="bytes")
 
 
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+fps = 30
+# First set up the figure, the axis, and the plot element we want to animate
+fig = plt.figure( figsize=(8,8) )
+
+a = X[0, 0]
+im = plt.imshow(a, interpolation='none', aspect='auto', vmin=-2, vmax=3)
+plt.colorbar()
+
+def animate_func(i):
+    if i % fps == 0:
+        print( '.', end ='' )
+
+    im.set_array(X[i, 0])
+    return [im]
+
+anim = animation.FuncAnimation(
+                               fig, 
+                               animate_func, 
+                               frames = 100
+                               )
+
+anim.save(f'output/figures/{EQUATION}.gif', fps=fps)
+
+print('Done!')
+
+#plt.show()  # Not required, it seems!

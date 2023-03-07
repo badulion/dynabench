@@ -1,5 +1,5 @@
 _target_: src.generator.equations.GasDynamicsPDE
 parameters: [0.01, 0.01, 1, 1]
-rate: 1
+rate: 0.75
 bc: auto_periodic_neumann
 num_fields: 4

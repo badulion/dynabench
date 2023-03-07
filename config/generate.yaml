@@ -1,9 +1,10 @@
 defaults:
-  - equation: wave
+  - equation: advection
   - generator: default
 
 
 # overall parameters
 num_simulations: 10
+split: train
 equation_name: ${hydra:runtime.choices.equation}
 seed: 42

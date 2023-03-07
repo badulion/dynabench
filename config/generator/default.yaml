@@ -3,9 +3,9 @@ _target_: src.generator.PDESolver
 # general settings
 # SHOULD NOT BE CHANGED
 grid_size: 64
-t_range: 100
+t_range: 200
 dt: 1e-3
-save_interval: 0.1
+save_interval: 1
 num_points: [15, 22, 30]
 num_points_names: ["low", "med", "high"]
 
