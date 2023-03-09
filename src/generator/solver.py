@@ -22,6 +22,7 @@ class PDESolver:
         equation,
         save_dir,
         save_name,
+        tar_suffix="",
         grid_size= 64,
         t_range=100,
         dt=1e-3,
@@ -32,6 +33,7 @@ class PDESolver:
         save_full_cloud=True,
         save_cloud_points=True,
         save_grid_points=True,
+        periodic=True,
         ) -> None:
 
 
@@ -52,7 +54,7 @@ class PDESolver:
         if not save_full_cloud*save_cloud_points*save_full_grid*save_grid_points:
             UserWarning("No data will be saved, are you sure?")
 
-        self.grid = UnitGrid([grid_size, grid_size], periodic=[True, True])
+        self.grid = UnitGrid([grid_size, grid_size], periodic=periodic)
         self.state = self.equation.get_initial_state(self.grid)
         self.state_with_dyn = FieldCollection([*self.state, *self.equation.evolution_rate(self.state)])
         
@@ -61,9 +63,9 @@ class PDESolver:
             os.makedirs(save_dir, exist_ok=True)
             
         sample_n = len(os.listdir(save_dir))
-        self.path = os.path.join(save_dir, f"{sample_n}.hdf5")
         self.save_dir = save_dir
         self.save_name = save_name
+        self.tar_suffix = tar_suffix
         self.data = []
         self.times = []
         
@@ -88,53 +90,6 @@ class PDESolver:
 
         # sample data and save indices
         self._postprocess()
-
-    def make_movie(self, path):
-        sfp = ScalarFieldPlot(self.state)
-        sfp.make_movie(self.storage, os.path.join("figures", path))
-        self.storage.close()
-
-    def make_movie_frame_by_frame(self, filename):
-        path = os.path.join('figures', filename)
-        movie = Movie(path)
-        for frame, t in zip(tqdm(self.storage.data), self.storage.times):
-            fig, ax = plt.subplots(1,4, dpi=150, figsize=(12.8, 4.8))
-            fig.set_layout_engine("tight")
-            fig.suptitle(f"Time {int(t)}")
-            fig.set_figwidth(0.75*fig.get_figwidth())
-            fig.set_figheight(0.75*fig.get_figheight())
-
-            # first subplot
-            hm = ax[0].imshow(frame[0,:,:], interpolation="bilinear", vmin=-2.5, vmax=2.5)
-            fig.colorbar(hm, ax=ax[0], location="bottom", shrink=1, pad=0.05)
-            ax[0].set_xticks([])
-            ax[0].set_yticks([])
-            ax[0].set_title("Density")
-
-            # second subplot
-            hm = ax[1].imshow(frame[1,:,:], interpolation="bilinear", vmin=-2.5, vmax=2.5)
-            fig.colorbar(hm, ax=ax[1], location="bottom", shrink=1, pad=0.05)
-            ax[1].set_xticks([])
-            ax[1].set_yticks([])
-            ax[1].set_title("Temperature")
-
-            # first subplot
-            hm = ax[2].imshow(frame[2,:,:], interpolation="bilinear", vmin=-2.5, vmax=2.5)
-            fig.colorbar(hm, ax=ax[2], location="bottom", shrink=1, pad=0.05)
-            ax[2].set_xticks([])
-            ax[2].set_yticks([])
-            ax[2].set_title("Velocity x")
-
-            # second subplot
-            hm = ax[3].imshow(frame[3,:,:], interpolation="bilinear", vmin=-2.5, vmax=2.5)
-            fig.colorbar(hm, ax=ax[3], location="bottom", shrink=1, pad=0.05)
-            ax[3].set_xticks([])
-            ax[3].set_yticks([])
-            ax[3].set_title("Velocity y")
-
-            movie.add_figure(fig)
-            plt.close(fig)
-        movie.save()
 
     def _postprocess(self):
         def generate_grid(num_points=30):
@@ -169,7 +124,7 @@ class PDESolver:
         points_cloud_full = points_grid_full.reshape(-1, 2)
 
         # write times
-        write_np_array_to_tar(self.times, f"{self.save_name}.times", os.path.join(self.save_dir, f"times.tar"))
+        write_np_array_to_tar(self.times, f"{self.save_name}.times", os.path.join(self.save_dir, f"times{self.tar_suffix}.tar"))
         num_samples = len(self.times)
 
 
@@ -187,31 +142,31 @@ class PDESolver:
         data_grid = [interpolate_grid(interpolator, points) for points in points_grid]
         # save data
         if self.save_full_grid:
-            write_np_array_to_tar(data_grid_full, f"{self.save_name}.data", os.path.join(self.save_dir, f"grid_full.tar"))
-            write_np_array_to_tar(points_grid_full, f"{self.save_name}.points", os.path.join(self.save_dir, f"grid_full.tar"))
+            write_np_array_to_tar(data_grid_full, f"{self.save_name}.data", os.path.join(self.save_dir, f"grid_full{self.tar_suffix}.tar"))
+            write_np_array_to_tar(points_grid_full, f"{self.save_name}.points", os.path.join(self.save_dir, f"grid_full{self.tar_suffix}.tar"))
             
         if self.save_grid_points:
             # save sampled subgrids:
             for points, name in zip(points_grid, self.num_points_names):
-                write_np_array_to_tar(points, f"{self.save_name}.points", os.path.join(self.save_dir, f"grid_{name}.tar"))
+                write_np_array_to_tar(points, f"{self.save_name}.points", os.path.join(self.save_dir, f"grid_{name}{self.tar_suffix}.tar"))
             for data, name in zip(data_grid, self.num_points_names):
-                write_np_array_to_tar(data, f"{self.save_name}.data", os.path.join(self.save_dir, f"grid_{name}.tar"))
+                write_np_array_to_tar(data, f"{self.save_name}.data", os.path.join(self.save_dir, f"grid_{name}{self.tar_suffix}.tar"))
 
         # point cloud part of the dataset
         data_cloud_full = data_grid_full.reshape(data_grid_full.shape[:2]+(-1,))
         data_cloud = [interpolate_cloud(interpolator, points) for points in points_cloud]
     
         if self.save_full_cloud:
-            write_np_array_to_tar(data_cloud_full, f"{self.save_name}.data", os.path.join(self.save_dir, f"cloud_full.tar"))
-            write_np_array_to_tar(points_cloud_full, f"{self.save_name}.points", os.path.join(self.save_dir, f"cloud_full.tar"))
+            write_np_array_to_tar(data_cloud_full, f"{self.save_name}.data", os.path.join(self.save_dir, f"cloud_full{self.tar_suffix}.tar"))
+            write_np_array_to_tar(points_cloud_full, f"{self.save_name}.points", os.path.join(self.save_dir, f"cloud_full{self.tar_suffix}.tar"))
 
             
         if self.save_cloud_points:
             # save sampled points
             for points, name in zip(points_cloud, self.num_points_names):
-                write_np_array_to_tar(points, f"{self.save_name}.points", os.path.join(self.save_dir, f"cloud_{name}.tar"))
+                write_np_array_to_tar(points, f"{self.save_name}.points", os.path.join(self.save_dir, f"cloud_{name}{self.tar_suffix}.tar"))
             for data, name in zip(data_cloud, self.num_points_names):
-                write_np_array_to_tar(data, f"{self.save_name}.data", os.path.join(self.save_dir, f"cloud_{name}.tar"))
+                write_np_array_to_tar(data, f"{self.save_name}.data", os.path.join(self.save_dir, f"cloud_{name}{self.tar_suffix}.tar"))
 
 
 

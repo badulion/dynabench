@@ -53,7 +53,7 @@ class ForecastModel(LightningModule):
         return loss
 
     def test_step(self, batch, batch_idx):
-        x, y, points = batch
+        x, y, points = batch['.x'], batch['.y'], batch['.points']
         
         rollout = y.x.size(2)
         y_hat = self(x, rollout=rollout)

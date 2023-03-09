@@ -1,9 +1,9 @@
 import io
 import numpy as np
 import tarfile
+import os
 
-
-EQUATION = "advection"
+EQUATION = "gas_dynamics"
 
 with tarfile.open(f"data/{EQUATION}/train/grid_full.tar") as f:
     files = f.getnames()
@@ -32,11 +32,14 @@ def animate_func(i):
 anim = animation.FuncAnimation(
                                fig, 
                                animate_func, 
-                               frames = 100
+                               frames = 100,
+                               interval=500,
                                )
 
 anim.save(f'output/figures/{EQUATION}.gif', fps=fps)
 
 print('Done!')
+
+#os.remove(f"data/{EQUATION}/train/grid_full.tar")
 
 #plt.show()  # Not required, it seems!

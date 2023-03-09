@@ -82,6 +82,6 @@ class DynaBenchDataModule(LightningDataModule):
         return self.Dataloader(self.val, batch_size=self.batch_size, num_workers=self.num_workers)
 
     def test_dataloader(self):
-        return self.Dataloader(self.test, batch_size=self.batch_size, num_workers=self.num_workers)
+        return self.Dataloader(self.test, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True)
 
     

@@ -1,10 +1,17 @@
 defaults:
-  - equation: advection
+  - equation: gas_dynamics
   - generator: default
 
 
 # overall parameters
 num_simulations: 10
+start_from: 0
 split: train
 equation_name: ${hydra:runtime.choices.equation}
 seed: 42
+output_dir: output
+
+
+hydra:
+  run:
+    dir: ./${output_dir}/hydra/generator/${now:%Y-%m-%d}_${now:%H-%M-%S}

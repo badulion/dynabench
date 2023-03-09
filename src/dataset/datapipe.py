@@ -7,7 +7,8 @@ from torchdata.datapipes.iter import (
     TarArchiveLoader,
     WebDataset,
     IterDataPipe,
-    Shuffler
+    Shuffler,
+    ShardingFilter
 )
 
 from torch.utils.data import DataLoader
@@ -26,17 +27,19 @@ class NumpyReader(IterDataPipe):
             yield file, np.load(np_bytes)
 
 class SlidingWindow(IterDataPipe):
-    def __init__(self, source_dp: IterDataPipe, lookback: int = 1, rollout: int = 1) -> None:
+    def __init__(self, source_dp: IterDataPipe, lookback: int = 1, rollout: int = 1, simulation_len: int = 200) -> None:
         super().__init__()
         self.source_dp = source_dp
         self.lookback = lookback
         self.rollout = rollout
+        self.real_len = simulation_len - self.lookback - self.rollout+1
     
     def __iter__(self):
         for item in self.source_dp:
             data = item.pop('.data')
-            real_len = len(data) - self.lookback - self.rollout+1
-            for i in range(real_len):
+            self.real_len = len(data) - self.lookback - self.rollout+1
+        
+            for i in range(self.real_len):
                 sample = item.copy()
                 sample['.x'] = data[i:i+self.lookback]
                 sample['.y'] = data[i+self.lookback:i+self.lookback+self.rollout]
@@ -118,6 +121,7 @@ def create_datapipes(
     datapipe = TarArchiveLoader(datapipe)
     datapipe = NumpyReader(datapipe)
     datapipe = WebDataset(datapipe)
+    datapipe = ShardingFilter(datapipe)
     datapipe = SlidingWindow(datapipe, lookback=lookback, rollout=rollout)
     datapipe = AxisPermuter(datapipe)
     datapipe = LookbackMerger(datapipe)

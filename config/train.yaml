@@ -1,7 +1,7 @@
 defaults:
   - model: point_transformer
   - datamodule: graph
-  - equation: advection
+  - equation: reaction_diffusion
   - task: forecast
   - support: cloud
   - num_points: high
