@@ -116,7 +116,7 @@ def create_datapipes(
         as_graph: bool = False,
         k: int = 10):
     
-    datapipe = FileLister(f"{base_path}/{equation}/{split}", f"{support}_{num_points}.tar")
+    datapipe = FileLister(f"{base_path}/{equation}/{split}", f"{support}_{num_points}*.tar")
     datapipe = FileOpener(datapipe, mode="b")
     datapipe = TarArchiveLoader(datapipe)
     datapipe = NumpyReader(datapipe)
