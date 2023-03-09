@@ -14,7 +14,7 @@ if __name__ == "__main__":
                         description = 'Neural Network')
     parser.add_argument('--equation', dest='eq', action='store', default="wave",
                         help='specify equation for dynabench')
-    parser.add_argument('--epochs', dest='epochs', action='store', default=10,
+    parser.add_argument('--epochs', dest='epochs', action='store', default=1,
                         help='specify epochs to be trained', type=int)
     parser.add_argument('--batches', dest='batches', action='store', default=32,
                         help='specify batch size', type=int)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 else:
     EQUATION = "wave"
     EPOCHS = 1
-    BATCH_SIZE = 32
+    BATCH_SIZE = 16
 ### STANDARD PARAMS ########
 # MODEL
 LOOKBACK = 8             # lookback
@@ -42,12 +42,11 @@ HIDDEN_LAYER = 2             # hidden layers for cconv   x-1-10
 # CCONV LAYER
 KNN_NUM = 10            # default 10 neighbors
 HIDDEN_SIZE_MLP = 128           # hidden mlp size for each layer   x-32-256
-HIDDEN_LAYER_MLP = 1             # hidden layer for MLP in cconv layer   x-1-2
+HIDDEN_LAYER_MLP = 2             # hidden layer for MLP in cconv layer   x-1-2
 
 if EQUATION == "gas_dynamics":
     # specific changes for gas_dynamics
     FEATURES_IN = 4
-    LOOKBACK = 4
     print(f"SET FEATURS_IN = {FEATURES_IN} AND LOOKBACK= {LOOKBACK}")
     print("----------------------------------------------------------")
 if EQUATION == "brusselator":
@@ -56,7 +55,7 @@ if EQUATION == "brusselator":
     print(f"SET FEATURS_IN = {FEATURES_IN}")
     print("----------------------------------------------------------")
 
-HIDDEN_SIZE          = FEATURES_IN*LOOKBACK       # hidden size: features_out for hidden cconv layers
+HIDDEN_SIZE          = FEATURES_IN*LOOKBACK//4       # hidden size: features_out for hidden cconv layers
 ###########################
 
 dynabench = DB.DynaBenchDataModule(batch_size=BATCH_SIZE,
