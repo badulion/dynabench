@@ -20,9 +20,8 @@ def main(cfg : DictConfig) -> None:
     eq_path = f"data/{cfg.equation_name}/{cfg.split}"
     seed_list = np.loadtxt(f"config/seeds/{cfg.split}.txt", dtype=int)
 
-    for i in range(cfg.num_simulations):
+    for i in range(cfg.start_from, cfg.start_from+cfg.num_simulations):
         # make sure everything is seeded
-        #i = 9
         seed = seed_list[i]
         np.random.seed(seed)
 
