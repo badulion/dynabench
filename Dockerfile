@@ -5,8 +5,3 @@ WORKDIR /workspace
 COPY scripts/ ./scripts/
 COPY requirements.txt .
 RUN ./scripts/install_requirements.sh
-
-COPY generate.py .
-COPY main.py .
-COPY config/ ./config/
-COPY src/ ./src/
