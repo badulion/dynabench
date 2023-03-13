@@ -35,9 +35,9 @@ class NumParameterPruner(optuna.pruners.BasePruner):
 
 def objective(trial: optuna.trial.Trial) -> float:
     # Optimize hidden cconv layers, hidden size of mlp, hidden layers of mlp
-    hidden_layer = trial.suggest_int("hidden_layer", 1, 6)
-    hidden_size_mlp = trial.suggest_int("hidden_size_mlp", 32, 256, log=True)
-    hidden_layer_mlp = trial.suggest_int("hidden_layer_mlp", 1, 2)
+    hidden_layer = trial.suggest_int("hidden_layer", 1, 4)
+    hidden_size_mlp = trial.suggest_int("hidden_size_mlp", 16, 256, log=True)
+    hidden_layer_mlp = trial.suggest_int("hidden_layer_mlp", 1, 5)
     weight_decay = trial.suggest_float("weight_decay", 1e-6, 1e-1, log=True)
     learning_rate = trial.suggest_float("learning_rate", 1e-4, 1e-2, log=True)
     hidden_size_divident = trial.suggest_categorical("hidden_size_divident", [1, 2, 4])
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     
     pruner = NumParameterPruner(50000, 150000)
     optuna.logging.get_logger("optuna").addHandler(logging.StreamHandler(sys.stdout))
-    study_name = "Continuous-Convolution-Hyperparater-search"
+    study_name = "Continuous-Convolution-Hyperparater-search2"
     storage_name = "sqlite:///{}.db".format(study_name)
     study = optuna.create_study(
         direction="minimize",
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         pruner=pruner
         )
 
-    study.optimize(objective, n_trials=1000)
+    study.optimize(objective, n_trials=200)
 
     print("Number of finished trials: {}".format(len(study.trials)))
 
