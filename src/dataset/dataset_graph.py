@@ -94,7 +94,12 @@ class DynaBenchGraph(DynaBenchBase):
         x_graph = transformation(x_graph)
         y_graph = transformation(y_graph)
 
+        # edge_attribute
+        edge_attr = points[y_graph.edge_index.T].reshape((y_graph.edge_index.size(1), -1))
+        y_graph.edge_attr = edge_attr
+        x_graph.edge_attr = edge_attr
+
         if self.task == "forecast":
-            y_graph = [Data(x=y_graph.x[i], pos=points, edge_index=y_graph.edge_index) for i in range(self.rollout)]
+            y_graph = [Data(x=y_graph.x[i], pos=points, edge_index=y_graph.edge_index, edge_attr=y_graph.edge_attr) for i in range(self.rollout)]
         
         return x_graph, y_graph, points

@@ -26,9 +26,9 @@ There are four different equations in the dataset, each with different character
 | Equation             | Components | Time Order | Spatial Order |
 |----------------------|------------|------------|---------------|
 | Advection            | 1          | 1          | 1             |
-| Brusselator          | 1          | 1          | 2             |
+| Reaction-Diffusion   | 2          | 1          | 2             |
 | Gas Dynamics         | 4          | 1          | 2             |
-| Kuramoto Sivashinsky | 1          | 1          | 4             |
+| Kuramoto-Sivashinsky | 1          | 1          | 4             |
 | Wave                 | 1          | 2          | 2             |
 
 ## Setup

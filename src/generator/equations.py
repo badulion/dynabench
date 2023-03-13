@@ -1,5 +1,6 @@
 from pde import FieldCollection, PDEBase, ScalarField, VectorField
 from .initial import sum_of_gaussians as initial_function
+from .initial import random_normal, random_uniform
 
 class GasDynamicsPDE(PDEBase):
     """Gas Dynamics simulating weather"""
@@ -47,8 +48,10 @@ class BrusselatorPDE(PDEBase):
 
     def get_initial_state(self, grid):
         """prepare a useful initial state"""
+        x, y = extract_coordinates_from_grid(grid)
+
         u = ScalarField(grid, self.a, label="Field $u$")
-        v = self.b / self.a + 0.1 * ScalarField.random_normal(grid, label="Field $v$")
+        v = self.b / self.a + 0.1 * ScalarField(grid, random_normal(x, y), label="Field $v$")
         return FieldCollection([u, v])
 
     def evolution_rate(self, state, t=0):
@@ -58,6 +61,35 @@ class BrusselatorPDE(PDEBase):
         d0, d1 = self.diffusivity
         rhs[0] = d0 * u.laplace(self.bc) + self.a - (self.b + 1) * u + u**2 * v
         rhs[1] = d1 * v.laplace(self.bc) + self.b * u - u**2 * v
+        return self.rate*rhs
+
+class ReactionDiffusionPDE(PDEBase):
+    """Brusselator with diffusive mobility"""
+
+    def __init__(self, parameters=[0.001, 0.005, 0.005, 0.1, 0.1], rate = 1, bc="auto_periodic_neumann", *args, **kwargs):
+        super().__init__()
+        self.parameters = parameters
+        self.bc = bc  # boundary condition
+        self.rate = rate # evolution rate
+
+    def get_initial_state(self, grid):
+        """prepare a useful initial state"""
+        x, y = extract_coordinates_from_grid(grid)
+        
+        # initialize fields
+        #u = ScalarField(grid, initial_function(x, y, components=5, zero_level=2), label="activator")
+        #v = ScalarField(grid, initial_function(x, y, components=5, zero_level=2), label="inhibitor")
+        u = 0.1 * ScalarField(grid, random_normal(x, y, smooth=True), label="activator")
+        v = 0.1 * ScalarField(grid, random_normal(x, y, smooth=True), label="inhibitor")
+        return FieldCollection([u, v])
+
+    def evolution_rate(self, state, t=0):
+        """pure python implementation of the PDE"""
+        u, v = state
+        rhs = state.copy()
+        Du, Dv, k, au, av = self.parameters
+        rhs[0] = Du * u.laplace(self.bc) + au*(u - u**3 - k - v)
+        rhs[1] = Dv * v.laplace(self.bc) + av*(u - v)
         return self.rate*rhs
 
 class KuramotoSivashinskyPDE(PDEBase):
@@ -70,7 +102,9 @@ class KuramotoSivashinskyPDE(PDEBase):
 
     def get_initial_state(self, grid):
         """prepare a useful initial state"""
-        u = ScalarField.random_uniform(grid)
+        x, y = extract_coordinates_from_grid(grid)
+        
+        u = ScalarField(grid, random_uniform(x, y), label="advection")
         return FieldCollection([u])
 
     def evolution_rate(self, state, t=0):
@@ -94,12 +128,7 @@ class WavePDE(PDEBase):
 
     def get_initial_state(self, grid):
         """prepare a useful initial state"""
-        # extract grid points
-        shape = grid.shape
-        x_bounds = grid.axes_bounds[0]
-        y_bounds = grid.axes_bounds[1]
-        x = (grid.cell_coords[:,:,0]-x_bounds[0])/(x_bounds[1]-x_bounds[0])
-        y = (grid.cell_coords[:,:,1]-y_bounds[0])/(y_bounds[1]-y_bounds[0])
+        x, y = extract_coordinates_from_grid(grid)
 
         # initialize fields
         u = ScalarField(grid, initial_function(x, y, components=5, zero_level=0), label="wave")
@@ -126,12 +155,7 @@ class AdvectionPDE(PDEBase):
 
     def get_initial_state(self, grid):
         """prepare a useful initial state"""
-        # extract grid points
-        shape = grid.shape
-        x_bounds = grid.axes_bounds[0]
-        y_bounds = grid.axes_bounds[1]
-        x = (grid.cell_coords[:,:,0]-x_bounds[0])/(x_bounds[1]-x_bounds[0])
-        y = (grid.cell_coords[:,:,1]-y_bounds[0])/(y_bounds[1]-y_bounds[0])
+        x, y = extract_coordinates_from_grid(grid)
 
         # initialize fields
         u = ScalarField(grid, initial_function(x, y, components=5, zero_level=0), label="advection")
@@ -144,3 +168,12 @@ class AdvectionPDE(PDEBase):
         grd = - u.gradient(self.bc)
         rhs[0] = grd[0]*self.travel_speed_x + grd[1]*self.travel_speed_y
         return self.rate*rhs
+    
+
+def extract_coordinates_from_grid(grid):
+    shape = grid.shape
+    x_bounds = grid.axes_bounds[0]
+    y_bounds = grid.axes_bounds[1]
+    x = (grid.cell_coords[:,:,0]-x_bounds[0])/(x_bounds[1]-x_bounds[0])
+    y = (grid.cell_coords[:,:,1]-y_bounds[0])/(y_bounds[1]-y_bounds[0])
+    return x, y

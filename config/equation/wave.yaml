@@ -1,5 +1,5 @@
 _target_: src.generator.equations.WavePDE
-parameters: [1]
+parameters: [2.1]
 rate: 1
 bc: auto_periodic_neumann
 num_fields: 1
