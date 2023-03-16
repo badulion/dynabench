@@ -40,7 +40,11 @@ class ForecastModel(LightningModule):
         y_hat = self(x, rollout=1)
         y = y[0].x.unsqueeze(0)
         loss = self.loss(y_hat, y)
-        self.log('train_loss', loss, batch_size=self.batch_size)
+        metrics = {
+            'train_loss': loss
+        }
+        for logger in self.loggers:
+            logger.log_metrics(metrics=metrics, step=self.global_step)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -55,10 +59,11 @@ class ForecastModel(LightningModule):
     def test_step(self, batch, batch_idx):
         x, y, points = batch['.x'], batch['.y'], batch['.points']
         
-        rollout = y.x.size(2)
+        rollout = len(y)
         y_hat = self(x, rollout=rollout)
         y = stack([roll.x for roll in y])
-        loss = mean((y_hat-y)**2, dim=(0,1))
+        loss = mean((y_hat-y)**2, dim=(-1,-2))
+        print(f"----------------------------{y_hat.shape}-----------------------------------")
         
         for i in range(rollout):
             self.log(f"test_rollout_{i+1}", loss[i], batch_size=self.batch_size)

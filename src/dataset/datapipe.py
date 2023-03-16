@@ -26,20 +26,29 @@ class NumpyReader(IterDataPipe):
             np_bytes = io.BytesIO(stream.read())
             yield file, np.load(np_bytes)
 
-class SlidingWindow(IterDataPipe):
-    def __init__(self, source_dp: IterDataPipe, lookback: int = 1, rollout: int = 1, simulation_len: int = 200) -> None:
+class SampleSelector(IterDataPipe):
+    def __init__(self, 
+                 source_dp: IterDataPipe, 
+                 lookback: int = 1, 
+                 rollout: int = 1,
+                 num_samples_per_simulation: int = -1) -> None:
         super().__init__()
         self.source_dp = source_dp
         self.lookback = lookback
         self.rollout = rollout
-        self.real_len = simulation_len - self.lookback - self.rollout+1
+        self.num_samples_per_simulation = num_samples_per_simulation
     
     def __iter__(self):
         for item in self.source_dp:
             data = item.pop('.data')
-            self.real_len = len(data) - self.lookback - self.rollout+1
+            real_len = len(data) - self.lookback - self.rollout+1
+
+            if self.num_samples_per_simulation < 0:
+                indices = range(real_len)
+            else:
+                indices = np.random.choice(real_len, size=self.num_samples_per_simulation, replace=False)
         
-            for i in range(self.real_len):
+            for i in indices:
                 sample = item.copy()
                 sample['.x'] = data[i:i+self.lookback]
                 sample['.y'] = data[i+self.lookback:i+self.lookback+self.rollout]
@@ -122,7 +131,7 @@ def create_datapipes(
     datapipe = NumpyReader(datapipe)
     datapipe = WebDataset(datapipe)
     datapipe = ShardingFilter(datapipe)
-    datapipe = SlidingWindow(datapipe, lookback=lookback, rollout=rollout)
+    datapipe = SampleSelector(datapipe, lookback=lookback, rollout=rollout, num_samples_per_simulation=10)
     datapipe = AxisPermuter(datapipe)
     datapipe = LookbackMerger(datapipe)
     datapipe = Shuffler(datapipe, buffer_size=10000)

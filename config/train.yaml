@@ -1,8 +1,7 @@
 defaults:
   - model: point_transformer
   - datamodule: graph
-  - equation: reaction_diffusion
-  - task: forecast
+  - equation: gas_dynamics
   - support: cloud
   - num_points: high
   - trainer: default
@@ -17,11 +16,17 @@ spatial_dimensions: 2
 input_size: ${equation.num_fields}
 output_dir: output
 
-logdir: ${experiment.task}/${experiment.support}/${experiment.num_points}/${experiment.equation}/${experiment.model}
+logdir: ${experiment.support}/${experiment.num_points}/${experiment.equation}/${experiment.model}
+
+lightning_module:
+  _target_: src.model.ForecastModel
+  lr: ${learning_rate}
+  training_noise: ${training_noise}
+  batch_size: ${batch_size}
+  net: ${model}
 
 experiment:
   equation: ${hydra:runtime.choices.equation}
-  task: ${hydra:runtime.choices.task}
   support: ${hydra:runtime.choices.support}
   num_points: ${hydra:runtime.choices.num_points}
   model: ${hydra:runtime.choices.model}

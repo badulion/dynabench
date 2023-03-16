@@ -9,7 +9,6 @@ class DynaBenchDataModule(LightningDataModule):
     def __init__(self,
                 name="dyna-benchmark",
                 equation="gas_dynamics",
-                task="forecast",
                 support="cloud",
                 num_points="high",
                 base_path="data",
@@ -25,7 +24,6 @@ class DynaBenchDataModule(LightningDataModule):
 
         self.name=name
         self.equation=equation
-        self.task=task
         self.support=support
         self.num_points=num_points
         self.base_path=base_path
@@ -69,7 +67,7 @@ class DynaBenchDataModule(LightningDataModule):
             support=self.support, 
             num_points=self.num_points,
             lookback=self.lookback, 
-            rollout=1,
+            rollout=self.rollout,
             as_graph=(self.structure == "graph"),
             k = self.k
         )
@@ -79,9 +77,9 @@ class DynaBenchDataModule(LightningDataModule):
         return self.Dataloader(self.train, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True)
 
     def val_dataloader(self):
-        return self.Dataloader(self.val, batch_size=self.batch_size, num_workers=self.num_workers)
+        return self.Dataloader(self.val, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True)
 
     def test_dataloader(self):
-        return self.Dataloader(self.test, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True)
+        return self.Dataloader(self.test, batch_size=self.batch_size, num_workers=self.num_workers)
 
     
