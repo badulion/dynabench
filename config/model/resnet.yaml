@@ -1,7 +1,7 @@
 _target_: src.model.grid.SimpleResnet
 input_size: ${input_size}
 lookback: ${lookback}
-resblock_layers: 4
+resblock_layers: 2
 resblock_channels: 64
 
 

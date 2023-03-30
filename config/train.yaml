@@ -1,9 +1,9 @@
 defaults:
-  - model: resnet
-  - datamodule: torch
-  - lightningmodule: gridmodule
+  - model: neuralpde
+  - datamodule: graph
+  - lightningmodule: graphmodule
   - equation: wave
-  - support: grid
+  - support: cloud
   - num_points: high
   - trainer: default
   - _self_
