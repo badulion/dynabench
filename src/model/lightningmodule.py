@@ -63,7 +63,6 @@ class ForecastModel(LightningModule):
         y_hat = self(x, rollout=rollout)
         y = stack([roll.x for roll in y])
         loss = mean((y_hat-y)**2, dim=(-1,-2))
-        print(f"----------------------------{y_hat.shape}-----------------------------------")
         
         for i in range(rollout):
             self.log(f"test_rollout_{i+1}", loss[i], batch_size=self.batch_size)

@@ -1,5 +1,5 @@
 defaults:
-  - model: point_transformer
+  - model: graphpde
   - datamodule: graph
   - equation: gas_dynamics
   - support: cloud
@@ -15,6 +15,7 @@ training_noise: 0.1
 spatial_dimensions: 2
 input_size: ${equation.num_fields}
 output_dir: output
+version_name: Null
 
 logdir: ${experiment.support}/${experiment.num_points}/${experiment.equation}/${experiment.model}
 

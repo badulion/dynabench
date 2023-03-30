@@ -12,7 +12,7 @@ logger:
   - _target_: pytorch_lightning.loggers.TensorBoardLogger
     save_dir: ${output_dir}/tb_logs
     name: ${logdir}
-    version: version_0
+    version: ${version_name}
     max_queue: 1000
     flush_secs: 240
   - _target_: pytorch_lightning.loggers.CSVLogger

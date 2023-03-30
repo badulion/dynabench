@@ -3,5 +3,5 @@ input_size: ${input_size}
 lookback: ${lookback}
 width: 64
 ker_width: 32
-depth: 4
+depth: 2
 spatial_dimensions: ${spatial_dimensions}

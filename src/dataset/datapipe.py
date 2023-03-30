@@ -53,6 +53,17 @@ class SampleSelector(IterDataPipe):
                 sample['.x'] = data[i:i+self.lookback]
                 sample['.y'] = data[i+self.lookback:i+self.lookback+self.rollout]
                 yield sample
+
+class WaveEquationSelector(IterDataPipe):
+    def __init__(self, source_dp: IterDataPipe) -> None:
+        super().__init__()
+        self.source_dp = source_dp
+    
+    def __iter__(self):
+        for item in self.source_dp:
+            item['.data'] = item['.data'][:,:1]
+            yield item
+
                 
 
 class LookbackMerger(IterDataPipe):
@@ -131,6 +142,8 @@ def create_datapipes(
     datapipe = NumpyReader(datapipe)
     datapipe = WebDataset(datapipe)
     datapipe = ShardingFilter(datapipe)
+    if equation == "wave":
+        datapipe = WaveEquationSelector(datapipe)
     datapipe = SampleSelector(datapipe, lookback=lookback, rollout=rollout, num_samples_per_simulation=10)
     datapipe = AxisPermuter(datapipe)
     datapipe = LookbackMerger(datapipe)
