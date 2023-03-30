@@ -1,0 +1,5 @@
+_target_: src.generator.equations.BurgersPDE
+parameters: [0.5]
+rate: 25
+bc: auto_periodic_neumann
+num_fields: 2

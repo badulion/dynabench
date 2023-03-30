@@ -11,3 +11,5 @@ outputs/
 
 kubernetes/
 .vscode/
+
+**tmp/

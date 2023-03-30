@@ -169,6 +169,34 @@ class AdvectionPDE(PDEBase):
         rhs[0] = grd[0]*self.travel_speed_x + grd[1]*self.travel_speed_y
         return self.rate*rhs
     
+class BurgersPDE(PDEBase):
+    """Implementation of the Burgers equation"""
+
+    def __init__(self, parameters=[1], rate=1, bc="auto_periodic_neumann", *args, **kwargs):
+        super().__init__()
+        self.bc = bc
+        self.diffusivity = parameters[0]
+        self.rate = rate # evolution rate
+
+    def get_initial_state(self, grid):
+        """prepare a useful initial state"""
+        x, y = extract_coordinates_from_grid(grid)
+
+        # initialize fields
+        u = ScalarField(grid, initial_function(x, y, components=5, zero_level=0), label="velocity x")
+        v = ScalarField(grid, initial_function(x, y, components=5, zero_level=0), label="velocity y")
+        return FieldCollection([u, v])
+
+    def evolution_rate(self, state, t=0):
+        """implement the python version of the evolution equation"""
+        u, v = state
+        rhs = state.copy()
+        grd_u = - u.gradient(self.bc)
+        grd_v = - v.gradient(self.bc)
+        rhs[0] = grd_u[0]*u + grd_u[1]*v + self.diffusivity*u.laplace(self.bc)
+        rhs[1] = grd_v[0]*u + grd_v[1]*v + self.diffusivity*v.laplace(self.bc)
+        return self.rate*rhs
+
 
 def extract_coordinates_from_grid(grid):
     shape = grid.shape
