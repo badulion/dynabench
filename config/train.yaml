@@ -1,14 +1,15 @@
 defaults:
-  - model: graphpde
-  - datamodule: graph
-  - equation: gas_dynamics
-  - support: cloud
+  - model: resnet
+  - datamodule: torch
+  - lightningmodule: gridmodule
+  - equation: wave
+  - support: grid
   - num_points: high
   - trainer: default
   - _self_
 
 lookback: 8
-rollout: 16
+rollout: 17
 batch_size: 16
 learning_rate: 0.001
 training_noise: 0.1
@@ -19,12 +20,6 @@ version_name: Null
 
 logdir: ${experiment.support}/${experiment.num_points}/${experiment.equation}/${experiment.model}
 
-lightning_module:
-  _target_: src.model.ForecastModel
-  lr: ${learning_rate}
-  training_noise: ${training_noise}
-  batch_size: ${batch_size}
-  net: ${model}
 
 experiment:
   equation: ${hydra:runtime.choices.equation}

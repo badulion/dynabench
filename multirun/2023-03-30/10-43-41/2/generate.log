@@ -1,0 +1,44 @@
+[2023-03-30 10:46:29,317][__main__][INFO] - Starting to generate data.
+[2023-03-30 10:46:29,318][__main__][INFO] - Generating data for the wave equation.
+[2023-03-30 10:46:29,318][__main__][INFO] - The selected equation will be solved 10 times.
+[2023-03-30 10:46:29,322][__main__][INFO] - Generating simulation 0 with seed 4993330
+[2023-03-30 10:46:29,331][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:46:29,495][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:46:36,377][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:46:37,044][__main__][INFO] - Generating simulation 1 with seed 9123715
+[2023-03-30 10:46:37,058][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:46:37,235][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:46:44,021][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:46:44,707][__main__][INFO] - Generating simulation 2 with seed 2200444
+[2023-03-30 10:46:44,723][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:46:44,898][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:46:51,923][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:46:52,857][__main__][INFO] - Generating simulation 3 with seed 3011614
+[2023-03-30 10:46:52,882][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:46:53,068][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:47:00,040][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:47:01,005][__main__][INFO] - Generating simulation 4 with seed 8546663
+[2023-03-30 10:47:01,019][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:47:01,297][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:47:07,676][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:47:09,093][__main__][INFO] - Generating simulation 5 with seed 4879037
+[2023-03-30 10:47:09,106][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:47:09,285][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:47:17,362][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:47:18,168][__main__][INFO] - Generating simulation 6 with seed 2658619
+[2023-03-30 10:47:18,182][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:47:18,349][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:47:24,829][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:47:26,316][__main__][INFO] - Generating simulation 7 with seed 1492607
+[2023-03-30 10:47:26,330][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:47:26,506][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:47:33,646][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:47:34,767][__main__][INFO] - Generating simulation 8 with seed 1360683
+[2023-03-30 10:47:34,781][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:47:34,965][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:47:42,918][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:47:43,673][__main__][INFO] - Generating simulation 9 with seed 9963426
+[2023-03-30 10:47:43,687][pde.tools.numba][INFO] - Compile `laplace` with parallel=False
+[2023-03-30 10:47:43,858][ScipySolver][INFO] - Initialized ScipySolver stepper
+[2023-03-30 10:47:50,858][Controller][INFO] - Simulation finished at t=200.0.
+[2023-03-30 10:47:51,553][__main__][INFO] - Finished generating data.

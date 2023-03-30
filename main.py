@@ -8,7 +8,7 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 @hydra.main(version_base=None, config_path="config", config_name="train")
 def main(cfg : DictConfig) -> None:
     
-    model = instantiate(cfg.lightning_module)
+    model = instantiate(cfg.lightningmodule)
     datamodule = instantiate(cfg.datamodule)
     trainer = instantiate(cfg.trainer)
 

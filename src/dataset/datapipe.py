@@ -41,6 +41,7 @@ class SampleSelector(IterDataPipe):
     def __iter__(self):
         for item in self.source_dp:
             data = item.pop('.data')
+            data = data.astype(np.float32)
             real_len = len(data) - self.lookback - self.rollout+1
 
             if self.num_samples_per_simulation < 0:
@@ -73,9 +74,9 @@ class LookbackMerger(IterDataPipe):
     
     def __iter__(self):
         for item in self.source_dp:
-            # ToDo: check order of items
-            item['.x'] = item['.x'].transpose((1, 0, 2))
-            item['.x'] = item['.x'].reshape((item['.x'].shape[0], -1))
+            # New shape:
+            new_shape = (-1,)+item['.x'].shape[2:]
+            item['.x'] = item['.x'].reshape(new_shape)
             yield item
 
 class AxisPermuter(IterDataPipe):
@@ -85,7 +86,7 @@ class AxisPermuter(IterDataPipe):
     
     def __iter__(self):
         for item in self.source_dp:
-            item['.x'] = item['.x'].transpose((0, 2, 1))
+            item['.x'] = item['.x'].transpose((0, 1))
             item['.y'] = item['.y'].transpose((0, 2, 1))
             yield item
 
@@ -142,12 +143,19 @@ def create_datapipes(
     datapipe = NumpyReader(datapipe)
     datapipe = WebDataset(datapipe)
     datapipe = ShardingFilter(datapipe)
+
     if equation == "wave":
         datapipe = WaveEquationSelector(datapipe)
+
     datapipe = SampleSelector(datapipe, lookback=lookback, rollout=rollout, num_samples_per_simulation=10)
-    datapipe = AxisPermuter(datapipe)
     datapipe = LookbackMerger(datapipe)
+
+    if support == "cloud":
+        datapipe = AxisPermuter(datapipe)
+
     datapipe = Shuffler(datapipe, buffer_size=10000)
-    if as_graph:
+
+    if as_graph and support=="cloud":
         datapipe = GraphCreator(datapipe, k = k)
+
     return datapipe
