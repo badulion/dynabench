@@ -64,6 +64,9 @@ The full benchmark dataset contains 7000 simulations for the training set, 1000 
 
 Warning: this can take a long time.
 
+## Data format
+The data is stored in *.tar* archives in chunks of 500 simulations. Each simulation consists of one file called XXXXXXX.data containing the simulation values for the given setting (cloud/grid + number of points) as well as a file called XXXXXXX.data containing the coordinates of the points at which the measurements were recorded.
+
 ## Usage
 To reproduce the experiments from our paper run:
     python main.py equation=EQUATION model=MODEL support=cloud num_points=NUM_POINTS
