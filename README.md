@@ -1,6 +1,6 @@
 # Dynabench: A benchmark dataset for learning dynamical systems from mesh data
 
-This is the repository containing the data generation algorithms as well as all baseline models for the __Dynabench: A benchmark dataset for learning dynamical systems from data__ paper (not out yet!)
+This is the repository containing the data generation algorithms as well as all baseline models for the __Dynabench: A benchmark dataset for learning dynamical systems from data__ paper (under review)
 
 DynaBench is a benchmark dataset for learning dynamical systems from data. Dynamical systems are physical systems that are typically modelled by partial differential equations (e.g. numerical weather prediction, climate models, fluid simulation, electromagnetic field simulation etc.). The main challenge of learning to predict the evolution of these systems from data is the chaotic behaviour that these systems show (small deviation from the initial conditions leads to highly different predictions) as well as data availability. In real world settings only low-resolution data is available, with measurements sparsly scattered in the simulation domain (see following figure illustrating the distribution of weather monitoring stations in europe).
 
@@ -9,11 +9,9 @@ DynaBench is a benchmark dataset for learning dynamical systems from data. Dynam
 
 In this benchmark we try to simulate this setting using synthetic data for easier evaluation and training of different machine learning models. To this end we generated simulation data by solving five different PDE systems which were then postprocessed to create low-resolution snapshots of the simulation.
 
-There are two main tasks for which the data can be used:
-1. Forecasting - predicting the next state(s) of the system
-2. Evolution - predicting the evolution rate of the system (first derivative with respect to time of the states)
+There main tasks for which the dataset has been generated is forecasting - predicting the next state(s) of the system
 
-The five included different equations were selected to be both sufficiently complex, as well as sufficiently variable to simulate different physical systems (first and second order, coupled equations, stationary and non-statinary).
+The six included different equations were selected to be both sufficiently complex, as well as sufficiently variable to simulate different physical systems (first and second order, coupled equations, stationary and non-statinary).
 
 An example (wave equation) of a simulated system is shown below:
 
@@ -26,9 +24,10 @@ There are four different equations in the dataset, each with different character
 | Equation             | Components | Time Order | Spatial Order |
 |----------------------|------------|------------|---------------|
 | Advection            | 1          | 1          | 1             |
-| Reaction-Diffusion   | 2          | 1          | 2             |
+| Burgers'             | 2          | 1          | 2             |
 | Gas Dynamics         | 4          | 1          | 2             |
 | Kuramoto-Sivashinsky | 1          | 1          | 4             |
+| Reaction-Diffusion   | 2          | 1          | 2             |
 | Wave                 | 1          | 2          | 2             |
 
 ## Setup
@@ -55,33 +54,31 @@ Additionally you need to install pytorch geometric, following the instructions o
 
 
 ## Generation
-To generate the data used in our experiments (recommended) run
-    sh scripts/generate_data.sh
+To generate the data for a specific equation run
 
-Warning: this can take a long time (> 1h).
+    python generate.py num_simulations=NUM_SIMULATIONS equation=EQUATION split=DATASET_SPLIT
 
-You can also generate specific parts of the data by running
+Where `NUM_SIMULATIONS` indicates how many times each equation is simulated,`EQUATION` is one of (advection, burgers, gas_dynamics, kuramoto_sivashinsky, reaction_diffusion, wave), and `DATASET_SPLIT` is one of train, test, val
 
-    python generate.py num_simulations=NUM_SIMULATIONS equation=EQUATION
+The full benchmark dataset contains 7000 simulations for the training set, 1000 for the validation set and 1000 for the test set, all divided into chunks of 500 simulations.
 
-Where `NUM_SIMULATIONS` indicates how many times each equation is simulated and `EQUATION` is one of (brusselator, gas_dynamics, kuramoto_sivashinsky, wave). A minimal number simulations for testing and debugging should be 3. The full benchmark dataset should be used with the default seed and 30 simulations.
-
-Warning! Depending on your CPU speed this can take a long time (~10 minutes for NUM_SIMULATIONS=10)
+Warning: this can take a long time.
 
 ## Usage
 To reproduce the experiments from our paper run:
-    python main.py equation=EQUATION model=MODEL support=cloud num_points=NUM_POINTS task=TASK
+    python main.py equation=EQUATION model=MODEL support=cloud num_points=NUM_POINTS
 
 This will start the training for a specific setting. The parameters specify which model, task, support structure, number of points etc. should be run. The available choices of parameters are:
 
     EQUATION = [brusselator, gas_dynamics, kuramoto_sivashinsky, wave, advection]
 
-    MODEL = [persistence, zero, difference, point_gnn, point_net, point_transformer, gat, gcn, feast]
+    MODEL = [persistence, point_gnn, point_net, point_transformer, gat, gcn, feast, kernelNN, graphpde]
 
-    NUM_POINTS = [high, low]
 
-    TASK= [forecast, evolution]
+To run the experiments for the grid models run:
+    python main.py equation=EQUATION model=MODEL support=grid num_points=NUM_POINTS datamodule=torch" lightningmodule=gridmodule support=grid
 
+with `MODEL` selected from [neuralpde, resnet, cnn]
 
 Additionally, to use the benchmark for your own research use the included datasets.The repository contains two dataset classes to handle the generated data.
 
@@ -127,42 +124,37 @@ Initializes a pytorch dataset with selected parameters. The data is loaded lazil
 2. A graph dataset, specifically used for Message Passing Neural Networks implemented using the [Pytorch Geometric](https://pytorch-geometric.readthedocs.io/) module. It has a similar structure as the base DynaBench dataset.
 
 
-## Benchmark Results (will be updated)
+## Benchmark Results
 The following tables show the results of our experiments
 
-- forecast task, high number of points (1-step MSE):
+- forecast task, 900 points (1-step MSE):
 
-| model             |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |        wave |
-|:------------------|--------------:|---------------:|-----------------------:|------------:|
-| feast             |    0.00242319 |     0.0021791  |             0.00128176 | 0.000484132 |
-| gat               |    0.0281436  |     0.0367549  |             0.069632   | 0.0118712   |
-| gcn               |    0.282337   |     0.140523   |             0.461607   | 0.0422273   |
-| persistence       |    0.0332305  |     0.00561406 |             0.00129482 | 0.000264883 |
-| point_gnn         |    0.00141922 |     0.00167125 |             0.00120295 | 0.000375454 |
-| point_net         |    0.998704   |     0.0384901  |             0.99871    | 0.999058    |
-| point_transformer |    0.0017799  |     0.00131779 |             0.00125645 | 0.000419147 |
+| model             |   Advection |    Burgers |   Gas Dynamics |   Kuramoto-Sivashinsky |   Reaction-Diffusion |       Wave |
+|:------------------|------------:|-----------:|---------------:|-----------------------:|---------------------:|-----------:|
+| CNN               | 5.30848e-05 | 0.0110988  |     0.00420368 |            0.000669837 |          0.00036918  | 0.00143387 |
+| FeaSt             | 0.000130351 | 0.0116155  |     0.0162     |            0.0117867   |          0.000488848 | 0.00523298 |
+| GAT               | 0.00960113  | 0.0439986  |     0.037483   |            0.0667057   |          0.00915208  | 0.0151498  |
+| GCN               | 0.026397    | 0.13899    |     0.0842611  |            0.436563    |          0.164678    | 0.0382004  |
+| GraphPDE          | 0.000137098 | 0.0107391  |     0.0194755  |            0.00719822  |          0.000142114 | 0.00207144 |
+| KernelNN          | 6.31157e-05 | 0.0106146  |     0.013354   |            0.00668698  |          0.000187019 | 0.00542925 |
+| NeuralPDE         | 8.24453e-07 | 0.0112373  |     0.00373416 |            0.000536958 |          0.000303176 | 0.00169871 |
+| Persistence       | 0.0812081   | 0.0367688  |     0.186985   |            0.142243    |          0.147124    | 0.113805   |
+| Point Transformer | 4.41633e-05 | 0.0103098  |     0.00724899 |            0.00489711  |          0.000141248 | 0.00238447 |
+| PointGNN          | 2.82496e-05 | 0.00882528 |     0.00901649 |            0.00673036  |          0.000136059 | 0.00138772 |
+| ResNet            | 2.15721e-06 | 0.0148052  |     0.00321235 |            0.000490104 |          0.000156752 | 0.00145884 |
 
-- forecast task, high number of points (16-step rollout MSE):
+- forecast task, 900 points (16-step rollout MSE):
 
-| model             |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |      wave |
-|:------------------|--------------:|---------------:|-----------------------:|----------:|
-| feast             |   0.227424    |       0.255952 |            0.134562    | 0.0339035 |
-| gat               |   1.29767     |      43.9229   |            1.31319     | 1.7413    |
-| gcn               |   2.46631e+08 |     326.2      |            2.78559e+15 | 8.68158   |
-| persistence       |   2.29927     |       0.797735 |            0.28452     | 0.0670084 |
-| point_gnn         |   0.133019    |       0.298848 |            0.110021    | 0.0503421 |
-| point_net         |   0.999038    |       2.67773  |            0.998887    | 0.998901  |
-| point_transformer |   0.166213    |       0.163016 |            0.117403    | 0.0253431 |
-
-- evolution task, high number of points:
-
-
-| model             |   brusselator |   gas_dynamics |   kuramoto_sivashinsky |     wave |
-|:------------------|--------------:|---------------:|-----------------------:|---------:|
-| difference        |     0.966056  |      0.937047  |              0.813676  | 0.967245 |
-| feast             |     0.0209256 |      0.103211  |              0.132971  | 0.247774 |
-| gat               |     0.335062  |      0.169115  |              0.255142  | 0.300955 |
-| gcn               |     0.54936   |      0.553218  |              0.598326  | 0.309449 |
-| point_gnn         |     0.0124441 |      0.0769728 |              0.110405  | 0.248534 |
-| point_net         |     0.930219  |      0.993493  |              0.861911  | 0.994931 |
-| point_transformer |     0.0136373 |      0.0649107 |              0.0959964 | 0.238254 |
+| model             |       Advection |   Burgers |   Gas Dynamics |   Kuramoto-Sivashinsky |   Reaction-Diffusion |     Wave |
+|:------------------|----------------:|----------:|---------------:|-----------------------:|---------------------:|---------:|
+| CNN               |     0.00161331  |  0.554554 |       0.995382 |            1.26011     |          0.0183483   | 0.561433 |
+| FeaSt             |     1.48288     |  0.561197 |       0.819594 |            3.74448     |          0.130149    | 1.61066  |
+| GAT               | 41364.1         |  0.833353 |       1.21436  |            5.68925     |          3.85506     | 2.38418  |
+| GCN               |     3.51453e+13 | 13.0876   |       7.20633  |            1.70612e+24 |          1.75955e+07 | 7.89253  |
+| GraphPDE          |     1.07953     |  0.729879 |       0.969208 |            2.1044      |          0.0800235   | 1.02586  |
+| KernelNN          |     0.897431    |  0.72716  |       0.854015 |            2.00334     |          0.0635278   | 1.57885  |
+| NeuralPDE         |     0.000270308 |  0.659789 |       0.443498 |            1.05564     |          0.0224155   | 0.247704 |
+| Persistence       |     2.39393     |  0.679261 |       1.457    |            1.89752     |          0.275678    | 2.61281  |
+| Point Transformer |     0.617025    |  0.503865 |       0.642879 |            2.09746     |          0.0564399   | 1.27343  |
+| PointGNN          |     0.660665    |  1.04342  |       0.759257 |            2.82063     |          0.0582293   | 1.30743  |
+| ResNet            |     8.64621e-05 |  1.86352  |       0.480284 |            1.0697      |          0.00704612  | 0.299457 |

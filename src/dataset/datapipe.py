@@ -86,7 +86,7 @@ class AxisPermuter(IterDataPipe):
     
     def __iter__(self):
         for item in self.source_dp:
-            item['.x'] = item['.x'].transpose((0, 1))
+            item['.x'] = item['.x'].transpose((1, 0))
             item['.y'] = item['.y'].transpose((0, 2, 1))
             yield item
 

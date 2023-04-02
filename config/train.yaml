@@ -1,5 +1,5 @@
 defaults:
-  - model: neuralpde
+  - model: gat
   - datamodule: graph
   - lightningmodule: graphmodule
   - equation: wave
