@@ -7,7 +7,6 @@ from pde.visualization.movies import Movie
 
 from scipy.interpolate import RBFInterpolator
 import os
-import h5py
 import numpy as np
 
 import matplotlib.pyplot as plt
