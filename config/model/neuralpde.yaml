@@ -1,4 +1,4 @@
-_target_: src.model.grid.NeuralPDE
+_target_: dynabench.model.grid.NeuralPDE
 input_size: ${input_size}
 lookback: ${lookback}
 hidden_layers: 4

@@ -1,4 +1,4 @@
-_target_: src.generator.equations.KuramotoSivashinskyPDE
+_target_: dynabench.generator.equations.KuramotoSivashinskyPDE
 parameters: []
 rate: 1
 bc: auto_periodic_neumann

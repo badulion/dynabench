@@ -1,4 +1,4 @@
-_target_: src.model.baseline.BaselinePersistence
+_target_: dynabench.model.baseline.BaselinePersistence
 input_size: ${input_size}
 lookback: ${lookback}
 spatial_dimensions: ${spatial_dimensions}

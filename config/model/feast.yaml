@@ -1,4 +1,4 @@
-_target_: src.model.cloud.FeaStNet
+_target_: dynabench.model.cloud.FeaStNet
 input_size: ${input_size}
 lookback: ${lookback}
 hidden_size: 64

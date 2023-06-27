@@ -1,4 +1,4 @@
-_target_: src.model.gnn.GATNet
+_target_: dynabench.model.gnn.GATNet
 input_size: ${input_size}
 lookback: ${lookback}
 hidden_size: 128

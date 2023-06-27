@@ -1,4 +1,4 @@
-_target_: src.dataset.DynaBenchDataModule
+_target_: dynabench.dataset.DynaBenchDataModule
 equation: ${experiment.equation}
 support: ${experiment.support}
 num_points: ${experiment.num_points}

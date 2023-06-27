@@ -1,4 +1,4 @@
-_target_: src.model.cloud.PointNet
+_target_: dynabench.model.cloud.PointNet
 input_size: ${input_size}
 lookback: ${lookback}
 intermediate_hidden_size: 64

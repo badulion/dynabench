@@ -1,4 +1,4 @@
-_target_: src.generator.PDESolver
+_target_: dynabench.generator.PDESolver
 
 # general settings
 # SHOULD NOT BE CHANGED

@@ -1,4 +1,4 @@
-_target_: src.model.gnn.GCN
+_target_: dynabench.model.gnn.GCN
 input_size: ${input_size}
 lookback: ${lookback}
 hidden_size: 256

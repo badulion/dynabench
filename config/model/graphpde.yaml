@@ -1,4 +1,4 @@
-_target_: src.model.graphpde.GraphPDE
+_target_: dynabench.model.graphpde.GraphPDE
 input_size: ${input_size}
 lookback: ${lookback}
 phi_hidden_size: 128

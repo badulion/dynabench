@@ -1,4 +1,4 @@
-_target_: src.model.cloud.PointGNN
+_target_: dynabench.model.cloud.PointGNN
 input_size: ${input_size}
 lookback: ${lookback}
 intermediate_hidden_size: 64

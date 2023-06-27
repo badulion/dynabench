@@ -1,4 +1,4 @@
-_target_: src.generator.equations.WavePDE
+_target_: dynabench.generator.equations.WavePDE
 parameters: [2.1]
 rate: 1
 bc: auto_periodic_neumann

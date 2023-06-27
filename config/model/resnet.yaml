@@ -1,4 +1,4 @@
-_target_: src.model.grid.SimpleResnet
+_target_: dynabench.model.grid.SimpleResnet
 input_size: ${input_size}
 lookback: ${lookback}
 resblock_layers: 2

@@ -1,4 +1,4 @@
-_target_: src.generator.equations.ReactionDiffusionPDE
+_target_: dynabench.generator.equations.ReactionDiffusionPDE
 parameters: [0.1, 0.001, 0.005, 1, 1]
 rate: 1.2
 bc: auto_periodic_neumann

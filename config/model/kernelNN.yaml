@@ -1,4 +1,4 @@
-_target_: src.model.neural_operator.KernelNN
+_target_: dynabench.model.neural_operator.KernelNN
 input_size: ${input_size}
 lookback: ${lookback}
 width: 64

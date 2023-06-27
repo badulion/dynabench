@@ -1,4 +1,4 @@
-  _target_: src.model.GridModule
+  _target_: dynabench.model.GridModule
   lr: ${learning_rate}
   training_noise: ${training_noise}
   batch_size: ${batch_size}

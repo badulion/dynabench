@@ -1,4 +1,4 @@
-_target_: src.model.grid.SimpleCNN
+_target_: dynabench.model.grid.SimpleCNN
 input_size: ${input_size}
 lookback: ${lookback}
 hidden_layers: 4
