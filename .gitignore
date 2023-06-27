@@ -13,3 +13,6 @@ kubernetes/
 .vscode/
 
 **tmp/
+
+dist/
+**egg-info
