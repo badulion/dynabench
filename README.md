@@ -161,3 +161,7 @@ The following tables show the results of our experiments
 | Point Transformer |     0.617025    |  0.503865 |       0.642879 |            2.09746     |          0.0564399   | 1.27343  |
 | PointGNN          |     0.660665    |  1.04342  |       0.759257 |            2.82063     |          0.0582293   | 1.30743  |
 | ResNet            |     8.64621e-05 |  1.86352  |       0.480284 |            1.0697      |          0.00704612  | 0.299457 |
+
+## License
+
+The content of this project itself, including the data and pretrained models, is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/). The underlying source code used to generate the data and train the models is licensed under the [MIT license](LICENSE).
