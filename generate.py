@@ -4,7 +4,7 @@ import numpy as np
 
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
-from src.utils.logging import create_logger
+from src.dynabench.utils.logging import create_logger
 
 logger = create_logger(__name__)
 
