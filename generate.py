@@ -17,19 +17,20 @@ def main(cfg : DictConfig) -> None:
     logger.info(f"Generating data for the {cfg.equation_name} equation.")
     logger.info(f"The selected equation will be solved {cfg.num_simulations} times.")
 
-    eq_path = f"data/{cfg.equation_name}/{cfg.split}"
     seed_list = np.loadtxt(f"config/seeds/{cfg.split}.txt", dtype=int)
+    
+    problem = instantiate(cfg.equation)
+    postprocessor = instantiate(cfg.postprocessing, save_prefix=f"{cfg.equation_name}_{cfg.split}", save_postfix=f"{cfg.start_from}_{cfg.start_from+cfg.num_simulations-1}")
 
     for i in range(cfg.start_from, cfg.start_from+cfg.num_simulations):
         # make sure everything is seeded
         seed = seed_list[i]
-        np.random.seed(seed)
 
         logger.info(f"Generating simulation {i} with seed {seed}")
+        
         # solve instance
-        equation = instantiate(cfg.equation)
-        solver = instantiate(cfg.generator, equation=equation, save_dir=eq_path, save_name=seed, tar_suffix=f"_{cfg.start_from}_{cfg.start_from+cfg.num_simulations-1}")
-        solver.solve()
+        u, t, p = problem.solve(random_state=seed)
+        postprocessor.process(u, p, simulation_name=seed, random_state=seed)
     logger.info(f"Finished generating data.")
     
 

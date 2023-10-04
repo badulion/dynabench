@@ -147,7 +147,7 @@ def create_datapipes(
     if equation == "wave":
         datapipe = WaveEquationSelector(datapipe)
 
-    datapipe = SampleSelector(datapipe, lookback=lookback, rollout=rollout, num_samples_per_simulation=10)
+    datapipe = SampleSelector(datapipe, lookback=lookback, rollout=rollout, num_samples_per_simulation=-1)
     datapipe = LookbackMerger(datapipe)
 
     if support == "cloud":
@@ -159,3 +159,11 @@ def create_datapipes(
         datapipe = GraphCreator(datapipe, k = k)
 
     return datapipe
+
+
+
+if __name__ == "__main__":
+    ds = create_datapipes()
+    import tqdm
+    for item in tqdm.tqdm(ds):
+        item

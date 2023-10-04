@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from .equations import WavePDE, GasDynamicsPDE, BrusselatorPDE, KuramotoSivashinskyPDE
-from ..utils import write_np_array_to_tar
+from ...utils import write_np_array_to_tar
 
 class PDESolver:
     available_equations = ['wave', 'gas_dynamics', 'brusselator', 'kuramoto_sivashinsky']
@@ -83,7 +83,7 @@ class PDESolver:
         tracker = TrackerCollection([tracker_callback, tracker_progress])
 
         # solve
-        sol = self.equation.solve(self.state, t_range=self.t_range, tracker=tracker)
+        sol = self.equation.solve(self.state, t_range=self.t_range, tracker=tracker, dt=1e-4)
         self.data = np.stack(self.data)
         self.times = np.stack(self.times)
 

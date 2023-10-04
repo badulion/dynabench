@@ -1,8 +1,10 @@
 _target_: dynabench.generator.ProblemDescription
-equation: advection
+equation: gasdynamics
 equation_params: 
-  speed_x: 2
-  speed_y: 2
+  gamma: 2
+  k: 0.1
+  M: 2
+  mu: 0.01
   rate: 1
 grid_size: [64, 64]
 domain_bounds: [64,64]

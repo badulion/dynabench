@@ -1,5 +1,0 @@
-_target_: dynabench.generator.equations.KuramotoSivashinskyPDE
-parameters: []
-rate: 1
-bc: auto_periodic_neumann
-num_fields: 1

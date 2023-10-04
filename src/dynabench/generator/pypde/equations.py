@@ -1,6 +1,6 @@
 from pde import FieldCollection, PDEBase, ScalarField, VectorField
-from .initial import sum_of_gaussians as initial_function
-from .initial import random_normal, random_uniform
+from ..fourier.initial import sum_of_gaussians as initial_function
+from ..fourier.initial import random_normal, random_uniform
 
 class GasDynamicsPDE(PDEBase):
     """Gas Dynamics simulating weather"""

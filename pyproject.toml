@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynabench"
-version = "0.1.0"
+version = "0.1.1"
 description = "Benchmark dataset for learning dynamical systems from data"
 readme = "README.md"
 authors = [{ name = "Andrzej Dulny", email = "andrzej.dulny@uni-wuerzburg.de" }]
@@ -32,7 +32,10 @@ requires-python = ">=3.9"
 dev = []
 
 [project.urls]
-Homepage = "https://github.com/badulion/code-2022-dynabench"
+homepage = "https://dynabench.github.io/"
+documentation = "https://dynabench.github.io/docs/"
+source = "https://github.com/badulion/dynabench"
+
 
 # [project.scripts]
 # realpython = "reader.__main__:main"

@@ -1,0 +1,12 @@
+_target_: dynabench.generator.postprocessing.Postprocessor
+
+cloud_resolutions: 
+  low: 225
+  medium: 484
+  high: 900
+grid_resolutions:
+  low: 15
+  medium: 22
+  high: 30
+save_location: data/all/
+normalize: bool = True

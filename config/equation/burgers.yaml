@@ -1,5 +1,10 @@
-_target_: dynabench.generator.equations.BurgersPDE
-parameters: [0.5]
-rate: 25
-bc: auto_periodic_neumann
-num_fields: 2
+_target_: dynabench.generator.ProblemDescription
+equation: burgers
+equation_params: 
+  viscosity: 0.05
+  rate: 5
+grid_size: [64, 64]
+domain_bounds: [64,64]
+step_size: 0.01
+save_dt: 1
+t_max: 200

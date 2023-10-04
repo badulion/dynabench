@@ -1,8 +1,11 @@
 _target_: dynabench.generator.ProblemDescription
-equation: advection
+equation: reactiondiffusion
 equation_params: 
-  speed_x: 2
-  speed_y: 2
+  diffusivity_1: 0.1
+  diffusivity_2: 0.001
+  k: 0.005
+  reaction_speed_1: 1
+  reaction_speed_2: 1
   rate: 1
 grid_size: [64, 64]
 domain_bounds: [64,64]

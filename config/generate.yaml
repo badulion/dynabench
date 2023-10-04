@@ -1,6 +1,6 @@
 defaults:
   - equation: gas_dynamics
-  - generator: default
+  - postprocessing: default
 
 
 # overall parameters

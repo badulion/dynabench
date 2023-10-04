@@ -1,8 +1,6 @@
 _target_: dynabench.generator.ProblemDescription
-equation: advection
+equation: kuramotosivashinsky
 equation_params: 
-  speed_x: 2
-  speed_y: 2
   rate: 1
 grid_size: [64, 64]
 domain_bounds: [64,64]
