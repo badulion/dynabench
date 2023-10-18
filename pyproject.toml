@@ -2,9 +2,11 @@
 
 [build-system]
 requires      = [
-    "setuptools>=61.0.0", "wheel", "numpy>=1.23.5", "py-pde>=0.27.1", "scipy>=1.2.0", 
-    "torchdata>=0.6.0", "torch>=2.0.1",
-    "torch_geometric>=2.3", "torch_cluster>=1.6"
+    "setuptools>=61.0.0", "wheel", 
+    "requests", 
+    "tqdm", 
+    "numpy>=1.23.5", 
+    "h5py>=3.9.0"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -22,9 +24,10 @@ classifiers = [
 ]
 keywords = ["benchmark", "torch", "deep learning"]
 dependencies = [
-    "py-pde>=0.27.1",
-    "torch>=2.0.1",
-    "torchdata>=0.6.0"
+    "requests", 
+    "tqdm", 
+    "numpy>=1.23.5", 
+    "h5py>=3.9.0"
 ]
 requires-python = ">=3.9"
 
