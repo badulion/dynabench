@@ -1,21 +1,15 @@
 # pyproject.toml
 
 [build-system]
-requires      = [
-    "setuptools>=61.0.0", "wheel", 
-    "requests", 
-    "tqdm", 
-    "numpy>=1.23.5", 
-    "h5py>=3.9.0"
-]
+requires      = [ "setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynabench"
-version = "0.1.1"
+version = "0.2.0"
 description = "Benchmark dataset for learning dynamical systems from data"
 readme = "README.md"
-authors = [{ name = "Andrzej Dulny", email = "andrzej.dulny@uni-wuerzburg.de" }]
+authors = [{ name = "Andrzej Dulny", email = "andrzej.dulny@protonmail.com" }]
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
@@ -32,7 +26,8 @@ dependencies = [
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-dev = []
+generator = ["dedalus>=3"]
+
 
 [project.urls]
 homepage = "https://dynabench.github.io/"
@@ -41,4 +36,4 @@ source = "https://github.com/badulion/dynabench"
 
 
 # [project.scripts]
-# realpython = "reader.__main__:main"
+# dynabench = "dynabench.__main__:main"
