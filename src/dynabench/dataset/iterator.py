@@ -73,16 +73,14 @@ class DynabenchIterator:
         with h5py.File(file, "r") as f:
             data_x = f['data'][simulation_idx, temporal_idx:temporal_idx+self.lookback]
             data_y = f['data'][simulation_idx, temporal_idx+self.lookback:temporal_idx+self.lookback+self.rollout]
+            points = f['points'][simulation_idx]
 
 
-        return data_x, data_y
+        return data_x, data_y, points
 
     def __len__(self):
         return sum(self.datapoints_per_file)
 
 if __name__ == "__main__":
     it = DynabenchIterator(equation="advection", structure="cloud", resolution="low", lookback=16)
-
-    import tqdm
-    for x, y in tqdm.tqdm(it):
-        pass
+    x, y, points = it[0]
