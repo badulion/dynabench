@@ -1,0 +1,15 @@
+# changelog
+
+## [0.2.0] -> Oct 18, 2023
+- dataset can be downloaded from WueData
+- added DynabenchIterator to iterate over the dataset
+- added download_equation to download dataset from WueData
+
+## [0.2.1] -> Oct 24, 2023
+- minor fixes
+
+## [0.2.2] -> Oct 31, 2023
+- fixed minor URL problem
+
+## [0.2.3] -> Nov 2, 2023
+- fixed different order of simulations for different structures/resolutions

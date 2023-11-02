@@ -37,6 +37,8 @@ class DynabenchIterator:
 
         # get the shapes of the simulations
         self.file_list = glob.glob(os.path.join(base_path, equation, structure, resolution, f"*{split}*.h5"))
+        self.file_list.sort()
+        
         self.shapes = []
         for file in self.file_list:
             with h5py.File(file, "r") as f:

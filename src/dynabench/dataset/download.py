@@ -34,7 +34,7 @@ DATASETS_WUEDATA = {
     'kuramotosivashinsky-grid-full': 'MZwiHmAEZMpDbNTt',
     'kuramotosivashinsky-grid-high': 'ELRRJbfPWZDzZJeS',
     'kuramotosivashinsky-grid-low': 'OAqFMPiCplVdZfPI',
-    'kuramoto-sivashinsky-grid-medium': 'CuyNqLlxtHxXbRss',
+    'kuramotosivashinsky-grid-medium': 'CuyNqLlxtHxXbRss',
     'reactiondiffusion-cloud-high': 'QWuksjgCrrAtLvUf',
     'reactiondiffusion-cloud-low': 'wnJBGyCRApQVYNej',
     'reactiondiffusion-cloud-medium': 'riXsWXMdJAVrEiiw',
