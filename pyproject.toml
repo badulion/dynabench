@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynabench"
-version = "0.2.3"
+version = "0.2.4"
 description = "Benchmark dataset for learning dynamical systems from data"
 readme = "README.md"
 authors = [{ name = "Andrzej Dulny", email = "andrzej.dulny@protonmail.com" }]

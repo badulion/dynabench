@@ -13,3 +13,6 @@
 
 ## [0.2.3] -> Nov 2, 2023
 - fixed different order of simulations for different structures/resolutions
+
+## [0.2.4] -> Nov 8, 2023
+- added full simulation iterator that iterates over the dataset and returns the whole simulation as each element
