@@ -30,6 +30,14 @@ class BaseEquation(object):
             Spatial dimension of the equation. Defaults to 2.
         parameters : dict, default {}
             Dictionary of parameters for the equation.
+
+        Attributes
+        ----------
+        linear_terms : List[str]
+            List of linear terms in the equation.
+        nonlinear_terms : List[str]
+            List of nonlinear terms in the equation.
+
     """
     
     def __init__(self, 
@@ -38,20 +46,13 @@ class BaseEquation(object):
                  **kwargs):
         self.spatial_dim = spatial_dim
         self.parameters = parameters
-        self.variables = ["u"]
+        self._variables = ["u"]
 
     def __str__(self):
         return "u_t = 0"
     
     @property
     def variables(self):
-        """
-            Get the variables of the equation.
-        """
-        return self._variables
-    
-    @property
-    def num_variables(self):
         """
             Get the number of variables of the equation.
         """
