@@ -1,39 +1,37 @@
-# pyproject.toml
+[tool.poetry]
+name = "dynabench"
+version = "0.3.0"
+description = "Benchmark dataset for learning dynamical systems from data"
+authors = ["Andrzej Dulny <andzej.dulny@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+numpy = "^1.26.4"
+requests = "^2.31.0"
+tqdm = "^4.66.2"
+h5py = "^3.11.0"
+
+[tool.poetry.group.dev.dependencies]
+Sphinx = "^7.2.6"
+pip-tools = "^7.4.1"
+numpydoc = "^1.7.0"
+sphinx-conestack-theme = "^1.0b3"
+sphinx-rtd-theme = "^2.0.0"
+
+[tool.poetry.group.fourier]
+optional = true
+
+[tool.poetry.group.fourier.dependencies]
+dedalus = "^3.0.2"
+
+[tool.poetry.group.findiff]
+optional = true
+
+[tool.poetry.group.findiff.dependencies]
+py-pde = "^0.38.0"
 
 [build-system]
-requires      = [ "setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "dynabench"
-version = "0.2.4"
-description = "Benchmark dataset for learning dynamical systems from data"
-readme = "README.md"
-authors = [{ name = "Andrzej Dulny", email = "andrzej.dulny@protonmail.com" }]
-license = { file = "LICENSE" }
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-]
-keywords = ["benchmark", "torch", "deep learning"]
-dependencies = [
-    "requests", 
-    "tqdm", 
-    "numpy>=1.23.5", 
-    "h5py>=3.9.0"
-]
-requires-python = ">=3.9"
-
-[project.optional-dependencies]
-generator = ["dedalus>=3"]
-
-
-[project.urls]
-homepage = "https://dynabench.github.io/"
-documentation = "https://dynabench.github.io/docs/"
-source = "https://github.com/badulion/dynabench"
-
-
-# [project.scripts]
-# dynabench = "dynabench.__main__:main"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

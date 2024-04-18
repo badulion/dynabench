@@ -1,8 +1,0 @@
-_target_: dynabench.model.graphpde.GraphPDE
-input_size: ${input_size}
-lookback: ${lookback}
-phi_hidden_size: 128
-phi_hidden_layers: 4
-gamma_hidden_size: 128
-gamma_hidden_layers: 4
-spatial_dimensions: ${spatial_dimensions}

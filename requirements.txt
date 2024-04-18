@@ -8,17 +8,17 @@ certifi==2023.7.22
     # via requests
 charset-normalizer==3.3.0
     # via requests
-h5py==3.10.0
+h5py==3.11.0
     # via dynabench (pyproject.toml)
 idna==3.4
     # via requests
-numpy==1.26.1
+numpy==1.26.4
     # via
     #   dynabench (pyproject.toml)
     #   h5py
 requests==2.31.0
     # via dynabench (pyproject.toml)
-tqdm==4.64.1
+tqdm==4.66.2
     # via dynabench (pyproject.toml)
 urllib3==2.0.7
     # via requests
