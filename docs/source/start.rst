@@ -5,16 +5,39 @@ Getting Started
 This section guides you on how to start using the DynaBench package.
 
 --------------------
-Installation
+Installing DynaBench
 --------------------
+
+^^^^^^^^^^^^^^^^^^^^
+Install using pip
+^^^^^^^^^^^^^^^^^^^^
 
 The easiest way to install DynaBench is to use pip:
 
 .. code-block::
 
-    pip install numpy
+    pip install dynabench
 
 Also when using pip, it’s good practice to use a virtual environment - see `this guide <https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko#howto>`_ for details on using virtual environments.
+
+^^^^^^^^^^^^^^^^^^^^
+Install from source
+^^^^^^^^^^^^^^^^^^^^
+
+To get the latest version of the code, you can install from source. 
+This can be done by providing the git repository with the pip command:
+
+.. code-block::
+
+    pip install git+https://github.com/badulion/dynabench.git
+
+Alternatively, if you want to help develop the package you can clone the repository and install it manually:
+
+.. code-block::
+
+    git clone https://github.com/badulion/dynabench.git
+    cd dynabench
+    pip install .
 
 --------------------
 Downloading the data
