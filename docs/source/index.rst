@@ -13,7 +13,7 @@ DynaBench documentation
 `Source Repository <https://github.com/badulion/dynabench>`__ |
 `Dataset <https://wuedata.uni-wuerzburg.de/radar/de/dataset/sSEeRraAYDgQCgBP>`__ |
 
-**DynaBench** (pronounced "Die-Nah-Bench") is an open-source software and benchmark dataset for evaluating deep learning models for all sort of task concerning physical spatiotemporal systems.
+**DynaBench** (pronounced "Die-Nah-Bench") is an open-source benchmark dataset for evaluating deep learning models for all sort of task concerning physical spatiotemporal systems.
 
 .. grid:: 1 1 2 2
     :gutter: 2 3 4 4
@@ -88,11 +88,13 @@ DynaBench documentation
 
             To the paper
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
 
-   Getting Started <start>
-   User Guide <guide>
-   Benchmark Results <results>
-   API reference <api>
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+
+    About <about>
+    Getting Started <start>
+    User Guide <guide>
+    Benchmark Results <results>
+    API reference <api>

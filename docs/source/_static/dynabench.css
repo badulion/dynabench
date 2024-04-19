@@ -13,3 +13,7 @@
 .wy-side-scroll {
     background: #31312C;
 }
+
+.wy-nav-content {
+    max-width: none;
+}
