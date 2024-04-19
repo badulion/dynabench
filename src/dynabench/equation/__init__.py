@@ -1,5 +1,5 @@
 """
-This module contains the classes for representing equations.
+Module for representing partial differential equations.
 """
 
 from ._base import BaseEquation, Term

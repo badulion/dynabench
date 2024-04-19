@@ -9,3 +9,4 @@ API reference
 
    dynabench.dataset
    dynabench.equation
+   dynabench.model

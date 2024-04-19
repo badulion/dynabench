@@ -30,7 +30,7 @@ DynaBench documentation
 
         +++
 
-        .. button-ref:: start
+        .. button-ref:: guide
             :color: secondary
             :click-parent:
 
@@ -64,7 +64,7 @@ DynaBench documentation
 
         +++
 
-        .. button-ref:: start
+        .. button-ref:: results
             :color: secondary
             :click-parent:
 
@@ -92,6 +92,7 @@ DynaBench documentation
    :maxdepth: 1
    :hidden:
 
-   Installing <installing>
-   User Guide <start>
+   Getting Started <start>
+   User Guide <guide>
+   Benchmark Results <results>
    API reference <api>

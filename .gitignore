@@ -172,6 +172,7 @@ outputs/
 
 # documentation
 docs/build/*
+docs/source/reference/*
 
 
 # Ignore 
