@@ -5,3 +5,11 @@
     margin-right: auto;
     margin-top: 10px;
   }
+
+.wy-side-nav-search, .wy-nav-top {
+    background: #DF721A;
+}
+
+.wy-side-scroll {
+    background: #31312C;
+}
