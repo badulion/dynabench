@@ -5,6 +5,10 @@ description = "Benchmark dataset for learning dynamical systems from data"
 authors = ["Andrzej Dulny <andzej.dulny@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://dynabench.github.io/about.html"
+documentation = "https://dynabench.github.io/"
+repository = "https://github.com/badulion/dynabench/"
+
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
