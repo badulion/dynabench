@@ -1,9 +1,0 @@
-_target_: dynabench.model.cloud.FeaStNet
-input_size: ${input_size}
-lookback: ${lookback}
-hidden_size: 64
-hidden_layers: 3
-input_layer_heads: 10
-hidden_layer_heads: 10
-output_layer_heads: 10
-spatial_dimensions: ${spatial_dimensions}

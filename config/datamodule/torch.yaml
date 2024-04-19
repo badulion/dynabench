@@ -1,9 +1,0 @@
-_target_: dynabench.dataset.DynaBenchDataModule
-equation: ${experiment.equation}
-support: ${experiment.support}
-num_points: ${experiment.num_points}
-lookback: ${lookback}
-rollout: ${rollout}
-batch_size: ${batch_size}
-structure: torch
-num_workers: 0

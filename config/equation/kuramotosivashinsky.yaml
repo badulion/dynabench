@@ -1,9 +1,0 @@
-_target_: dynabench.generator.ProblemDescription
-equation: kuramotosivashinsky
-equation_params: 
-  rate: 1
-grid_size: [64, 64]
-domain_bounds: [64,64]
-step_size: 0.01
-save_dt: 1
-t_max: 200

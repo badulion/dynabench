@@ -1,2 +1,3 @@
-from .graphmodule import GraphModule
-from .gridmodule import GridModule
+"""
+Module containing the models used in the DynaBench benchmark.
+"""

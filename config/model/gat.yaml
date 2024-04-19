@@ -1,8 +1,0 @@
-_target_: dynabench.model.gnn.GATNet
-input_size: ${input_size}
-lookback: ${lookback}
-hidden_size: 128
-hidden_layers: 4
-spatial_dimensions: ${spatial_dimensions}
-
-
