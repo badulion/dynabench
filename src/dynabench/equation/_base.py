@@ -42,18 +42,21 @@ class BaseEquation(object):
     
     def __init__(self, 
                  spatial_dim: int = 2, 
+                 equations: List[str] | str = "u_t = 0",
+                 variables: List[str] = ['u'],
                  parameters: dict = {}, 
                  **kwargs):
         self.spatial_dim = spatial_dim
         self.parameters = parameters
-        self._variables = ["u"]
+        self._equations = equations
+        self._variables = variables
 
     def __str__(self):
-        return "u_t = 0"
+        return self._equations
     
     @property
     def variables(self):
         """
-            Get the number of variables of the equation.
+            Get the variables of the equation.
         """
-        return len(self._variables)
+        return self._variables
