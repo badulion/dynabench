@@ -32,10 +32,10 @@ optional = true
 dedalus = "^3.0.2"
 
 [tool.poetry.group.findiff]
-optional = true
+optional = false
 
 [tool.poetry.group.findiff.dependencies]
-py-pde = "^0.38.0"
+sympy = "^1.12"
 
 [build-system]
 requires = ["poetry-core"]
