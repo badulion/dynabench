@@ -36,6 +36,7 @@ optional = false
 
 [tool.poetry.group.findiff.dependencies]
 sympy = "^1.12"
+findiff = "^0.10.0"
 
 [build-system]
 requires = ["poetry-core"]

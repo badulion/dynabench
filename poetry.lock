@@ -372,6 +372,22 @@ files = [
 ]
 
 [[package]]
+name = "findiff"
+version = "0.10.0"
+description = "A Python package for finite difference derivatives in any number of dimensions."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "findiff-0.10.0-py3-none-any.whl", hash = "sha256:c91180d349ab1a7d3dc2d40ea7af613efe9c9a443e397c3bd2c364a81ecbd12c"},
+    {file = "findiff-0.10.0.tar.gz", hash = "sha256:955f25b93b111bb4bbd47a97d1693b7cd8936e2d286756073ee1d4a5475d9307"},
+]
+
+[package.dependencies]
+numpy = "*"
+scipy = "*"
+sympy = "*"
+
+[[package]]
 name = "fonttools"
 version = "4.51.0"
 description = "Tools to manipulate font files"
@@ -1704,4 +1720,4 @@ viz = ["matplotlib", "nc-time-axis", "seaborn"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "0da9d45624f6164ddba84bbbf2ded1b2b2cb6704a44386fba205455941ff9901"
+content-hash = "b4394b9471e0d7945031370ab04f7bccb720aa79e39d73f9d90fa907d61268bb"
