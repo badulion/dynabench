@@ -10,3 +10,4 @@ API reference
    dynabench.dataset
    dynabench.equation
    dynabench.model
+   dynabench.solver
