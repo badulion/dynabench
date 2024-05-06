@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dynabench"
-version = "0.3.0"
+version = "0.3.1"
 description = "Benchmark dataset for learning dynamical systems from data"
 authors = ["Andrzej Dulny <andzej.dulny@gmail.com>"]
 license = "MIT"
@@ -36,6 +36,11 @@ optional = true
 
 [tool.poetry.group.findiff.dependencies]
 py-pde = "^0.38.0"
+
+
+[tool.poetry.group.nn.dependencies]
+torch = "^2.3.0"
+torchdiffeq = "^0.2.3"
 
 [build-system]
 requires = ["poetry-core"]

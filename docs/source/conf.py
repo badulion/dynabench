@@ -9,7 +9,7 @@
 project = 'dynabench'
 copyright = '2024, Andrzej Dulny'
 author = 'Andrzej Dulny'
-release = '0.3.0'
+release = '0.3.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -18,7 +18,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
-    'numpydoc',
+    'sphinx.ext.napoleon',
     'sphinx_design',
     'sphinx_rtd_theme',
 ]
