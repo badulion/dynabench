@@ -1,6 +1,6 @@
 import numpy as np
-from findiff import coefficients
-from scipy.signal import convolve2d
+import findiff
+import scipy.signal
 
 # ToDo: implement boundary conditions
 class DifferentialOperator(object):
@@ -21,6 +21,11 @@ class DifferentialOperator(object):
             The spacing between grid points in the x direction.
         dy : float, default 1
             The spacing between grid points in the y direction.
+
+        Methods
+        -------
+        __call__(u: np.ndarray) -> np.ndarray
+            Apply the differential operator to the input array.
     """
 
     def __init__(self, derivative: str = "u_x_0_y_0", acc: int = 2, dx: float = 1, dy: float = 1):
@@ -58,12 +63,12 @@ class DifferentialOperator(object):
         if order_x == 0:
             c_x = np.array([[1]])
         else:
-            c_x = coefficients(deriv=order_x, acc=acc)['center']['coefficients'].reshape(-1, 1)/dx**order_x
+            c_x = findiff.coefficients(deriv=order_x, acc=acc)['center']['coefficients'].reshape(-1, 1)/dx**order_x
 
         if order_y == 0:
             c_y = np.array([[1]])
         else:
-            c_y = coefficients(deriv=order_y, acc=acc)['center']['coefficients'].reshape(1, -1)/dy**order_y
+            c_y = findiff.coefficients(deriv=order_y, acc=acc)['center']['coefficients'].reshape(1, -1)/dy**order_y
 
         return c_x@c_y
 
@@ -71,4 +76,4 @@ class DifferentialOperator(object):
         return f"{self.derivative}"
 
     def __call__(self, u: np.ndarray) -> np.ndarray:
-        return convolve2d(u, self.coeffs, mode="same", boundary="wrap")
+        return scipy.signal.convolve2d(u, self.coeffs, mode="same", boundary="wrap")

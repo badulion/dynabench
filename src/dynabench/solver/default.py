@@ -10,6 +10,11 @@ class FinDiffSolver(object):
             Spatial dimension of the solver. Defaults to 2.
         parameters : dict, default {}
             Dictionary of parameters for the solver.
+
+        Methods
+        -------
+        solve(*args, **kwargs)
+            Solve the equation.
     """
     
     def __init__(self, 
