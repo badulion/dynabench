@@ -35,7 +35,7 @@ class CNN(nn.Module):
                  padding: int | str | Tuple[int] = 'same',
                  padding_mode: str = 'circular',
                  kernel_size: int = 3,
-                 activation: str = 'relu'):
+                 activation: str = 'ReLU'):
         super().__init__()
         self.input_layer = nn.Conv2d(input_size, hidden_channels, kernel_size, padding=padding, padding_mode=padding_mode)
         self.hidden_layers = [nn.Conv2d(hidden_channels, hidden_channels, kernel_size, padding=padding, padding_mode=padding_mode) for _ in range(hidden_layers)]

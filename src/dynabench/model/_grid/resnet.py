@@ -145,7 +145,7 @@ class ResNet(nn.Module):
                  padding: int | str | Tuple[int] = 'same',
                  padding_mode: str = 'circular',
                  kernel_size: int = 3,
-                 activation: str = 'relu'):
+                 activation: str = 'ReLU'):
         super().__init__()
 
         if resblock_type == 'simple':
