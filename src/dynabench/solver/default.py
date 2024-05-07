@@ -51,12 +51,12 @@ class FinDiffSolver(object):
             callable
                 The function representing the equation.
         """
-        diff_operators_dict = {
-            "u_x_0_y_0": DifferentialOperator(derivative="u_x_0_y_0"),
-            "u_x_1_y_0": DifferentialOperator(derivative="u_x_1_y_0"),
-        }
+        diff_operator_names = equation.diff_operators
+        diff_operator_filters = [DifferentialOperator(op) for op in diff_operator_names]
+        print(diff_operator_names, diff_operator_filters)
+        diff_operators_dict = dict(zip(diff_operator_names, diff_operator_filters))
 
-        equation = "u_x_0_y_0(u) + u_x_1_y_0(u)"
+        equation = "dxx(u) + dyy(u) + dxy(u**3) + dx(u) + dy(u) + u"
         return lambda u, t: eval(equation, {'u': u, **diff_operators_dict})
     
     def solve(self, *args, **kwargs):
