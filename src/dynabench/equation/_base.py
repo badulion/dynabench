@@ -79,11 +79,9 @@ class BaseEquation(object):
 
 
         # Collect the differential operators in the equation
-        self._diff_operators = []
+        self.diff_operators = []
         for rhs in self._rhs_str:
-            self._diff_operators += self._find_diff_operators(rhs)
-
-        # collect the different operators in the equation
+            self.diff_operators += self._find_diff_operators(rhs)
 
         # validate the variables from lhs and rhs
         variables_lhs = [re.sub(r"dt\((.*)\)", "\g<1>", eq, flags=re.UNICODE) for eq in self._lhs_str]
