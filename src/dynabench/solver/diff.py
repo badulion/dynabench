@@ -1,6 +1,7 @@
 import numpy as np
 import findiff
 import scipy.signal
+import re
 
 # ToDo: implement boundary conditions
 class DifferentialOperator(object):
@@ -13,7 +14,7 @@ class DifferentialOperator(object):
 
         Parameters
         ----------
-        derivative : str, default "u_x_0_y_0"
+        derivative : str, default "dx"
             The string representation of the derivative.
         acc : int, default 2
             The accuracy with which to calculate the derivative.
@@ -28,7 +29,7 @@ class DifferentialOperator(object):
             Apply the differential operator to the input array.
     """
 
-    def __init__(self, derivative: str = "u_x_0_y_0", acc: int = 2, dx: float = 1, dy: float = 1):
+    def __init__(self, derivative: str = "dx", acc: int = 2, dx: float = 1, dy: float = 1):
         self.derivative = derivative
         self.acc = acc
         self.dx = dx
@@ -57,8 +58,10 @@ class DifferentialOperator(object):
                 The coefficients of the differential operator.
         """
         # parse orders
-        derivative = derivative_str.split("_")
-        order_x, order_y = int(derivative[2]), int(derivative[4])
+        if not re.fullmatch(r"dx*y*", derivative_str):
+            raise ValueError("The derivative string should be of the form 'dx*y*' where x and y are repeated for the order of the derivative, e.g. 'dxyy'.")
+
+        order_x, order_y = derivative_str.count('x'), derivative_str.count('y')
 
         if order_x == 0:
             c_x = np.array([[1]])
