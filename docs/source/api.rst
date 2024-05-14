@@ -11,3 +11,5 @@ API reference
    dynabench.equation
    dynabench.model
    dynabench.solver
+   dynabench.initial
+   dynabench.grid

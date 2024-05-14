@@ -3,6 +3,10 @@
 """
 
 import numpy as np
+import dynabench.grid
+
+from typing import List
+
 
 
 
@@ -12,33 +16,27 @@ class InitialCondition(object):
 
         Parameters
         ----------
-        spatial_dim : int, default 2
-            Spatial dimension of the initial condition. Defaults to 2.
         parameters : dict, default {}
             Dictionary of parameters for the initial condition.
     """
     
     def __init__(self, 
-                 spatial_dim: int = 2, 
                  parameters: dict = {}, 
                  **kwargs):
-        self.spatial_dim = spatial_dim
+        self.spatial_dim = 2
         self.parameters = parameters
-        self._variables = ["u"]
 
     def __str__(self):
-        return "u(x, y) = 0"
-    
-    @property
-    def variables(self):
-        """
-            Get the number of variables of the initial condition.
-        """
-        return len(self._variables)
-    
-    def generate(self, *args, **kwargs):
+        return "Initial condition base class"
+
+    def generate(self, grid: dynabench.grid.Grid):
         """
             Generate the initial condition.
+
+            Parameters
+            ----------
+            grid : dynabench.grid.Grid
+                The grid on which the initial condition is to be generated.
 
             Returns
             -------
@@ -47,8 +45,45 @@ class InitialCondition(object):
         """
         raise NotImplementedError("The generate method must be implemented in the subclass.")
     
-    def __call__(self, *args, **kwargs):
-        return self.generate(*args, **kwargs)
+    def __call__(self, grid: dynabench.grid.Grid):
+        return self.generate(grid)
+    
+class Composite(InitialCondition):
+    """
+        Composite initial condition generator consisting of multiple initial conditions for the same grid.
+        Convenience class to generate multiple initial conditions for different variables.
+
+        Parameters
+        ----------
+        components : list
+            List of single initial conditions.
+    """
+    
+    def __init__(self, *components: list):
+        self.components = components
+        
+    def generate(self, grid: dynabench.grid.Grid):
+        return [component(grid) for component in self.components]
+    
+class Constant(InitialCondition):
+    """
+        Initial condition with a constant value.
+
+        Parameters
+        ----------
+        value : float, default 0.0
+            The value of the constant.
+    """
+    
+    def __init__(self, value: float = 0.0, **kwargs):
+        super(Constant, self).__init__(**kwargs)
+        self.value = value
+        
+    def __str__(self):
+        return f"I(x, y) = {self.value}"
+    
+    def generate(self, grid: dynabench.grid.Grid):
+        return self.value+np.zeros(grid.shape)
     
 
 class SumOfGaussians(InitialCondition):
@@ -68,26 +103,24 @@ class SumOfGaussians(InitialCondition):
     """
     
     def __init__(self, 
-                 grid_size: tuple = (64, 64), 
                  components: int = 1, 
                  zero_level: float = 0.0, 
                  random_state: int = None, 
                  **kwargs):
         super(SumOfGaussians, self).__init__(**kwargs)
-        self.grid_size = grid_size
         self.components = components
         self.zero_level = zero_level
         self.random_state = random_state
         
     def __str__(self):
-        return "Sum of gaussians"
+        return "I(x, y) = sum_i A_i exp(-40(x-x_i)^2 + (y-y_i)^2)"
     
-    def generate(self, *args, **kwargs):
+    def generate(self, grid: dynabench.grid.Grid):
         np.random.seed(self.random_state)
-        x, y = np.meshgrid(np.linspace(0,1,self.grid_size[0], endpoint=False), np.linspace(0,1,self.grid_size[1], endpoint=False))
+        x, y = np.meshgrid(grid.x, grid.y)
 
-        mx = [np.random.choice(self.grid_size[0]) for i in range(self.components)]
-        my = [np.random.choice(self.grid_size[1]) for i in range(self.components)]
+        mx = [np.random.choice(grid.shape[0]) for i in range(self.components)]
+        my = [np.random.choice(grid.shape[1]) for i in range(self.components)]
 
         squared_distance_to_center = (x-0.5)**2 + (y-0.5)**2
         gaussian = np.exp(-40*squared_distance_to_center)
