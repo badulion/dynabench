@@ -1,8 +1,14 @@
-# Dynabench: A benchmark dataset for learning dynamical systems from low-resolution data
+# DynaBench
 
-This is the repository containing the data generation algorithms as well as all baseline models for the __Dynabench: A benchmark dataset for learning dynamical systems from low-resolution data__ paper (accepted at ECML-PKDD 2023)
+<img src="docs/source/_images/dynabench.svg" width="300em" align="right" />
+
+[![PyPI version](https://badge.fury.io/py/dynabench.svg)](https://badge.fury.io/py/dynabench)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Build Python](https://github.com/badulion/dynabench/actions/workflows/test_all.yml/badge.svg?branch=master)](https://github.com/badulion/dynabench/actions/workflows/test_all.yml)
 
 **!!!You can find the documentation on how to use this package here: [dynabench.github.io](https://dynabench.github.io)**
+
+This is the repository containing the data generation algorithms as well as all baseline models for the __Dynabench: A benchmark dataset for learning dynamical systems from low-resolution data__ paper (accepted at ECML-PKDD 2023)
 
 DynaBench is a benchmark dataset for learning dynamical systems from data. Dynamical systems are physical systems that are typically modelled by partial differential equations (e.g. numerical weather prediction, climate models, fluid simulation, electromagnetic field simulation etc.). The main challenge of learning to predict the evolution of these systems from data is the chaotic behaviour that these systems show (small deviation from the initial conditions leads to highly different predictions) as well as data availability. In real world settings only low-resolution data is available, with measurements sparsly scattered in the simulation domain (see following figure illustrating the distribution of weather monitoring stations in europe).
 
