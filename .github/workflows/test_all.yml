@@ -1,4 +1,4 @@
-name: "Serial tests"
+name: "Build Python"
 
 on: [push]
 
