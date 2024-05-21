@@ -32,3 +32,13 @@ jobs:
 
     - name: Build documentation with sphinx
       run: poetry run sphinx-build -M html docs/source docs/build
+
+    - name: Push generated docs to dynabench.github.io
+      uses: nkoppel/push-files-to-another-repository@v1.1.3
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source-files: 'docs/build/'
+        destination-username: 'dynabench'
+        destination-repository: 'dynabench.github.io'
+        commit-email: 'andzej.dulny@gmail.com'
