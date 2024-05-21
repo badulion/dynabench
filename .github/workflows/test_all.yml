@@ -31,9 +31,4 @@ jobs:
       run: poetry install
 
     - name: Run serial tests with pytest
-      env:
-        NUMBA_WARNINGS: 1
-        MPLBACKEND: agg
-      run: |
-        cd scripts
-        python run_tests.py --unit --runslow --num_cores auto --showconfig
+      run: poetry run pytest
