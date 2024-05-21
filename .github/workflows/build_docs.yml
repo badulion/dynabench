@@ -32,7 +32,11 @@ jobs:
       run: touch docs/build/html/.nojekyll
 
     - name: Push generated docs to dynabench.github.io
-      uses: peaceiris/actions-gh-pages@v4
+      uses: nkoppel/push-files-to-another-repository@v1.1.3
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
       with:
-        github_token: ${{ secrets.API_TOKEN_GITHUB }}
-        publish_dir: ./docs/build/html
+        source-files: './docs/build/html'
+        destination-username: 'dynabench'
+        destination-repository: 'dynabench.github.io'
+        commit-email: 'andzej.dulny@gmail.com'
