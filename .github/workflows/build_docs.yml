@@ -39,4 +39,5 @@ jobs:
         source-directory: './docs/build/html'
         destination-github-username: 'dynabench'
         destination-repository-name: 'dynabench.github.io'
+        target-branch: master
         user-email: 'andzej.dulny@gmail.com'
