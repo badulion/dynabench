@@ -1,15 +1,10 @@
 name: "Docs"
 
-on: [push]
+on: [release]
 
 jobs:
   build-docs:
-    strategy:
-      matrix:
-        poetry-version: ["1.8.2"]
-        python-version: ["3.12"]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 60
 
     steps:
@@ -19,12 +14,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.12"
 
     - name: Set up Poetry
       uses: abatilo/actions-poetry@v3.0.0
       with:
-          poetry-version: ${{ matrix.poetry-version }}
+          poetry-version: "1.8.2"
 
     - name: Install dependencies
       # install all requirements
