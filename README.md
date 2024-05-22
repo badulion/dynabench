@@ -113,9 +113,30 @@ The original six equations have been used to evaluate the performance of various
 | PointGNN          |     0.660665    |  1.04342  |       0.759257 |            2.82063     |          0.0582293   | 1.30743  |
 | ResNet            |     8.64621e-05 |  1.86352  |       0.480284 |            1.0697      |          0.00704612  | 0.299457 |
 
+## 📃 Citing
+If you use *DynaBench* for your research, please cite:
+
+```bibtex
+@inproceedings{dulny2023dynabench,
+    author = {Dulny, Andrzej and Hotho, Andreas and Krause, Anna},
+    title = {DynaBench: A Benchmark Dataset for Learning Dynamical Systems from Low-Resolution Data},
+    year = {2023},
+    isbn = {978-3-031-43411-2},
+    publisher = {Springer-Verlag},
+    address = {Berlin, Heidelberg},
+    doi = {10.1007/978-3-031-43412-9_26},
+    booktitle = {Machine Learning and Knowledge Discovery in Databases: Research Track: European Conference, ECML PKDD 2023, Turin, Italy, September 18–22, 2023, Proceedings, Part I},
+    pages = {438–455},
+    numpages = {18},
+    keywords = {neuralPDE, dynamical systems, benchmark, dataset},
+    location = {Turin, Italy}
+}
+```
+
 ## 📚 More resources
 - The documentation for the package can be found [here](https://dynabench.github.io).
 - The original benchmark paper can be found [here](https://arxiv.org/abs/2306.05805).
+
 
 ## License
 
