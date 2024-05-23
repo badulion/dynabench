@@ -65,12 +65,14 @@ class NeuralPDE(nn.Module):
             Returns
             -------
             torch.Tensor
-                Output tensor of shape (batch_size, output_size, height, width).
+                Output tensor of shape (batch_size, rollout, output_size, height, width).
         """
 
         t_eval = torch.tensor(t_eval, dtype=x.dtype, device=x.device)
         if self.use_adjoint:
-            return odeint_adjoint(self._ode, x, t_eval, **self.solver, adjoint_params=self.cnn.parameters())[1:]
+            pred = odeint_adjoint(self._ode, x, t_eval, **self.solver, adjoint_params=self.cnn.parameters())[1:]
         else:
-            return odeint(self._ode, x, t_eval, **self.solver)[1:]
+            pred =  odeint(self._ode, x, t_eval, **self.solver)[1:]
         
+        pred = torch.swapaxes(pred, 0, 1)
+        return pred

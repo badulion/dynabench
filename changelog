@@ -16,3 +16,12 @@
 
 ## [0.2.4] -> Nov 8, 2023
 - added full simulation iterator that iterates over the dataset and returns the whole simulation as each element
+
+## [0.3.0] -> Apr 20, 2024
+- added documentation build with sphinx
+- initial classes for new solver landscape
+
+## [0.3.1] -> May 6, 2024
+- added NeuralPDE model
+- added NeuralPDE documentation
+- Fixed example for getting started with wrong keyword argument

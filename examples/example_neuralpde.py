@@ -7,17 +7,17 @@ import torch.nn as nn
 
 download_equation('burgers', structure='grid', resolution='low')
 
-advection_train_iterator = DynabenchIterator(split="train",
-                                            equation='burgers',
-                                            structure='grid',
-                                            resolution='low',
-                                            lookback=1,
-                                            rollout=1)
+burgers_train_iterator = DynabenchIterator(split="train",
+                                           equation='burgers',
+                                           structure='grid',
+                                           resolution='low',
+                                           lookback=1,
+                                           rollout=1)
 
-train_loader = DataLoader(advection_train_iterator, batch_size=32, shuffle=True)
+train_loader = DataLoader(burgers_train_iterator, batch_size=32, shuffle=True)
 
 model = NeuralPDE(input_dim=2, hidden_channels=64, hidden_layers=3,
-                solver={'method': 'euler', 'options': {'step_size': 0.01}},
+                solver={'method': 'euler', 'options': {'step_size': 0.1}},
                 use_adjoint=False)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
@@ -34,21 +34,21 @@ for epoch in range(10):
         optimizer.step()
         print(f"Epoch: {epoch}, Batch: {i}, Loss: {loss.item()}")
 
-advection_test_iterator = DynabenchIterator(split="test",
-                                            equation='burgers',
-                                            structure='grid',
-                                            resolution='low',
-                                            lookback=1,
-                                            rollout=16)
+burgers_test_iterator = DynabenchIterator(split="test",
+                                          equation='burgers',
+                                          structure='grid',
+                                          resolution='low',
+                                          lookback=1,
+                                          rollout=16)
 
-test_loader = DataLoader(advection_test_iterator, batch_size=32, shuffle=False)
+test_loader = DataLoader(burgers_test_iterator, batch_size=32, shuffle=False)
 
 model.eval()
 
 loss_values = []
 for i, (x, y, p) in enumerate(test_loader):
     x, y = x[:,0].float(), y.float() # only use the first channel and convert to float32
-    y_pred = model(x)
+    y_pred = model(x, t_eval=range(17))
     loss = criterion(y_pred, y)
     loss_values.append(loss.item())
 
