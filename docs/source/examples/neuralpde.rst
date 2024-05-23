@@ -60,7 +60,7 @@ Next, we will define the neural network architecture. We will use the NeuralPDE 
     from dynabench.model import NeuralPDE
 
     model = NeuralPDE(input_dim=2, hidden_channels=64, hidden_layers=3,
-                    solver={'method': 'euler', 'options': {'step_size': 0.01}},
+                    solver={'method': 'euler', 'options': {'step_size': 0.1}},
                     use_adjoint=False)
 
 
@@ -101,6 +101,10 @@ Evaluate the model
 Finally, we will evaluate the model on the test dataset. We will use the test dataset to evaluate the model's performance on unseen data.
 To do this we need to load the test dataset and create a data loader for the test dataset.
 
+We want to evaluate the model's performance over a longer time horizon, so we will set the rollout parameter to 16. 
+This means that the model will have to predict the next 16 time steps given the input data. 
+We can specify this in the forward pass of the model by passing the t_eval parameter to the model.
+
 .. code-block::
 
     burgers_test_iterator = DynabenchIterator(split="test",
@@ -117,7 +121,7 @@ To do this we need to load the test dataset and create a data loader for the tes
     loss_values = []
     for i, (x, y, p) in enumerate(test_loader):
         x, y = x[:,0].float(), y.float() # only use the first channel and convert to float32
-        y_pred = model(x)
+        y_pred = model(x, t_eval=range(17))
         loss = criterion(y_pred, y)
         loss_values.append(loss.item())
 
@@ -152,7 +156,7 @@ Overall the code for training the NeuralPDE model on the Burgers' equation is as
     train_loader = DataLoader(burgers_train_iterator, batch_size=32, shuffle=True)
 
     model = NeuralPDE(input_dim=2, hidden_channels=64, hidden_layers=3,
-                    solver={'method': 'euler', 'options': {'step_size': 0.01}},
+                    solver={'method': 'euler', 'options': {'step_size': 0.1}},
                     use_adjoint=False)
 
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
@@ -183,7 +187,7 @@ Overall the code for training the NeuralPDE model on the Burgers' equation is as
     loss_values = []
     for i, (x, y, p) in enumerate(test_loader):
         x, y = x[:,0].float(), y.float() # only use the first channel and convert to float32
-        y_pred = model(x)
+        y_pred = model(x, t_eval=range(17))
         loss = criterion(y_pred, y)
         loss_values.append(loss.item())
 
