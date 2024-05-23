@@ -25,3 +25,8 @@
 - added NeuralPDE model
 - added NeuralPDE documentation
 - Fixed example for getting started with wrong keyword argument
+
+## [0.3.2] -> May 23, 2024
+- Fixed example for NeuralPDE model - rollout was not used and wrong name of dataloader
+- Fixed order of axis in NeuralPDE rollout (torchidiffeq: TxBx ..., expected BxTx...)
+- Added autobuild and push for documentation
