@@ -5,9 +5,38 @@ import h5py
 import numpy as np
 
 from ._download import download_equation
+from warnings import warn
 
 class DynabenchIterator:
-
+    """
+    Iterator for the Dynabench dataset. This iterator will iterate over each simulation in the dataset, 
+    by moving a window over the simulation data. 
+    The window size is defined by the lookback and rollout parameters, which define the number of timesteps
+    to be used as input and output, respectively.
+       
+    Parameters
+    ----------
+    split : str
+        The split of the dataset to use. Can be "train", "val" or "test".
+    equation : str
+        The equation to use. Can be "advection", "burgers", "gasdynamics", "kuramotosivashinsky", "reactiondiffustion" or "wave".
+    structure : str
+        The structure of the dataset. Can be "cloud" or "grid".
+    resolution : str
+        The resolution of the dataset. Can be *low*, *medium*, *high* or *full*. 
+        Low resolution corresponds to 225 points in total (aranged in a 15x15 grid for the grid structure).
+        Medium resolution corresponds to 484 points in total (aranged in a 22x22 grid for the grid structure).   
+        High resolution corresponds to 900 points in total (aranged in a 30x30 grid for the grid structure).
+        Full resolution uses the full simulation grid of shape (64x64) that has been used to numerically solve the simulations.
+    base_path : str
+        Location where the data is stored. Defaults to "data".
+    lookback : int
+        Number of timesteps to use for the input data. Defaults to 1.
+    rollout : int
+        Number of timesteps to use for the target data. Defaults to 1.
+    download: int
+        Whether to download the data. Defaults to False.
+    """
     def __init__(
         self,
         split: str="train",
@@ -21,6 +50,8 @@ class DynabenchIterator:
         *args,
         **kwargs,
     ) -> None:
+        # deprecation
+        warn(f'{self.__class__.__name__} will be deprecated. Please use DynabechGridIterator and DynabenchCloudIterator.', DeprecationWarning, stacklevel=2)
 
         # download
         if download:
