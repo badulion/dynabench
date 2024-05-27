@@ -7,6 +7,8 @@ import dynabench.grid
 
 from typing import List
 
+from itertools import product
+
 
 
 
@@ -28,8 +30,15 @@ class InitialCondition(object):
 
     def __str__(self):
         return "Initial condition base class"
+    
+    @property
+    def num_variables(self):
+        """
+            Get the number of variables.
+        """
+        return 1
 
-    def generate(self, grid: dynabench.grid.Grid):
+    def generate(self, grid: dynabench.grid.Grid, random_state: int = 42):
         """
             Generate the initial condition.
 
@@ -61,6 +70,13 @@ class Composite(InitialCondition):
     
     def __init__(self, *components: list):
         self.components = components
+
+    @property
+    def num_variables(self):
+        """
+            Get the number of variables.
+        """
+        return len(self.components)
         
     def generate(self, grid: dynabench.grid.Grid):
         return [component(grid) for component in self.components]
@@ -86,6 +102,31 @@ class Constant(InitialCondition):
         return self.value+np.zeros(grid.shape)
     
 
+class RandomUniform(InitialCondition):
+    """
+        Initial condition with random values drawn from a uniform distribution.
+
+        Parameters
+        ----------
+        low : float, default 0.0
+            The lower bound of the uniform distribution.
+        high : float, default 1.0
+            The upper bound of the uniform distribution.
+    """
+    
+    def __init__(self, low: float = 0.0, high: float = 1.0, **kwargs):
+        super(RandomUniform, self).__init__(**kwargs)
+        self.low = low
+        self.high = high
+        
+    def __str__(self):
+        return f"I(x, y) ~ U({self.low}, {self.high})"
+    
+    def generate(self, grid: dynabench.grid.Grid, random_state: int = 42):
+        np.random.seed(random_state)
+        return np.random.uniform(self.low, self.high, grid.shape)
+    
+
 class SumOfGaussians(InitialCondition):
     """
         Initial condition generator for the sum of gaussians.
@@ -98,25 +139,21 @@ class SumOfGaussians(InitialCondition):
             The number of gaussian components.
         zero_level : float, default 0.0
             The zero level of the initial condition.
-        random_state : int, default None
-            The random state.
     """
     
     def __init__(self, 
                  components: int = 1, 
                  zero_level: float = 0.0, 
-                 random_state: int = None, 
                  **kwargs):
         super(SumOfGaussians, self).__init__(**kwargs)
         self.components = components
         self.zero_level = zero_level
-        self.random_state = random_state
         
     def __str__(self):
         return "I(x, y) = sum_i A_i exp(-40(x-x_i)^2 + (y-y_i)^2)"
     
-    def generate(self, grid: dynabench.grid.Grid):
-        np.random.seed(self.random_state)
+    def generate(self, grid: dynabench.grid.Grid, random_state: int = 42):
+        np.random.seed(random_state)
         x, y = np.meshgrid(grid.x, grid.y)
 
         mx = [np.random.choice(grid.shape[0]) for i in range(self.components)]
@@ -134,13 +171,67 @@ class SumOfGaussians(InitialCondition):
 
         return u
     
+class WrappedGaussians(InitialCondition):
+    """
+        Initial condition generator for the sum of wrapped gaussians.
+
+        Parameters
+        ----------
+        components : int, default 1
+            The number of gaussian components.
+        zero_level : float, default 0.0
+            The zero level of the initial condition.
+        periodic_levels : int or list, default 10
+            The number of periodic levels to calculate the wrapped distribution. :math:`p_w(\theta)=\sum_{k=-\infty}^\infty {p(\theta+2\pi k)}`
+    """
+    
+    def __init__(self, 
+                 components: int = 1, 
+                 zero_level: float = 0.0, 
+                 periodic_levels: int = 10,
+                 **kwargs):
+        super(WrappedGaussians, self).__init__(**kwargs)
+        self.components = components
+        self.zero_level = zero_level
+        self.periodic_levels = periodic_levels
+        
+    def __str__(self):
+        return "I(x, y) = sum_i A_i exp(-40(x-x_i)^2 + (y-y_i)^2)"
+    
+    def _wrapped_gaussian_2d(self, x, y, mu, sigma, limits_x = (0, 1), limits_y = (0, 1)):
+        def gaussian_2d(x, y, mu, sigma):
+            return np.exp(-((x - mu[0])**2 + (y - mu[1])**2)/(2*sigma**2))
+        
+        n = self.periodic_levels
+        dLx = limits_x[1] - limits_x[0]
+        dLy = limits_y[1] - limits_y[0]
+
+        components = np.array([gaussian_2d(x, y, mu+[dLx*k_x, dLy*k_y], sigma) for k_x, k_y in product(range(-n, n+1), repeat=2)])
+        return components.sum(axis=0)
+    
+    def generate(self, grid: dynabench.grid.Grid, random_state: int = 42):
+        np.random.seed(random_state)
+        x, y = np.meshgrid(grid.x, grid.y)
+
+        m = np.array([grid.get_random_point_within_domain() for i in range(self.components)])
+
+        u = self.zero_level+np.zeros_like(x)
+
+        for i in range(self.components):
+
+            component = self._wrapped_gaussian_2d(x, y, m[i], 0.1)
+
+            u = u + np.random.uniform(-1, 1) * component
+
+        return u
+    
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from dynabench.solver.diff import differential_operator
     from scipy.signal import convolve2d
 
-    initial_condition = SumOfGaussians((512,512), components=5, random_state=42)
+    initial_condition = WrappedGaussians((64,64), components=5, random_state=42)
     u = initial_condition.generate()
     d_u = differential_operator("u_x_1_y_0", dx=1/512, dy=1/512)
     print(d_u)

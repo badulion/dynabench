@@ -5,6 +5,8 @@
 
 import numpy as np
 
+from pde import CartesianGrid
+
 class Grid(object):
     """
         Base class for all grids.
@@ -18,7 +20,7 @@ class Grid(object):
     """ 
     def __init__(self, 
                  grid_size: tuple = (64, 64), 
-                 grid_limits: tuple = ((0, 1), (0, 1)),
+                 grid_limits: tuple = ((0, 64), (0, 64)),
                  **kwargs):
         self.grid_size = grid_size
         self.grid_limits = grid_limits
@@ -49,3 +51,28 @@ class Grid(object):
             Get the step size in the y direction.
         """
         return self.y[1] - self.y[0]
+    
+    def get_meshgrid(self):
+        """
+            Get the meshgrid of the grid.
+        """
+        return np.meshgrid(self.x, self.y, indexing='ij')
+    
+    def get_random_point(self):
+        """
+            Get a random point on the grid.
+        """
+        return (np.random.choice(self.x), np.random.choice(self.y))
+    
+    def get_random_point_within_domain(self):
+        """
+            Get a random point within the domain of the grid, but not necessarily on the grid.
+        """
+        return (np.random.uniform(self.grid_limits[0][0], self.grid_limits[0][1]), 
+                np.random.uniform(self.grid_limits[1][0], self.grid_limits[1][1]))
+    
+    def export_as_pypde_grid(self):
+        """
+            Export the grid as a PyPDE grid.
+        """
+        return CartesianGrid(self.grid_limits, self.grid_size, periodic=True)
