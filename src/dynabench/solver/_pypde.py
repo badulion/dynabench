@@ -21,6 +21,10 @@ class PyPDESolver(BaseSolver):
             The grid on which the equation is to be solved.
         initial_generator : dynabench.initial.InitialCondition
             The initial condition generator from which the initial condition is to be generated.
+        parameters : dict, default {}
+            Dictionary of parameters for the solver. 
+            See the documentation of `py-pde <https://py-pde.readthedocs.io/en/latest/packages/pde.solvers.scipy.html>`_ and scipy's `solve_ivp <https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html>`_ for more information.
+            
 
     """
 
@@ -35,7 +39,7 @@ class PyPDESolver(BaseSolver):
     def solve(self, 
               random_state: int = 42,
               t_span: List[float] = [0, 1],
-              t_eval: List[float] = None):
+              dt_eval: float = 0.1):
         """
             Solve the equation.
 
@@ -69,5 +73,5 @@ class PyPDESolver(BaseSolver):
             initial_field = FieldCollection([ScalarField(pypde_grid, ic) for ic in initial_condition])
 
         # Solve the equation
-        sol = pypde_eq.solve(initial_field, t_range=10, tracker=["progress", storage.tracker(0.01)], solver="scipy", method="RK23")
+        sol = pypde_eq.solve(initial_field, t_range=t_span, tracker=["progress", storage.tracker(dt_eval)], solver="scipy", **self.parameters)
         sol.plot()

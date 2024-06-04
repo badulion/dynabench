@@ -38,7 +38,7 @@ class BaseSolver(object):
     def solve(self, 
               random_state: int = 42,
               t_span: List[float] = [0, 1],
-              t_eval: List[float] = None):
+              dt_eval: float = 0.1):
         """
             Solve the equation.
 
