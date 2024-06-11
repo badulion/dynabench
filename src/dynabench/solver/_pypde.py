@@ -1,3 +1,4 @@
+from numpy import ndarray
 from ._base import BaseSolver
 
 from dynabench.equation import BaseEquation
@@ -6,7 +7,9 @@ from dynabench.initial import InitialCondition
 
 from typing import List
 
-from pde import FileStorage, ScalarField, FieldCollection
+from pde import FieldBase, ScalarField, FieldCollection, FileStorage
+import os
+import h5py
 
 class PyPDESolver(BaseSolver):
     """
@@ -58,23 +61,34 @@ class PyPDESolver(BaseSolver):
                 The solution of the equation.
         """
         
-        print(self.generate_filename(t_span=t_span, dt_eval=dt_eval, seed=random_state))
-        quit()
+        save_path = self.generate_filename(t_span=t_span, dt_eval=dt_eval, seed=random_state)
         
         pypde_eq = self.equation.export_as_pypde_equation()
         initial_condition = self.initial_generator.generate(self.grid, random_state=random_state)
         pypde_grid = self.grid.export_as_pypde_grid()
 
         # Create tracker and file storage
-        storage = FileStorage("data.h5")
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, save_path)
+        if os.path.exists(out_path):
+            os.remove(out_path)
+        storage = FileStorage(out_path, write_mode="truncate")
 
         # create initial py-pde field
         num_variables = self.initial_generator.num_variables
         if num_variables == 1:
-            initial_field = ScalarField(pypde_grid, initial_condition)
+            initial_field = FieldCollection([ScalarField(pypde_grid, initial_condition)])
         else:
             initial_field = FieldCollection([ScalarField(pypde_grid, ic) for ic in initial_condition])
 
         # Solve the equation
         sol = pypde_eq.solve(initial_field, t_range=t_span, tracker=["progress", storage.tracker(dt_eval)], solver="scipy", **self.parameters)
-        sol.plot()
+        
+        # save additional information
+        with h5py.File(out_path, "a") as f:
+            f["x_coords"] = pypde_grid.axes_coords[0]
+            f["y_coords"] = pypde_grid.axes_coords[1]
+            f.attrs["variables"] = self.equation.variables
+            f.attrs["equation"] = self.equation.equations
+            f.attrs["parameter_names"] = list(self.equation.parameters.keys())
+            f.attrs["parameter_values"] = list(self.equation.parameters.values())

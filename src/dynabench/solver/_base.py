@@ -39,13 +39,14 @@ class BaseSolver(object):
     def generate_filename(self,
                           t_span: List[float],
                           dt_eval: float,
-                          seed: int):
+                          seed: int,
+                          hash_truncate: int = 8):
         eq_params = (
             self.equation,
             self.grid,
             self.initial_generator
         )
-        return f"{hash(eq_params)}_dt_{dt_eval}_trange_{t_span[0]}_{t_span[1]}_seed_{seed}.h5"
+        return f"{self.equation.name}_{hash(eq_params)[:hash_truncate]}_dt_{dt_eval}_trange_{t_span[0]}_{t_span[1]}_seed_{seed}.h5"
     
     def solve(self, 
               random_state: int = 42,

@@ -61,6 +61,12 @@ class BaseEquation(object):
             self._lhs_str.append(lhs)
             self._rhs_str.append(rhs)
 
+    @property
+    def name(self):
+        """
+            Get the name of the equation.
+        """
+        return self.__class__.__name__.lower().removesuffix("equation")
     
     def _first_ordify(self, equation: str) -> List[str]:
         """
@@ -80,7 +86,7 @@ class BaseEquation(object):
         lhs, rhs = equation.split("=")
         order = 0
         lhs_var = self._extract_variable_from_lhs(lhs)
-        order_str = re.sub(r"d(t+)\(.+\)", "\g<1>", lhs, flags=re.UNICODE)
+        order_str = re.sub(r"d(t+)\(.+\)", r"\g<1>", lhs, flags=re.UNICODE)
         order = len(order_str)
 
         if order == 1:
@@ -172,7 +178,7 @@ class BaseEquation(object):
             str
                 The variable in the equation.
         """
-        return re.sub(r"dt+\((.+)\)", "\g<1>", lhs, flags=re.UNICODE)
+        return re.sub(r"dt+\((.+)\)", r"\g<1>", lhs, flags=re.UNICODE)
 
 
     @property
