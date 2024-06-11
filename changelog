@@ -30,3 +30,15 @@
 - Fixed example for NeuralPDE model - rollout was not used and wrong name of dataloader
 - Fixed order of axis in NeuralPDE rollout (torchidiffeq: TxBx ..., expected BxTx...)
 - Added autobuild and push for documentation
+
+## [0.3.3] -> June 11, 2024
+- Implemented PyPDESolver for solving PDEs
+- Implemented Equation class for defining PDEs
+- Added aliases for equations
+    - AdvectionEquation
+    - WaveEquation
+    - CahnHilliardEquation
+    - DiffusionEquation
+    - FitzhughNagumoEquation
+- Updated documentation
+- Created nicely formated readme
