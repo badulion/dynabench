@@ -13,7 +13,7 @@ The main challenges of working with these systems are the chaotic behaviour that
 In real world settings only low-resolution data is available, with measurements sparsly scattered in the simulation domain (see following figure illustrating the distribution of weather monitoring stations in europe).
 
 
-.. image:: images/weather_stations.gif
+.. image:: _images/weather_stations.gif
 
 -----------------    
 What is included?
@@ -27,7 +27,7 @@ The six included different equations were selected to be both sufficiently compl
 
 An example (wave equation) of a simulated system is shown below:
 
-.. image:: images/wave_equation.gif
+.. image:: _images/wave_equation.gif
 
 ----------------
 Equations
