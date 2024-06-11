@@ -6,8 +6,7 @@ from dynabench.initial import InitialCondition
 
 from typing import List
 
-from pde import FileStorage, ProgressTracker
-from pde import ScalarField, FieldCollection
+from pde import FileStorage, ScalarField, FieldCollection
 
 class PyPDESolver(BaseSolver):
     """
@@ -39,7 +38,8 @@ class PyPDESolver(BaseSolver):
     def solve(self, 
               random_state: int = 42,
               t_span: List[float] = [0, 1],
-              dt_eval: float = 0.1):
+              dt_eval: float = 0.1,
+              out_dir: str = "data/raw"):
         """
             Solve the equation.
 
@@ -57,6 +57,9 @@ class PyPDESolver(BaseSolver):
             np.ndarray
                 The solution of the equation.
         """
+        
+        print(self.generate_filename(t_span=t_span, dt_eval=dt_eval, seed=random_state))
+        quit()
         
         pypde_eq = self.equation.export_as_pypde_equation()
         initial_condition = self.initial_generator.generate(self.grid, random_state=random_state)

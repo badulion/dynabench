@@ -3,6 +3,7 @@ import dynabench.initial
 import dynabench.grid
 
 from typing import List
+from joblib import hash
 
 class BaseSolver(object):
     """
@@ -35,10 +36,22 @@ class BaseSolver(object):
     def __str__(self):
         return "Base Equation Solver"
     
+    def generate_filename(self,
+                          t_span: List[float],
+                          dt_eval: float,
+                          seed: int):
+        eq_params = (
+            self.equation,
+            self.grid,
+            self.initial_generator
+        )
+        return f"{hash(eq_params)}_dt_{dt_eval}_trange_{t_span[0]}_{t_span[1]}_seed_{seed}.h5"
+    
     def solve(self, 
               random_state: int = 42,
               t_span: List[float] = [0, 1],
-              dt_eval: float = 0.1):
+              dt_eval: float = 0.1,
+              out_dir: str = "data/raw"):
         """
             Solve the equation.
 
