@@ -17,7 +17,7 @@ We will train the NeuralPDE model on the Burgers' equation using the following s
 2. :ref:`Define the neural network architecture. <define_model>`
 3. :ref:`Train the model. <train>`
 4. :ref:`Evaluate the model. <evaluate>`
-5. :ref:`Summary. <summary>`
+5. :ref:`Summary. <_summary_neuralpde>`
 
 
 
@@ -127,7 +127,7 @@ We can specify this in the forward pass of the model by passing the t_eval param
 
     print(f"Mean Loss: {sum(loss_values) / len(loss_values)}")
 
-.. _summary:
+.. _summary_neuralpde:
 
 **************************************
 Summary
