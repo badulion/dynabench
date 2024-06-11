@@ -16,6 +16,8 @@ numpy = "^1.26.4"
 requests = "^2.31.0"
 tqdm = "^4.66.2"
 h5py = "^3.11.0"
+joblib = "^1.4.2"
+matplotlib = "<=3.8"
 
 [tool.poetry.group.dev.dependencies]
 Sphinx = "^7.2.6"
@@ -24,6 +26,7 @@ numpydoc = "^1.7.0"
 sphinx-conestack-theme = "^1.0b3"
 sphinx-rtd-theme = "^2.0.0"
 sphinx-design = "^0.5.0"
+ipykernel = "^6.29.4"
 
 [tool.poetry.group.fourier]
 optional = true
@@ -31,10 +34,12 @@ optional = true
 [tool.poetry.group.fourier.dependencies]
 dedalus = "^3.0.2"
 
-[tool.poetry.group.findiff]
-optional = true
+[tool.poetry.group.pypde]
+optional = false
 
-[tool.poetry.group.findiff.dependencies]
+[tool.poetry.group.pypde.dependencies]
+sympy = "^1.12"
+findiff = "^0.10.0"
 py-pde = "^0.38.0"
 
 

@@ -70,7 +70,11 @@ def download_raw(equation: str, structure: str, resolution: str, tmp_dir: str = 
             Resolution of the dataset. Can be "low", "medium", or "high".
         tmp_dir : str
             Directory where the temporary files should be saved. Defaults to "data/tmp/".
-        return : None
+        
+            
+        Returns
+        -------
+        None
     """
 
 
@@ -108,7 +112,10 @@ def download_equation(equation: str, structure: str, resolution: str, out_dir: s
             Directory where the dataset should be saved. Defaults to "data/".
         tmp_dir : str
             Directory where the temporary files should be saved. Defaults to "data/tmp/". This directory will be deleted after the dataset is unpacked.
-        return : None
+        
+        Returns
+        -------
+        None
     """
 
 
