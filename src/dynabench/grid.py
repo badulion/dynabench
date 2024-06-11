@@ -76,3 +76,19 @@ class Grid(object):
             Export the grid as a PyPDE grid.
         """
         return CartesianGrid(self.grid_limits, self.grid_size, periodic=True)
+    
+
+class UnitGrid(Grid):
+    """
+        Class for a unit grid. For a given grid size N, M, the grid limits are (0, N) and (0, M).
+
+        Parameters
+        ----------
+        grid_size : tuple, default (64, 64)
+            Size of the grid. Defaults to (64, 64).
+    """
+    def __init__(self, grid_size: tuple = (64, 64), **kwargs):
+        super().__init__(grid_size=grid_size, grid_limits=((0, grid_size[0]), (0, grid_size[1])), **kwargs)
+    
+    def __str__(self):
+        return f"Unit Grid of size {self.grid_size}."
