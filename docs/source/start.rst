@@ -64,7 +64,7 @@ To easily load the data the dynabench package provides the :py:class:`dynabench.
 
     from dynabench.dataset import DynabenchIterator
 
-    advection_iterator = DynabenchIterator('advection', 
+    advection_iterator = DynabenchIterator(equation='advection', 
                                            structure='cloud', 
                                            resolution='low',
                                            lookback=4,

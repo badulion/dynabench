@@ -1,0 +1,43 @@
+name: "Docs"
+
+on: [release]
+
+jobs:
+  build-and-deploy-docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
+    - name: Set up Poetry
+      uses: abatilo/actions-poetry@v3.0.0
+      with:
+          poetry-version: "1.8.2"
+
+    - name: Install dependencies
+      # install all requirements
+      run: poetry install
+
+    - name: Build documentation with sphinx
+      run: poetry run sphinx-build -M html docs/source docs/build
+
+    - name: Create .nojekyll file
+      run: touch docs/build/html/.nojekyll
+
+    - name: Push generated docs to dynabench.github.io
+      uses: cpina/github-action-push-to-another-repository@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source-directory: './docs/build/html'
+        destination-github-username: 'dynabench'
+        destination-repository-name: 'dynabench.github.io'
+        target-branch: master
+        user-email: 'andzej.dulny@gmail.com'
