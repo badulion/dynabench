@@ -3,7 +3,7 @@ Module for loading the data.
 """
 
 from ._download import download_equation
-from ._iterator import DynabenchIterator
-from ._simulation_iterator import DynabenchSimulationIterator
+from ._dynabench import DynabenchIterator, DynabenchSimulationIterator
+from ._equation import EquationMovingWindowIterator
 
-__all__ = ["download_equation", "DynabenchIterator", "DynabenchSimulationIterator"]
+__all__ = ["download_equation", "DynabenchIterator", "DynabenchSimulationIterator", "EquationMovingWindowIterator"]
