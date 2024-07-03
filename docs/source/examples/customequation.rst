@@ -8,10 +8,12 @@ the :class:`dynabench.equation.FitzhughNagumoEquation`. The Fitzhugh-Nagumo equa
 neuron. The equation is given by:
 
 .. math::
-    \\frac{\\partial v}{\\partial t} = \\nabla^2 v + v - \\frac{v^3}{3} - w + stimulus
-    \\frac{\\partial w}{\\partial t} = \\frac{v + a - b * w}{\\tau}
+    \frac{\partial v}{\partial t} = \nabla^2 v + v - \frac{v^3}{3} - w + s
 
-where :math:`v` is the membrane potential and :math:`w` is the recovery variable, and :math:`stimulus`, :math:`a`, :math:`b`, and :math:`\tau` are parameters of the equation.
+.. math::
+    \frac{\partial w}{\partial t} = \frac{v + a - b * w}{\tau}
+
+where :math:`v` is the membrane potential and :math:`w` is the recovery variable, and :math:`s` (stimulus), :math:`a`, :math:`b`, and :math:`\tau` are parameters of the equation.
 
 We will generate the data for the Fitzhugh-Nagumo equation in a similar way to the previous example for the :doc:`Cahn-Hilliard Equation </examples/cahnhiliard>`.
 
