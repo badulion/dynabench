@@ -42,3 +42,6 @@
     - FitzhughNagumoEquation
 - Updated documentation
 - Created nicely formated readme
+
+# [0.3.4] -> July 03, 2024
+- Fixed problem with dependency management - py-pde was not installed when installing dynabench from PyPi
