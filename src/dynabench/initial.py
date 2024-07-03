@@ -78,8 +78,10 @@ class Composite(InitialCondition):
         """
         return len(self.components)
         
-    def generate(self, grid: dynabench.grid.Grid):
-        return [component(grid) for component in self.components]
+    def generate(self, grid: dynabench.grid.Grid, random_state: int = 42):
+        np.random.seed(random_state)
+        seeds = np.random.randint(0, 1e6, len(self.components))
+        return [component(grid, random_state=seed) for component, seed in zip(self.components, seeds)]
     
 class Constant(InitialCondition):
     """
