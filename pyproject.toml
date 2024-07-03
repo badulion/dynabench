@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dynabench"
-version = "0.3.3"
+version = "0.3.4"
 description = "Benchmark dataset for learning dynamical systems from data"
 authors = ["Andrzej Dulny <andzej.dulny@gmail.com>"]
 license = "MIT"
