@@ -49,3 +49,4 @@
 - Added custom equation iterator
 - Added custom equation example
 - Added custom equation iterator documentation
+- Fixed problem with dependency management - py-pde was not installed when installing dynabench from PyPi
