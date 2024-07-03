@@ -13,7 +13,7 @@ pde_equation = FitzhughNagumoEquation()
 grid = Grid(grid_limits=((0, 64), (0, 64)), grid_size=(64, 64))
 intitial = Composite(RandomUniform(), RandomUniform())
 solver = PyPDESolver(equation=pde_equation, grid=grid, initial_generator=intitial, parameters={'method': "RK23"})
-#solver.solve(t_span=[0, 100], dt_eval=1)
+solver.solve(t_span=[0, 100], dt_eval=1)
 
 
 # initialize the equation iterator
