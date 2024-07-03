@@ -54,8 +54,8 @@ class InitialCondition(object):
         """
         raise NotImplementedError("The generate method must be implemented in the subclass.")
     
-    def __call__(self, grid: dynabench.grid.Grid):
-        return self.generate(grid)
+    def __call__(self, grid: dynabench.grid.Grid, *args, **kwargs):
+        return self.generate(grid, *args, **kwargs)
     
 class Composite(InitialCondition):
     """
