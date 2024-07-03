@@ -31,8 +31,19 @@ class EquationMovingWindowIterator:
 
     def __len__(self):
         with h5py.File(self.data_path, "r") as f:
-            print(f.keys())
             return len(f['times']) - self.lookback - self.rollout + 1
+        
+    def __iter__(self):
+        self.index = 0
+        return self
+    
+    def __next__(self):
+        if self.index < len(self):
+            sample = self[self.index]
+            self.index += 1
+            return sample
+        else:
+            raise StopIteration
     
     def __getitem__(self, index):
         index = int(index) % len(self)
