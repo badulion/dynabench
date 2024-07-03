@@ -6,10 +6,7 @@ import numpy as np
 import dynabench.grid
 
 from typing import List
-
-from itertools import product
-
-
+import itertools
 
 
 class InitialCondition(object):
@@ -182,7 +179,7 @@ class WrappedGaussians(InitialCondition):
         zero_level : float, default 0.0
             The zero level of the initial condition.
         periodic_levels : int or list, default 10
-            The number of periodic levels to calculate the wrapped distribution. :math:`p_w(\theta)=\sum_{k=-\infty}^\infty {p(\theta+2\pi k)}`
+            The number of periodic levels to calculate the wrapped distribution. :math:`p_w(\\theta)=\\sum_{k=-\\infty}^\\infty {p(\\theta+2\\pi k)}`
     """
     
     def __init__(self, 
@@ -206,7 +203,7 @@ class WrappedGaussians(InitialCondition):
         dLx = limits_x[1] - limits_x[0]
         dLy = limits_y[1] - limits_y[0]
 
-        components = np.array([gaussian_2d(x, y, mu+[dLx*k_x, dLy*k_y], sigma) for k_x, k_y in product(range(-n, n+1), repeat=2)])
+        components = np.array([gaussian_2d(x, y, mu+[dLx*k_x, dLy*k_y], sigma) for k_x, k_y in itertools.product(range(-n, n+1), repeat=2)])
         return components.sum(axis=0)
     
     def generate(self, grid: dynabench.grid.Grid, random_state: int = 42):
@@ -224,19 +221,3 @@ class WrappedGaussians(InitialCondition):
             u = u + np.random.uniform(-1, 1) * component
 
         return u
-    
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    from dynabench.solver.diff import differential_operator
-    from scipy.signal import convolve2d
-
-    initial_condition = WrappedGaussians((64,64), components=5, random_state=42)
-    u = initial_condition.generate()
-    d_u = differential_operator("u_x_1_y_0", dx=1/512, dy=1/512)
-    print(d_u)
-
-    for _ in range(10):
-        u = convolve2d(u, d_u, mode="same", boundary="wrap")
-    plt.imshow(u)
-    plt.savefig("initial_condition.png")

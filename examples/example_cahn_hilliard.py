@@ -1,6 +1,6 @@
 from dynabench.equation import CahnHilliardEquation
 from dynabench.initial import RandomUniform
-from dynabench.grid import Grid
+from dynabench.grid import UnitGrid
 from dynabench.solver import PyPDESolver
 
 
@@ -9,7 +9,7 @@ from dynabench.solver import PyPDESolver
 pde_equation = CahnHilliardEquation()
 
 # Create an instance of grid with default parameters
-grid = Grid(grid_limits=((0, 64), (0, 64)), grid_size=(64, 64))
+grid = UnitGrid(grid_size=(64, 64))
 
 # generate an initial condition as a sum of 5 gaussians
 intitial = RandomUniform()
