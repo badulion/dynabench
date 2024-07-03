@@ -42,3 +42,7 @@
     - FitzhughNagumoEquation
 - Updated documentation
 - Created nicely formated readme
+
+# [0.3.4] -> July 03, 2024
+- fix mistakes in documentation
+- fix warning in doc-build for Inline Emphasis...
