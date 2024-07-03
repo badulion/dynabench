@@ -44,4 +44,9 @@
 - Created nicely formated readme
 
 # [0.3.4] -> July 03, 2024
+- fix mistakes in documentation
+- fix warning in doc-build for Inline Emphasis...
+- Added custom equation iterator
+- Added custom equation example
+- Added custom equation iterator documentation
 - Fixed problem with dependency management - py-pde was not installed when installing dynabench from PyPi
