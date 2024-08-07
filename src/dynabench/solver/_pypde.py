@@ -92,3 +92,5 @@ class PyPDESolver(BaseSolver):
             f.attrs["equation"] = self.equation.equations
             f.attrs["parameter_names"] = list(self.equation.parameters.keys())
             f.attrs["parameter_values"] = list(self.equation.parameters.values())
+
+        return save_path
