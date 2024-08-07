@@ -344,3 +344,54 @@ class FitzhughNagumoEquation(BaseEquation):
                          parameters=parameters,
                          evolution_rate=evolution_rate,
                          **kwargs)
+        
+
+class SimpleBurgersEquation(BaseEquation):
+    """
+        Simple Burgers equation in 2D. The equation is given by:
+
+        .. math::
+            \\frac{\\partial u}{\\partial t} = -u (\\frac{\\partial u}{\\partial x}+\\frac{\\partial u}{\\partial y}) + \\nu \\nabla^2 u
+
+        where nu is the viscosity of the fluid.
+
+        Parameters
+        ----------
+        parameters : dict, default {nu: 1}
+            Dictionary of parameters for the equations.
+
+        Attributes
+        ----------
+        linear_terms : List[str]
+            List of linear terms in the equation.
+        nonlinear_terms : List[str]
+            List of nonlinear terms in the equation.
+
+    """
+    def __init__(self, nu: float = 1.0, evolution_rate: float = 1.0, **kwargs):
+        parameters = {'nu': nu}
+        super().__init__(equations=["dt(u) = -u*(d_dx(u)+d_dy(u))+nu*laplace(u)"], parameters=parameters, evolution_rate=evolution_rate, **kwargs)
+
+
+class KuramotoSivashinskyEquation(BaseEquation):
+    """
+        Kuramoto-Sivashinsky equation in 2D. The equation is given by:
+
+        .. math::
+            \\frac{\\partial u}{\\partial t} = -\\nabla^2 u - \\nabla^4 u - \\frac{1}{2}|\\nabla u|^2
+
+        Parameters
+        ----------
+        parameters : dict, default {}
+            Dictionary of parameters for the equations.
+
+        Attributes
+        ----------
+        linear_terms : List[str]
+            List of linear terms in the equation.
+        nonlinear_terms : List[str]
+            List of nonlinear terms in the equation.
+
+    """
+    def __init__(self, evolution_rate: float = 1.0, **kwargs):
+        super().__init__(equations=["dt(u) = -laplace(u) - laplace(laplace(u)) - gradient_squared(u)"], evolution_rate=evolution_rate, **kwargs)
