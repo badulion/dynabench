@@ -15,8 +15,8 @@ class GridDownsamplerFFT:
         self.target_size = target_size
         
     def __call__(self, data):
-        frequency = np.fft.fftshift(np.fft.fft2(data, norm='forward'))
-        shift_x = (data.shape[0]-self.target_size[0])//2
-        shift_y = (data.shape[1]-self.target_size[1])//2
+        frequency = np.fft.fftshift(np.fft.fft2(data, norm='forward'), axes=(-2,-1))
+        shift_x = (data.shape[-2]-self.target_size[0])//2
+        shift_y = (data.shape[-1]-self.target_size[1])//2
         frequency = frequency[..., shift_x:-shift_x, shift_y:-shift_y]
-        return np.fft.ifft2(np.fft.ifftshift(frequency), norm='forward').real
+        return np.fft.ifft2(np.fft.ifftshift(frequency, axes=(-2,-1)), norm='forward').real
