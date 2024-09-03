@@ -1,6 +1,6 @@
 # DynaBench
 
-<img src="docs/source/_images/dynabench.svg" width="400em" align="right" />
+<img src="https://dynabench.github.io/_images/dynabench.svg" width="400em" align="right" />
 
 [![PyPI version](https://badge.fury.io/py/dynabench.svg)](https://badge.fury.io/py/dynabench)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)

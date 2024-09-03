@@ -125,6 +125,6 @@ The package is designed to be easy to use and flexible, allowing for easy extens
 
     About <about>
     Getting Started <start>
-    User Guide <guide>
+    Examples <guide>
     Benchmark Results <results>
     API reference <api>

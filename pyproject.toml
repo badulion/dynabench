@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dynabench"
-version = "0.3.3"
+version = "0.3.6"
 description = "Benchmark dataset for learning dynamical systems from data"
 authors = ["Andrzej Dulny <andzej.dulny@gmail.com>"]
 license = "MIT"
@@ -11,13 +11,17 @@ repository = "https://github.com/badulion/dynabench/"
 
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
+python = ">=3.9,<3.13"
 numpy = "^1.26.4"
 requests = "^2.31.0"
 tqdm = "^4.66.2"
 h5py = "^3.11.0"
 joblib = "^1.4.2"
 matplotlib = "<=3.8"
+torch = "^2.3.0"
+torchdiffeq = "^0.2.3"
+py-pde = "^0.40.0"
+sympy = "^1.12"
 
 [tool.poetry.group.dev.dependencies]
 Sphinx = "^7.2.6"
@@ -33,19 +37,6 @@ optional = true
 
 [tool.poetry.group.fourier.dependencies]
 dedalus = "^3.0.2"
-
-[tool.poetry.group.pypde]
-optional = false
-
-[tool.poetry.group.pypde.dependencies]
-sympy = "^1.12"
-findiff = "^0.10.0"
-py-pde = "^0.38.0"
-
-
-[tool.poetry.group.nn.dependencies]
-torch = "^2.3.0"
-torchdiffeq = "^0.2.3"
 
 [build-system]
 requires = ["poetry-core"]

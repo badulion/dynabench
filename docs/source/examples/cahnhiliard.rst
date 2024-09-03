@@ -75,7 +75,7 @@ In this case, as dx = dy = 1, the :class:`dynabench.grid.UnitGrid` class can be 
     from dynabench.grid import UnitGrid
 
     # Create an instance of a unit grid
-    grid = UnitGrid(grid_limits=grid_size=(64, 64))
+    grid = UnitGrid(grid_size=(64, 64))
 
 .. _define_initial:
 
@@ -135,7 +135,7 @@ Overall the code for generating data for the Cahn-Hilliard equation is as follow
     pde_equation = CahnHilliardEquation()
 
     # Create an instance of a unit grid
-    grid = UnitGrid(grid_limits=grid_size=(64, 64))
+    grid = UnitGrid(grid_size=(64, 64))
 
     # generate an initial condition as a sum of 5 gaussians
     intitial = RandomUniform()
