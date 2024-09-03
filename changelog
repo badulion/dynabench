@@ -61,3 +61,7 @@
 - Solver now returns path at which the simulation was stored
 - Add example for burgers equation
 - Add example for kuramoto sivashinsky equation
+
+## [0.3.7] -> 
+- Add grind model from ECML paper
+- Add example and documentation for grind model
