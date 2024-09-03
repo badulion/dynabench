@@ -36,10 +36,12 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
         print(f"Epoch: {epoch}, Batch: {i}, Loss: {loss.item()}")
+        break
+    break
 
 burgers_test_iterator = DynabenchIterator(split="test",
                                           equation='burgers',
-                                          structure='grid',
+                                          structure='cloud',
                                           resolution='low',
                                           lookback=1,
                                           rollout=16)
@@ -50,7 +52,7 @@ model.eval()
 
 loss_values = []
 for i, (x, y, p) in enumerate(test_loader):
-    x, y = x[:,0].float(), y.float() # only use the first channel and convert to float32
+    x, y, p = x[:,0].float(), y.float(), p.float() # only use the first channel and convert to float32
     y_pred = model(x, p, t_eval=range(17))
     loss = criterion(y_pred, y)
     loss_values.append(loss.item())
