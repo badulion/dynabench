@@ -104,19 +104,18 @@ The package is designed to be easy to use and flexible, allowing for easy extens
         :img-top: _static/file-lines-solid.svg
         :text-align: center
 
-        **Paper**
+        **Papers**
         ^^^
 
-        The DynaBench paper has been published in the Joint European Conference on Machine Learning and Knowledge Discovery in Databases 2023.
-        The paper describes the benchmark and the results in detail.
+        Here's a list of all papers that use the DynaBench dataset and benchmark.
 
         +++
 
-        .. button-link:: https://arxiv.org/abs/2306.05805
+        .. button-ref:: papers
             :color: secondary
             :click-parent:
 
-            To the paper
+            To the paper list.
 
 
 .. toctree::
@@ -126,5 +125,6 @@ The package is designed to be easy to use and flexible, allowing for easy extens
     About <about>
     Getting Started <start>
     Examples <guide>
+    Papers <papers>
     Benchmark Results <results>
     API reference <api>

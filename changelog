@@ -65,3 +65,5 @@
 ## [0.3.7] -> 
 - Add grind model from ECML paper
 - Add example and documentation for grind model
+- Add link to grind original github
+- Add paper list to website
