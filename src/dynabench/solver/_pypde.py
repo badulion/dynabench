@@ -61,7 +61,7 @@ class PyPDESolver(BaseSolver):
                 The solution of the equation.
         """
         
-        save_path = self.generate_filename(t_span=t_span, dt_eval=dt_eval, seed=random_state)
+        save_path = self.generate_filename(t_span=t_span, dt_eval=dt_eval, random_state=random_state)
         
         pypde_eq = self.equation.export_as_pypde_equation()
         initial_condition = self.initial_generator.generate(self.grid, random_state=random_state)
