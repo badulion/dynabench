@@ -5,9 +5,7 @@ import numpy as np
 
 from unittest.mock import MagicMock
 from dynabench.solver import PyPDESolver
-from dynabench.equation import BaseEquation
 from dynabench.grid import Grid
-from dynabench.initial import InitialCondition
 
 class PickableMagickMock(MagicMock):
     def __reduce__(self):
@@ -21,6 +19,14 @@ def base_solver(default_base_equation, default_grid, base_initial_condition):
         initial_generator=base_initial_condition,
         parameters={"param1": "value1"}
     )
+@pytest.fixture
+def mock_grid():
+    grid = PickableMagickMock(spec=Grid)
+    grid.export_as_pypde_grid.return_value = PickableMagickMock()
+    grid.shape = (64, 64)
+    grid.x = np.linspace(0, 1, 64)
+    grid.y = np.linspace(0, 1, 64)
+    return grid
 
 @pytest.fixture
 def mock_initial_condition():
