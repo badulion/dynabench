@@ -14,7 +14,7 @@ def test_generate_filename(base_solver):
     filename = base_solver.generate_filename(
         t_span=[0, 10],
         dt_eval=0.1,
-        seed=42,
+        random_state=42,
         hash_truncate=8
     )
     assert filename.startswith("base_")
@@ -24,13 +24,13 @@ def test_generate_filename_different_seeds(base_solver):
     filename1 = base_solver.generate_filename(
         t_span=[0, 100],
         dt_eval=0.1,
-        seed=42,
+        random_state=42,
         hash_truncate=8
     )
     filename2 = base_solver.generate_filename(
         t_span=[0, 10],
         dt_eval=0.01,
-        seed=43,
+        random_state=43,
         hash_truncate=8
     )
     assert filename1 != filename2
