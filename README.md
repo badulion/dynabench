@@ -1,31 +1,35 @@
 # DynaBench
 
+<img src="https://dynabench.github.io/_images/dynabench.svg" width="400em" align="right" />
+
 [![PyPI version](https://badge.fury.io/py/dynabench.svg)](https://badge.fury.io/py/dynabench)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![All Tests](https://github.com/badulion/dynabench/actions/workflows/test_all.yml/badge.svg)](https://github.com/badulion/dynabench/actions/workflows/test_all.yml)
+[![Docs](https://github.com/badulion/dynabench/actions/workflows/build_docs.yml/badge.svg)](https://dynabench.github.io)
 
-**!!!You can find the documentation on how to use this package here: [dynabench.github.io](https://dynabench.github.io)**
+The *DynaBench* package started as a benchmark dataset for learning dynamical systems from low-resolution data. It has since evolved into a full-fledged package for generating synthetic data, training models, and evaluating them on various tasks concerning partial differential equations. The package is designed to be easy to use and flexible, allowing for easy extension and modification of the existing models, data generation algorithms and physical equations.
 
-This is the repository containing the data generation algorithms as well as all baseline models for the __Dynabench: A benchmark dataset for learning dynamical systems from low-resolution data__ paper (accepted at ECML-PKDD 2023)
+Take a look at the [documentation](https://dynabench.github.io) for more details on the package and how to use it.
 
-DynaBench is a benchmark dataset for learning dynamical systems from data. Dynamical systems are physical systems that are typically modelled by partial differential equations (e.g. numerical weather prediction, climate models, fluid simulation, electromagnetic field simulation etc.). The main challenge of learning to predict the evolution of these systems from data is the chaotic behaviour that these systems show (small deviation from the initial conditions leads to highly different predictions) as well as data availability. In real world settings only low-resolution data is available, with measurements sparsly scattered in the simulation domain (see following figure illustrating the distribution of weather monitoring stations in europe).
+## ⚡️ Getting Started
 
+To get started with the package, you can install it via pip:
 
-![Weather stations europe gif](demos/weather_stations.gif)
-
-In this benchmark we try to simulate this setting using synthetic data for easier evaluation and training of different machine learning models. To this end we generated simulation data by solving five different PDE systems which were then postprocessed to create low-resolution snapshots of the simulation.
-
-There main tasks for which the dataset has been generated is forecasting - predicting the next state(s) of the system
-
-The six included different equations were selected to be both sufficiently complex, as well as sufficiently variable to simulate different physical systems (first and second order, coupled equations, stationary and non-statinary).
-
-An example (wave equation) of a simulated system is shown below:
-
-![Wave example gif](demos/equation_example_wave.gif)
+```bash
+pip install dynabench
+```
 
 
-## Equations
-There are four different equations in the dataset, each with different characteristics summarized in the following table:
+### Downloading data
+The DynaBench package contains dozens of different equations that can be used to generate synthetic data. The easiest way to get started, however, is to use one of the original benchmark equations. These can be downloaded using the following command:
+
+```python
+from dynabench.dataset import download_equation
+
+download_equation(equation='advection', structure='cloud', resolution='low')
+```
+
+The original benchmark dataset consists of simulations of the following equations: 
 
 | Equation             | Components | Time Order | Spatial Order |
 |----------------------|------------|------------|---------------|
@@ -36,107 +40,108 @@ There are four different equations in the dataset, each with different character
 | Reaction-Diffusion   | 2          | 1          | 2             |
 | Wave                 | 1          | 2          | 2             |
 
-## Setup
-### Automated setup
-If needed create a virtual environment and activate it
-You can then install all dependencies by running 
+### Loading data
 
-    sh scripts/install_requirements.sh
-
-from the main project directory
-
-### Manual installation
-Alternatively you can manually install the dependencies from the `requirements.txt` file:
-
-    pip install -r requirements.txt
-
-It is recommended to first create a virtual environment, for example:
-
-    python -m venv venv
-    source venv/bin/activate
-
-Additionally you need to install pytorch geometric, following the instructions on [their website](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html).
-
-
-
-## Generation
-To generate the data for a specific equation run
-
-    python generate.py num_simulations=NUM_SIMULATIONS equation=EQUATION split=DATASET_SPLIT
-
-Where `NUM_SIMULATIONS` indicates how many times each equation is simulated,`EQUATION` is one of (advection, burgers, gas_dynamics, kuramoto_sivashinsky, reaction_diffusion, wave), and `DATASET_SPLIT` is one of train, test, val
-
-The full benchmark dataset contains 7000 simulations for the training set, 1000 for the validation set and 1000 for the test set, all divided into chunks of 500 simulations.
-
-Warning: this can take a long time.
-
-## Data format
-The data is stored in *.tar* archives in chunks of 500 simulations. Each simulation consists of one file called XXXXXXX.data containing the simulation values for the given setting (cloud/grid + number of points) as well as a file called XXXXXXX.data containing the coordinates of the points at which the measurements were recorded.
-
-## Usage
-To reproduce the experiments from our paper run:
-    python main.py equation=EQUATION model=MODEL support=cloud num_points=NUM_POINTS
-
-This will start the training for a specific setting. The parameters specify which model, task, support structure, number of points etc. should be run. The available choices of parameters are:
-
-    EQUATION = [brusselator, gas_dynamics, kuramoto_sivashinsky, wave, advection]
-
-    MODEL = [persistence, point_gnn, point_net, point_transformer, gat, gcn, feast, kernelNN, graphpde]
-
-
-To run the experiments for the grid models run:
-    python main.py equation=EQUATION model=MODEL support=grid num_points=NUM_POINTS datamodule=torch" lightningmodule=gridmodule support=grid
-
-with `MODEL` selected from [neuralpde, resnet, cnn]
-
-Additionally, to use the benchmark for your own research use the included datasets.The repository contains two dataset classes to handle the generated data.
-
-1. A pytorch dataset class, where each sample has the form $X\in\mathbb{R}^{L\times N\times D}$, where L is the lookback, N is the number of points and D is the number of target variables. See documentation of the dataset for details. To initialize the dataset class:
+To easily load the data the dynabench package provides the `DynabenchIterator` iterator:
 
 ```python
-DynaBenchBase(
-    mode: str = 'train',
-    equation: str = 'gas_dynamics',
-    task: str = 'forecast',
-    support: str = 'grid',
-    num_points: str = 'high',
-    base_path: str = 'data',
-    lookback: int = 1,
-    rollout: int = 1,
-    test_ratio: float = 0.1,
-    val_ratio: float = 0.1,
-    merge_lookback: bool = True,
-    *args,
-    **kwargs
-)
+
+from dynabench.dataset import DynabenchIterator
+
+advection_iterator = DynabenchIterator(equation='advection', 
+                                        structure='cloud', 
+                                        resolution='low',
+                                        lookback=4,
+                                        rollout=16)
 ```
 
-Initializes a pytorch dataset with selected parameters. The data is loaded lazily. 
+This will iterate through all downloaded simulation of the advection dataset with observation points scattered (cloud) and low resolution. 
+Each sample will be a tuple containing a snapshot of the simulation at the past 4 time steps, the future 16 time steps as target as well as the coordinates of the observation points:
+
+```python	
+for sample in advection_iterator:
+    x, y, points = sample
+
+    # x is the input data with shape (lookback, n_points, n_features)
+    # y is the target data with shape (rollout, n_points, n_features)
+    # points are the observation points with shape (n_points, dim)
+    # for the advection equation n_features=1 and dim=2
+```
+
+
+## ⚙️ Usage
+More advanced use cases include generating data for different equations, training models, and evaluating them. The package provides a simple interface for all these tasks. 
+
+### Example: Generating data for Cahn-Hilliard equation
+The *DynaBench* package provides a simple interface for generating synthetic data for various physical systems. For example data for the [Cahn-Hilliard equation](https://en.wikipedia.org/wiki/Cahn%E2%80%93Hilliard_equation) can be generated by running:
+
+```python
+from dynabench.equation import CahnHilliardEquation
+from dynabench.initial import RandomUniform
+from dynabench.grid import Grid
+from dynabench.solver import PyPDESolver
 
 
 
-**Args:**
+# Create an instance of the CahnHilliardEquation class with default parameters
+pde_equation = CahnHilliardEquation()
 
-- <b>`mode`</b> (str, optional):  the selection of data to use (train/val/test). Defaults to "train". 
-- <b>`equation`</b> (str, optional):  the equation to use. Defaults to "gas_dynamics". 
-- <b>`task`</b> (str, optional):  Which task to use as targets. Defaults to "forecast". 
-- <b>`support`</b> (str, optional):  Structure of the points at which the measurements are recorded. Defaults to "grid". 
-- <b>`num_points`</b> (str, optional):  Number of points at which measurements are available. Defaults to "high". 
-- <b>`base_path`</b> (str, optional):  location where the data is stored. Defaults to "data". 
-- <b>`lookback`</b> (int, optional):  How many past states are used to make the prediction. The additional states can be concatenated along the channel dimension if merge_lookback is set to True. Defaults to 1. 
-- <b>`rollout`</b> (int, optional):  How many steps should be predicted in a closed loop setting. Only used for forecast task. Defaults to 1. 
-- <b>`test_ratio`</b> (float, optional):  What fraction of simulations to set aside for testing. Defaults to 0.1. 
-- <b>`val_ratio`</b> (float, optional):  What fraction of simulations to set aside for validation. Defaults to 0.1. 
-- <b>`merge_lookback`</b> (bool, optional):  Whether to merge the additional lookback information into the channel dimension. Defaults to True. 
+# Create an instance of grid with default parameters
+grid = Grid(grid_limits=((0, 64), (0, 64)), grid_size=(64, 64))
+
+# generate an initial condition as a sum of 5 gaussians
+intitial = RandomUniform()
 
 
-2. A graph dataset, specifically used for Message Passing Neural Networks implemented using the [Pytorch Geometric](https://pytorch-geometric.readthedocs.io/) module. It has a similar structure as the base DynaBench dataset.
+# Solve the Cahn-Hilliard equation with the initial condition
+solver = PyPDESolver(equation=pde_equation, grid=grid, initial_generator=intitial, parameters={'method': "RK23"})
+solver.solve(t_span=[0, 100], dt_eval=1)
+```
 
+### Example: Training NeuralPDE
+The *DynaBench* package provides several models that can be used to forecast the physical system. For example, to train the [NeuralPDE model](https://arxiv.org/abs/2111.07671) on the advection equation, you can use the following code snippet:
 
-## Benchmark Results
-The following tables show the results of our experiments
+```python
+from dynabench.dataset import DynabenchIterator
+from torch.utils.data import DataLoader
+from dynabench.model import NeuralPDE
 
-- forecast task, 900 points (1-step MSE):
+import torch.optim as optim
+import torch.nn as nn
+
+advection_train_iterator = DynabenchIterator(split="train",
+                                             equation='burgers',
+                                             structure='grid',
+                                             resolution='low',
+                                             lookback=1,
+                                             rollout=4)
+
+train_loader = DataLoader(advection_train_iterator, batch_size=32, shuffle=True)
+
+model = NeuralPDE(input_dim=2, hidden_channels=64, hidden_layers=3,
+                  solver={'method': 'euler', 'options': {'step_size': 0.1}},
+                  use_adjoint=False)
+
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+criterion = nn.MSELoss()
+
+for epoch in range(10):
+    model.train()
+    for i, (x, y, p) in enumerate(train_loader):
+        x, y = x[:,0].float(), y.float() # only use the first channel and convert to float32
+        optimizer.zero_grad()
+        y_pred = model(x, range(0, 5))
+        y_pred = y_pred.transpose(0, 1)
+        loss = criterion(y_pred, y)
+        loss.backward()
+        optimizer.step()
+        print(f"Epoch: {epoch}, Batch: {i}, Loss: {loss.item()}")
+```
+
+## 📈 Benchmark Results
+The original six equations have been used to evaluate the performance of various models on the task of forecasting the physical system. For this 900 spatial points have been used. The results are shown below:
+
+- 1-step MSE
 
 | model             |   Advection |    Burgers |   Gas Dynamics |   Kuramoto-Sivashinsky |   Reaction-Diffusion |       Wave |
 |:------------------|------------:|-----------:|---------------:|-----------------------:|---------------------:|-----------:|
@@ -152,7 +157,7 @@ The following tables show the results of our experiments
 | PointGNN          | 2.82496e-05 | 0.00882528 |     0.00901649 |            0.00673036  |          0.000136059 | 0.00138772 |
 | ResNet            | 2.15721e-06 | 0.0148052  |     0.00321235 |            0.000490104 |          0.000156752 | 0.00145884 |
 
-- forecast task, 900 points (16-step rollout MSE):
+- 16-step rollout MSE:
 
 | model             |       Advection |   Burgers |   Gas Dynamics |   Kuramoto-Sivashinsky |   Reaction-Diffusion |     Wave |
 |:------------------|----------------:|----------:|---------------:|-----------------------:|---------------------:|---------:|
@@ -168,6 +173,36 @@ The following tables show the results of our experiments
 | PointGNN          |     0.660665    |  1.04342  |       0.759257 |            2.82063     |          0.0582293   | 1.30743  |
 | ResNet            |     8.64621e-05 |  1.86352  |       0.480284 |            1.0697      |          0.00704612  | 0.299457 |
 
+## 📃 Citing
+If you use *DynaBench* for your research, please cite:
+
+```bibtex
+@inproceedings{dulny2023dynabench,
+    author = {Dulny, Andrzej and Hotho, Andreas and Krause, Anna},
+    title = {DynaBench: A Benchmark Dataset for Learning Dynamical Systems from Low-Resolution Data},
+    year = {2023},
+    isbn = {978-3-031-43411-2},
+    publisher = {Springer-Verlag},
+    address = {Berlin, Heidelberg},
+    doi = {10.1007/978-3-031-43412-9_26},
+    booktitle = {Machine Learning and Knowledge Discovery in Databases: Research Track: European Conference, ECML PKDD 2023, Turin, Italy, September 18–22, 2023, Proceedings, Part I},
+    pages = {438–455},
+    numpages = {18},
+    keywords = {neuralPDE, dynamical systems, benchmark, dataset},
+    location = {Turin, Italy}
+}
+```
+
+## 📚 More resources
+- The documentation for the package can be found [here](https://dynabench.github.io).
+- The original benchmark paper can be found [here](https://arxiv.org/abs/2306.05805).
+
+
 ## License
 
 The content of this project itself, including the data and pretrained models, is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International Public License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/). The underlying source code used to generate the data and train the models is licensed under the [MIT license](LICENSE).
+
+
+## References
+
+[1] 

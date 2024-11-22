@@ -9,7 +9,7 @@
 project = 'dynabench'
 copyright = '2024, Andrzej Dulny'
 author = 'Andrzej Dulny'
-release = '0.3.1'
+release = '0.3.7'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

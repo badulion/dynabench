@@ -70,7 +70,11 @@ def download_raw(equation: str, structure: str, resolution: str, tmp_dir: str = 
             Resolution of the dataset. Can be "low", "medium", or "high".
         tmp_dir : str
             Directory where the temporary files should be saved. Defaults to "data/tmp/".
-        return : None
+        
+            
+        Returns
+        -------
+        None
     """
 
 
@@ -92,7 +96,7 @@ def download_raw(equation: str, structure: str, resolution: str, tmp_dir: str = 
 
             #shutil.rmtree("data/tmp")
 
-def download_equation(equation: str, structure: str, resolution: str, out_dir: str = "data", tmp_dir: str = "data/tmp/"):
+def download_equation(equation: str, structure: str, resolution: str, data_dir: str = "data", tmp_dir: str = "tmp"):
     """
         Download a dataset and unpack it to the right place.
 
@@ -104,16 +108,19 @@ def download_equation(equation: str, structure: str, resolution: str, out_dir: s
             Description of how the observation points are structured. Can be "cloud" or "grid".
         resolution : str
             Resolution of the dataset. Can be "low", "medium", or "high".
-        out_dir : str
+        data_dir : str
             Directory where the dataset should be saved. Defaults to "data/".
         tmp_dir : str
             Directory where the temporary files should be saved. Defaults to "data/tmp/". This directory will be deleted after the dataset is unpacked.
-        return : None
+        
+        Returns
+        -------
+        None
     """
 
 
     # paths
-    tmp_dir = os.path.join(out_dir, tmp_dir)
+    tmp_dir = os.path.join(data_dir, tmp_dir)
 
     os.makedirs(tmp_dir, exist_ok=True)
 
@@ -143,7 +150,7 @@ def download_equation(equation: str, structure: str, resolution: str, out_dir: s
     
     # move the data to the right place
     print("Moving data...")
-    target_path = os.path.join(out_dir, equation, structure, resolution)
+    target_path = os.path.join(data_dir, equation, structure, resolution)
     os.makedirs(target_path, exist_ok=True)
     for file in glob.glob(file_template):
         try:

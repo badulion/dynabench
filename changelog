@@ -16,3 +16,54 @@
 
 ## [0.2.4] -> Nov 8, 2023
 - added full simulation iterator that iterates over the dataset and returns the whole simulation as each element
+
+## [0.3.0] -> Apr 20, 2024
+- added documentation build with sphinx
+- initial classes for new solver landscape
+
+## [0.3.1] -> May 6, 2024
+- added NeuralPDE model
+- added NeuralPDE documentation
+- Fixed example for getting started with wrong keyword argument
+
+## [0.3.2] -> May 23, 2024
+- Fixed example for NeuralPDE model - rollout was not used and wrong name of dataloader
+- Fixed order of axis in NeuralPDE rollout (torchidiffeq: TxBx ..., expected BxTx...)
+- Added autobuild and push for documentation
+
+## [0.3.3] -> June 11, 2024
+- Implemented PyPDESolver for solving PDEs
+- Implemented Equation class for defining PDEs
+- Added aliases for equations
+    - AdvectionEquation
+    - WaveEquation
+    - CahnHilliardEquation
+    - DiffusionEquation
+    - FitzhughNagumoEquation
+- Updated documentation
+- Created nicely formated readme
+
+## [0.3.4] -> July 03, 2024
+- fix mistakes in documentation
+- fix warning in doc-build for Inline Emphasis...
+- Added custom equation iterator
+- Added custom equation example
+- Added custom equation iterator documentation
+- Fixed problem with dependency management - py-pde was not installed when installing dynabench from PyPi
+
+## [0.3.5] -> July 04, 2024
+- Fix display of equation in custom equation iterator example
+- Absolute link to logo in readme to display properly on PyPI
+
+## [0.3.6] -> August 07, 2024
+- Add simple burgers equation (one variable)
+- Add kuramoto sivashinsky equation
+- Solver now returns path at which the simulation was stored
+- Add example for burgers equation
+- Add example for kuramoto sivashinsky equation
+
+## [0.3.7] -> 
+- Add grind model from ECML paper
+- Add example and documentation for grind model
+- Add link to grind original github
+- Add paper list to website

@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 ====================================
-User Guide
+Examples
 ====================================
 This guide contains several examples on how to use the DynaBench API to interact with the benchmark, as well as how to use the benchmark to evaluate different models.
 
@@ -13,3 +13,6 @@ This guide contains several examples on how to use the DynaBench API to interact
     :maxdepth: 1
 
     Example 1: NeuralPDE <examples/neuralpde>
+    Example 2: Cahn-Hilliard Equation <examples/cahnhiliard>
+    Example 3: Equation DataLoader <examples/customequation>
+    Example 4: GrIND <examples/grind>
