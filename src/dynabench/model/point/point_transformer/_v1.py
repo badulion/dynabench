@@ -25,7 +25,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from .pointnet_util import PointNetFeaturePropagation, PointNetSetAbstraction, index_points, square_distance
+from ._utils import PointNetFeaturePropagation, PointNetSetAbstraction, index_points, square_distance
 
 class TransformerBlock(nn.Module):
     def __init__(self, d_points, d_model, k) -> None:
@@ -139,33 +139,60 @@ class Backbone(nn.Module):
         return points, xyz_and_feats
 
 
-class PointTransformerSeg(nn.Module):
-    def __init__(self, num_points, num_blocks, num_neighbors, num_classes, input_dim, transformer_dim):
+class PointTransformerV1(nn.Module):
+    """
+        Point Transformer model V1 form the Paper [Point Transformer](https://arxiv.org/abs/2012.09164).
+        The model is unchanged to the original implementation in the [Git](https://github.com/qq456cvb/Point-Transformers).
+        The in and out channels need to be specified to fit the data structure in dynabench.
+        E.g. the Advection equation has 1 channel.
+
+        !! Time intervals need to stay constant !!
+        
+        Parameters
+        ----------
+        num_points: int
+            The number of points in the data.
+        channels: int
+            The number of channels of the data.
+        knn: int
+            The number of k-nearest neighbors to use in the Point Transformer Layer.
+        num_blocks: int
+            The number of blocks in the Point Transformer Layer. (depends on the number of points)
+        transformer_dim: int
+            The dimension of the transformer.
+        input_dim: int
+            The dimension of the input data.
+    """
+    def __init__(self, 
+                 input_dim, 
+                 num_points, 
+                 num_blocks: int = 4, 
+                 num_neighbors: int = 16,
+                 transformer_dim: int = 512):
         super().__init__()
-        npoints, nblocks, nneighbor, n_c, d_points = num_points, num_blocks, num_neighbors, num_classes, input_dim
-        self.backbone = Backbone(npoints, nblocks, nneighbor, d_points, transformer_dim)
+        self.backbone = Backbone(num_points, num_blocks, num_neighbors, input_dim, transformer_dim)
         self.fc2 = nn.Sequential(
-            nn.Linear(32 * 2 ** nblocks, 512),
+            nn.Linear(32 * 2 ** num_blocks, 512),
             nn.ReLU(),
             nn.Linear(512, 512),
             nn.ReLU(),
-            nn.Linear(512, 32 * 2 ** nblocks)
+            nn.Linear(512, 32 * 2 ** num_blocks)
         )
-        self.transformer2 = TransformerBlock(32 * 2 ** nblocks, transformer_dim, nneighbor)
-        self.nblocks = nblocks
+        self.transformer2 = TransformerBlock(32 * 2 ** num_blocks, transformer_dim, num_neighbors)
+        self.num_blocks = num_blocks
         self.transition_ups = nn.ModuleList()
         self.transformers = nn.ModuleList()
-        for i in reversed(range(nblocks)):
+        for i in reversed(range(num_blocks)):
             channel = 32 * 2 ** i
             self.transition_ups.append(TransitionUp(channel * 2, channel, channel))
-            self.transformers.append(TransformerBlock(channel, transformer_dim, nneighbor))
+            self.transformers.append(TransformerBlock(channel, transformer_dim, num_neighbors))
 
         self.fc3 = nn.Sequential(
             nn.Linear(32, 64),
             nn.ReLU(),
             nn.Linear(64, 64),
             nn.ReLU(),
-            nn.Linear(64, n_c)
+            nn.Linear(64, input_dim)
         )
     
     def forward(self, x, p):
@@ -173,55 +200,9 @@ class PointTransformerSeg(nn.Module):
         xyz = xyz_and_feats[-1][0]
         points = self.transformer2(xyz, self.fc2(points))[0]
 
-        for i in range(self.nblocks):
+        for i in range(self.num_blocks):
             points = self.transition_ups[i](xyz, points, xyz_and_feats[- i - 2][0], xyz_and_feats[- i - 2][1])
             xyz = xyz_and_feats[- i - 2][0]
             points = self.transformers[i](xyz, points)[0]
             
         return self.fc3(points)
-
-
-
-## Implementation for Dynabench
-class PointTransformerDyn(PointTransformerSeg):
-    def __init__(self, num_points: int, channels: int, knn: int=16, num_blocks: int=4, transformer_dim: int=512, input_dim: int=1, **kwargs):
-        '''
-            Point Transformer model V1 form the Paper [Point Transformer](https://arxiv.org/abs/2012.09164).
-            The model is unchanged to the original implementation in the [Git](https://github.com/qq456cvb/Point-Transformers).
-            The in and out channels need to be specified to fit the data structure in dynabench.
-            E.g. the Advection equation has 1 channel.
-
-            !! Time intervals need to stay constant !!
-            
-            Parameters
-            ----------
-            num_points: int
-                The number of points in the data.
-            channels: int
-                The number of channels of the data.
-            knn: int
-                The number of k-nearest neighbors to use in the Point Transformer Layer.
-            num_blocks: int
-                The number of blocks in the Point Transformer Layer. (depends on the number of points)
-            transformer_dim: int
-                The dimension of the transformer.
-            input_dim: int
-                The dimension of the input data.
-        '''
-        super(PointTransformerDyn, self).__init__(
-            # Bottleneck function includes the Point Transformer Layer
-            num_points=num_points, num_blocks=num_blocks, num_neighbors=knn, num_classes=channels, input_dim=input_dim, transformer_dim=transformer_dim
-        )
-    
-    def forward(self, x: torch.Tensor, p:torch.Tensor, t_eval: list=[1]) -> torch.Tensor:
-        # Transform data to fit the model
-        # make a data_dict to fit the Point Transformer model
-        ## p: (n,d), x: (n,c)
-
-        res = []
-        # timing --> execute the model for each time_step with propagated data
-        for t in t_eval:
-            x = super().forward(x, p)
-            res.append(x)
-        res = torch.stack(res, dim=1)
-        return res
