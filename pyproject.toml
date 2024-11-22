@@ -31,6 +31,7 @@ sphinx-conestack-theme = "^1.0b3"
 sphinx-rtd-theme = "^2.0.0"
 sphinx-design = "^0.5.0"
 pytest = "^8.2.1"
+coverage = "^7.6.7"
 
 [tool.poetry.group.fourier]
 optional = true
