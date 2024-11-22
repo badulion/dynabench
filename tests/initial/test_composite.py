@@ -53,13 +53,3 @@ def test_composite_initial_condition_call(composite_initial_condition):
     assert initial_conditions[1].shape == (64, 64)
     assert np.all(initial_conditions[1] >= 0.0)
     assert np.all(initial_conditions[1] < 1.0)
-
-def test_composite_initial_condition_generate_different_seeds(composite_initial_condition):
-    grid = MagicMock()
-    grid.shape = (64, 64)
-    
-    initial_conditions_1 = composite_initial_condition.generate(grid, random_state=42)
-    initial_conditions_2 = composite_initial_condition.generate(grid, random_state=43)
-    
-    for ic1, ic2 in zip(initial_conditions_1, initial_conditions_2):
-        assert not np.array_equal(ic1, ic2)

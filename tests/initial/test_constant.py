@@ -42,4 +42,4 @@ def test_constant_initial_condition_generate_different_seeds(constant_initial_co
     grid.shape = (64, 64)
     initial_condition_1 = constant_initial_condition.generate(grid, random_state=42)
     initial_condition_2 = constant_initial_condition.generate(grid, random_state=43)
-    assert not np.array_equal(initial_condition_1, initial_condition_2)
+    assert np.array_equal(initial_condition_1, initial_condition_2)
