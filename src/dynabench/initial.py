@@ -97,7 +97,7 @@ class Constant(InitialCondition):
     def __str__(self):
         return f"I(x, y) = {self.value}"
     
-    def generate(self, grid: dynabench.grid.Grid):
+    def generate(self, grid: dynabench.grid.Grid, random_state: int = 42):
         return self.value+np.zeros(grid.shape)
     
 
