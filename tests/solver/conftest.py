@@ -41,5 +41,5 @@ def pypde_solver(default_base_equation, default_grid, mock_initial_condition):
         equation=default_base_equation,
         grid=default_grid,
         initial_generator=mock_initial_condition,
-        parameters={"param1": 1.0}
+        parameters={'method': 'RK45'}
     )

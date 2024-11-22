@@ -2,7 +2,7 @@ import numpy as np
 from unittest.mock import MagicMock, patch
 
 def test_pypde_solver_init(pypde_solver):
-    assert pypde_solver.parameters == {"param1": 1.0}
+    assert pypde_solver.parameters == {'method': 'RK45'}
     assert pypde_solver.spatial_dim == 2
     assert pypde_solver.equation is not None
 
