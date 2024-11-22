@@ -62,8 +62,13 @@
 - Add example for burgers equation
 - Add example for kuramoto sivashinsky equation
 
-## [0.3.7] -> 
+## [0.3.7] -> September 12, 2024
 - Add grind model from ECML paper
 - Add example and documentation for grind model
 - Add link to grind original github
 - Add paper list to website
+
+## [0.3.8] -> 
+- Add tests for initial condition generators
+- Add tests for grid class
+- Add tests for equation handlers
