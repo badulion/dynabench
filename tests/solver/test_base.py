@@ -1,19 +1,4 @@
 import pytest
-from unittest.mock import MagicMock
-from dynabench.solver._base import BaseSolver
-
-@pytest.fixture
-def mock_initial_generator():
-    return MagicMock()
-
-@pytest.fixture
-def base_solver(default_base_equation, default_grid, base_initial_condition):
-    return BaseSolver(
-        equation=default_base_equation,
-        grid=default_grid,
-        initial_generator=base_initial_condition,
-        parameters={"param1": "value1"}
-    )
 
 def test_init(base_solver, default_base_equation, default_grid, base_initial_condition):
     assert base_solver.equation == default_base_equation
