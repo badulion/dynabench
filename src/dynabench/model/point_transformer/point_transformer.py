@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright (c) 2023 Pointcept
+# Copyright (c) 2023 Yang You
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -187,7 +187,7 @@ class PointTransformerDyn(PointTransformerSeg):
     def __init__(self, num_points: int, channels: int, knn: int=16, num_blocks: int=4, transformer_dim: int=512, input_dim: int=1, **kwargs):
         '''
             Point Transformer model V1 form the Paper [Point Transformer](https://arxiv.org/abs/2012.09164).
-            The model is unchanged to the original implementation in the [Git]{https://github.com/Pointcept/Pointcept/tree/main}.
+            The model is unchanged to the original implementation in the [Git](https://github.com/qq456cvb/Point-Transformers).
             The in and out channels need to be specified to fit the data structure in dynabench.
             E.g. the Advection equation has 1 channel.
 
@@ -200,9 +200,9 @@ class PointTransformerDyn(PointTransformerSeg):
             channels: int
                 The number of channels of the data.
             knn: int
-                The number of knn to use in the Point Transformer Layer.
+                The number of k-nearest neighbors to use in the Point Transformer Layer.
             num_blocks: int
-                The number of blocks in the Point Transformer Layer.
+                The number of blocks in the Point Transformer Layer. (depends on the number of points)
             transformer_dim: int
                 The dimension of the transformer.
             input_dim: int

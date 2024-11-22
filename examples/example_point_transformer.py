@@ -5,7 +5,7 @@ from dynabench.model.point_transformer.point_transformer import PointTransformer
 import torch.optim as optim
 import torch.nn as nn
 
-#download_equation('advection', structure='cloud', resolution='low')
+download_equation('advection', structure='cloud', resolution='low')
 
 advection_train_iterator = DynabenchIterator(split="train",
                                            equation='advection',
