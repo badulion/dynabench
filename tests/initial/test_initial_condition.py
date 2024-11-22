@@ -1,5 +1,6 @@
-import pytest
+import numpy as np
 from unittest.mock import MagicMock
+import pytest
 
 def test_initial_condition_init(base_initial_condition):
     assert base_initial_condition.parameters == {"param1": 1.0}
