@@ -14,6 +14,3 @@ def test_wuedata_urls():
                 url = f"https://wuedata.uni-wuerzburg.de/radar/api/datasets/{DATASETS_WUEDATA[key]}/metadata"
                 response = requests.get(url)
                 assert response.status_code == 200
-
-
-test_wuedata_urls()
