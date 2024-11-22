@@ -72,3 +72,5 @@
 - Add tests for initial condition generators
 - Add tests for grid class
 - Add tests for equation handlers
+- PointTransformerV1 implemented
+- Wrapper for iterative predictions for point clouds implemented
