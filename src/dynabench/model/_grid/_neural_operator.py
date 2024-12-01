@@ -156,7 +156,7 @@ class FourierNeuralOperator(nn.Module):
         self.fc1 = nn.Linear(width, 128)
         self.fc2 = nn.Linear(128, channels)
 
-    def forward(self, x: torch.Tensor, p: torch.Tensor):
+    def forward(self, x: torch.Tensor):
         if self.pad is not None:
             x = F.pad(x, self.pad, "replicate")
         # permute for embedding
