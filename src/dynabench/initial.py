@@ -6,6 +6,7 @@ import numpy as np
 import dynabench.grid
 
 from typing import List
+from warnings import warn
 import itertools
 
 
@@ -147,7 +148,7 @@ class SumOfGaussians(InitialCondition):
         super(SumOfGaussians, self).__init__(**kwargs)
         self.components = components
         self.zero_level = zero_level
-        
+        warn(f'{self.__class__.__name__} is deprecated and will be removed in a future version. Use WrappedGaussians instead.', DeprecationWarning, stacklevel=2)
         
     def __str__(self):
         return "I(x, y) = sum_i A_i exp(-40(x-x_i)^2 + (y-y_i)^2)"
