@@ -222,7 +222,7 @@ class WrappedGaussians(InitialCondition):
 
         std_scale = min(dLx, dLy)
 
-        m = np.array([grid.get_random_point_within_domain() for _ in range(self.components)])
+        m = grid.get_random_point_within_domain(self.components)
 
         u = self.zero_level+np.zeros_like(x)
 
