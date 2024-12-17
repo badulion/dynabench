@@ -6,6 +6,7 @@ import numpy as np
 import dynabench.grid
 
 from typing import List
+from warnings import warn
 import itertools
 
 
@@ -147,6 +148,7 @@ class SumOfGaussians(InitialCondition):
         super(SumOfGaussians, self).__init__(**kwargs)
         self.components = components
         self.zero_level = zero_level
+        warn(f'{self.__class__.__name__} is deprecated and will be removed in a future version. Use WrappedGaussians instead.', DeprecationWarning, stacklevel=2)
         
     def __str__(self):
         return "I(x, y) = sum_i A_i exp(-40(x-x_i)^2 + (y-y_i)^2)"
@@ -212,13 +214,23 @@ class WrappedGaussians(InitialCondition):
         np.random.seed(random_state)
         x, y = np.meshgrid(grid.x, grid.y)
 
-        m = np.array([grid.get_random_point_within_domain() for i in range(self.components)])
+        limits_x = grid.grid_limits[0]
+        limits_y = grid.grid_limits[1]
+
+        dLx = limits_x[1] - limits_x[0]
+        dLy = limits_y[1] - limits_y[0]
+
+        std_scale = min(dLx, dLy)
+
+        m = grid.get_random_point_within_domain(self.components)
 
         u = self.zero_level+np.zeros_like(x)
 
         for i in range(self.components):
 
-            component = self._wrapped_gaussian_2d(x, y, m[i], 0.1)
+            std = np.random.uniform(0.01, 1) * std_scale
+
+            component = self._wrapped_gaussian_2d(x, y, m[i], std, limits_x, limits_y)
 
             u = u + np.random.uniform(-1, 1) * component
 

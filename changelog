@@ -74,3 +74,5 @@
 - Add tests for equation handlers
 - PointTransformerV1 implemented
 - Wrapper for iterative predictions for point clouds implemented
+- Deprecated sum of gaussians
+- Fix: Wrapped gaussians now work for any limits
