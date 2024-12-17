@@ -64,12 +64,19 @@ class Grid(object):
         """
         return (np.random.choice(self.x), np.random.choice(self.y))
     
-    def get_random_point_within_domain(self):
+    def get_random_point_within_domain(self, num_points: int = 1):
         """
             Get a random point within the domain of the grid, but not necessarily on the grid.
         """
-        return (np.random.uniform(self.grid_limits[0][0], self.grid_limits[0][1]), 
-                np.random.uniform(self.grid_limits[1][0], self.grid_limits[1][1]))
+        if not isinstance(num_points, int):
+            raise ValueError("num_points must be an integer.")
+        if num_points == 1:
+            return (np.random.uniform(self.grid_limits[0][0], self.grid_limits[0][1]), 
+                    np.random.uniform(self.grid_limits[1][0], self.grid_limits[1][1]))
+        else:
+            points_x = np.random.uniform(self.grid_limits[0][0], self.grid_limits[0][1], num_points)
+            points_y = np.random.uniform(self.grid_limits[1][0], self.grid_limits[1][1], num_points)
+            return np.stack((points_x, points_y), axis=-1)
     
     def export_as_pypde_grid(self):
         """
