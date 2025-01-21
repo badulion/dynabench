@@ -19,6 +19,9 @@ To get started with the package, you can install it via pip:
 pip install dynabench
 ```
 
+### Additional dependencies
+To use some of the components of dynabench (models, solvers etc.) additional dependencies are required
+...
 
 ### Downloading data
 The DynaBench package contains dozens of different equations that can be used to generate synthetic data. The easiest way to get started, however, is to use one of the original benchmark equations. These can be downloaded using the following command:
