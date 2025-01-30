@@ -1,16 +1,37 @@
 import torch
 import pytest
 
-def test_output_shape(batched_input_low, default_cnn):
-    output = default_cnn(batched_input_low)
-    assert output.shape == (16, 1, 15, 15)
+@pytest.mark.parametrize("input,expected,model",
+                        [
+                            ('batched_input_grid_low', (16, 1, 15, 15), 'default_cnn'),
+                            ('batched_input_grid_med', (16, 1, 22, 22), 'default_cnn'),
+                            ('batched_input_grid_high', (16, 1, 30, 30), 'default_cnn'),
+                            ('unbatched_input_grid_low', (1, 15, 15), 'default_cnn'),
+                            ('unbatched_input_grid_med', (1, 22, 22), 'default_cnn'),
+                            ('unbatched_input_grid_high', (1, 30, 30), 'default_cnn'),
+                            ('batched_input_grid_low_channel', (16, 4, 15, 15), 'default_cnn_channel'),
+                            ('unbatched_input_grid_low_channel', (4, 15, 15), 'default_cnn_channel'),
+                        ])
+def test_output_shape(input, expected, model, request):
+    input = request.getfixturevalue(input)
+    model = request.getfixturevalue(model)
+    output = model(input[0])
+    assert output.shape == expected
 
 
-def test_cuda_copy(batched_input_low, default_cnn):
+@pytest.mark.parametrize("input,model",
+                        [
+                            ('batched_input_grid_low', 'default_cnn'),
+                            ('batched_input_grid_med', 'default_cnn'),
+                            ('batched_input_grid_high', 'default_cnn'),
+                        ])
+def test_cuda_copy(input, model, request):
     if torch.cuda.is_available():
-        default_cnn.cuda()
-        batched_input_low = batched_input_low.cuda()
-        output = default_cnn(batched_input_low)
+        input = request.getfixturevalue(input)
+        model = request.getfixturevalue(model)
+        model.cuda()
+        input = input[0].cuda()
+        output = model(input)
         assert output.device.type == "cuda"
     else:
         pytest.skip("CUDA not available")
