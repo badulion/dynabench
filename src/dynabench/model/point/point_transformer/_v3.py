@@ -8,7 +8,6 @@ Please cite our work if the code is helpful to you.
 ## Needed Pkgs: addict, flash_attn (requires CUDA)(recommended), spconv (requires CUDA toolkit), torch_scatter (torch version specific)
 # flash attn is not used in this test
 # pip install addict spconv-${CUDA} torch-scatter -f https://data.pyg.org/whl/torch-2.4.0+${CUDA}.html
-# SPCONV fix: set Linux var: SPCONV_SAVED_WEIGHT_LAYOUT="RSCK"
 # ${CUDA} is the CUDA version of your machine, e.g. cu124 for CUDA 12.4 OR cpu for cpu
 """
 

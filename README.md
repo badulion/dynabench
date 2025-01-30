@@ -138,6 +138,32 @@ for epoch in range(10):
         print(f"Epoch: {epoch}, Batch: {i}, Loss: {loss.item()}")
 ```
 
+#### Further Models
+In Dynabench there are several SOTA-models already implemented and ready to train.
+The models are altered to fit the data structure of dynabench.
+The source code can be found in src/dynabench/model/_grid or /point respectively and include the [NeuralPDE model](https://arxiv.org/abs/2111.07671), [Neural Operator model](http://arxiv.org/abs/2010.08895), [Point Transformer model](http://arxiv.org/abs/2012.09164), and [Point Transformer model V3](http://arxiv.org/abs/2312.10035). 
+The first three models can be trained from scratch by simply starting the respective script in /examples. For the Point Transformer V3 some additional packages need to be installed.
+It is recommended to use a virtual environment. Then install:
+```shell
+# activate environment
+source bin/activate/venv
+# install needed dependencies ONLY for Point Transfomer V3
+pip install addict
+# for cpu
+pip install spconv
+# for cuda ${CUDA} is the CUDA version of your machine, e.g. cu124 for CUDA 12.4
+pip install spconv-${CUDA}
+# ${CUDA} is the CUDA version OR cpu for CPU
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.4.0+${CUDA}.html
+```
+For further information check out the [pytorch_scatter](https://github.com/rusty1s/pytorch_scatter) and [spconv](https://github.com/traveller59/spconv) repos. Moreover, the model CAN be used with [flash-attention](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) which may be installed according to their guide.
+
+To try a model first change the intrinsic parameters of the model as needed and then run the example training script of the model with:
+```shell
+python3 examples/example_{model}.py
+```
+
+
 ## 📈 Benchmark Results
 The original six equations have been used to evaluate the performance of various models on the task of forecasting the physical system. For this 900 spatial points have been used. The results are shown below:
 
