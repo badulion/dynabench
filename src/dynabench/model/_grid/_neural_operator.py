@@ -157,6 +157,10 @@ class FourierNeuralOperator(nn.Module):
         self.fc2 = nn.Linear(128, channels)
 
     def forward(self, x: torch.Tensor):
+        # batching
+        if x.dim() == 3:
+            x = x.unsqueeze(0)
+
         if self.pad is not None:
             x = F.pad(x, self.pad, "replicate")
         # permute for embedding

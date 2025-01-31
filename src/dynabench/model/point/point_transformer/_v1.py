@@ -196,6 +196,12 @@ class PointTransformerV1(nn.Module):
         )
     
     def forward(self, x, p):
+        # batching
+        if x.dim() == 2:
+            x = x.unsqueeze(0)
+        if p.dim() == 2:
+            p = p.unsqueeze(0)
+            
         points, xyz_and_feats = self.backbone(x, p)
         xyz = xyz_and_feats[-1][0]
         points = self.transformer2(xyz, self.fc2(points))[0]
