@@ -158,8 +158,10 @@ class FourierNeuralOperator(nn.Module):
 
     def forward(self, x: torch.Tensor):
         # batching
+        batched = True
         if x.dim() == 3:
             x = x.unsqueeze(0)
+            batched = False
 
         if self.pad is not None:
             x = F.pad(x, self.pad, "replicate")
@@ -183,4 +185,6 @@ class FourierNeuralOperator(nn.Module):
         if self.pad is not None:
             out = out[:,:,self.pad[0]:-self.pad[1],self.pad[2]:-self.pad[3]]
 
+        if not batched: out = out.squeeze(0)
+        
         return out

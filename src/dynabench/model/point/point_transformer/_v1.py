@@ -197,8 +197,10 @@ class PointTransformerV1(nn.Module):
     
     def forward(self, x, p):
         # batching
+        batched = True
         if x.dim() == 2:
             x = x.unsqueeze(0)
+            batched = False
         if p.dim() == 2:
             p = p.unsqueeze(0)
             
@@ -210,5 +212,9 @@ class PointTransformerV1(nn.Module):
             points = self.transition_ups[i](xyz, points, xyz_and_feats[- i - 2][0], xyz_and_feats[- i - 2][1])
             xyz = xyz_and_feats[- i - 2][0]
             points = self.transformers[i](xyz, points)[0]
-            
-        return self.fc3(points)
+        
+        y = self.fc3(points)
+
+        if not batched: y = y.squeeze(0)
+
+        return y
