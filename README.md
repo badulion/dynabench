@@ -27,7 +27,7 @@ It is recommended to use a virtual environment. Then install:
 pip install addict spconv-${CUDA} torch-scatter -f https://data.pyg.org/whl/torch-2.4.0+${CUDA}.html
 ```
 For further information check out the [pytorch_scatter](https://github.com/rusty1s/pytorch_scatter#installation) and [spconv](https://github.com/traveller59/spconv#install) repos. Moreover, the Point Transformer model V3 CAN be used with [flash-attention](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) which may be installed according to their guide.
-Note, that the model requires cuda and the requirements need to be installed according to your PyTorch installation.
+Note, that the model requires cuda and the requirements need to be installed according to the PyTorch installation.
 
 ### Downloading data
 The DynaBench package contains dozens of different equations that can be used to generate synthetic data. The easiest way to get started, however, is to use one of the original benchmark equations. These can be downloaded using the following command:
