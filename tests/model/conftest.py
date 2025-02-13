@@ -3,6 +3,7 @@ from dynabench.model._grid.cnn import CNN
 from dynabench.model._grid.resnet import ResNet
 from dynabench.model.point.point_transformer import PointTransformerV1
 from dynabench.model._grid._neural_operator import FourierNeuralOperator
+from dynabench.model.point._fno import Geo_FNO
 from dynabench.model._grid.neuralpde import NeuralPDE
 
 import torch
@@ -116,6 +117,14 @@ def default_neural_operator():
 @pytest.fixture
 def default_neural_operator_channel():
     return FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, channels=4)
+
+@pytest.fixture
+def default_fno_geo():
+    return Geo_FNO(width=32, modes=(8,8), channels=1, grid_size=(20,20), num_blocks=3)
+
+@pytest.fixture
+def default_fno_geo_channel():
+    return Geo_FNO(width=32, modes=(8,8), channels=4, grid_size=(20,20), num_blocks=3)
 
 @pytest.fixture
 def default_neuralpde():
