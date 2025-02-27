@@ -1,10 +1,11 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
-from dynabench.model.point.point_transformer import PointTransformerV1
+from dynabench.model.point.point_transformer import PointTransformerV3
 from dynabench.model.utils import PointIterativeWrapper
 
 import torch.optim as optim
 import torch.nn as nn
+import torch
 
 #download_equation('advection', structure='cloud', resolution='low')
 
@@ -17,9 +18,11 @@ advection_train_iterator = DynabenchIterator(split="train",
 
 train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 
-## number of knn=16 --> best found in ablation study in paper
-## number of blocks=3 --> depends on num_points -> (low) - 3
-net = PointTransformerV1(input_dim=1, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=512)
+## additional packages need to be installed (addict, spconv, torch_scatter)
+## without flash_attn --> enable_flash=False enc_patch_size and dec_patch_size reduced to 128
+## in_channels=1 for advection + change decoder output channels to 1
+net = PointTransformerV3(in_channels=1, dec_channels=(1, 64, 128, 256), dec_num_head=(1, 4, 8, 16), enable_flash=False, enc_patch_size=(128,128,128,128,128), dec_patch_size=(128,128,128,128))
+
 model = PointIterativeWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
