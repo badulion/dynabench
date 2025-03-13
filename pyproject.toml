@@ -11,8 +11,8 @@ repository = "https://github.com/badulion/dynabench/"
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-numpy = "^1.26.4"
+python = ">=3.9,<3.14"
+numpy = "^2.0.0"
 requests = "^2.31.0"
 tqdm = "^4.66.2"
 h5py = "^3.11.0"
@@ -20,7 +20,7 @@ joblib = "^1.4.2"
 matplotlib = "<=3.8"
 torch = "^2.3.0"
 torchdiffeq = "^0.2.3"
-py-pde = "^0.40.0"
+py-pde = "^0.44.0"
 sympy = "^1.12"
 
 [tool.poetry.group.dev.dependencies]
