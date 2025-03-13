@@ -75,6 +75,7 @@
 - PointTransformerV1 implemented
 - PointTransformerV3 implemented
 - FNO implemented
+- Non-uniform FNO implemented
 - Wrapper for iterative predictions for point clouds implemented
 - Deprecated sum of gaussians
 - Fix: Wrapped gaussians now work for any limits
