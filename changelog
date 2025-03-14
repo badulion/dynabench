@@ -80,3 +80,6 @@
 - Deprecated sum of gaussians
 - Fix: Wrapped gaussians now work for any limits
 - Update requirements to work with python3.13
+
+## [0.4.1] -> March 4, 2025
+- Add squeeze_lookback_dim to DynabenchIterator and update examples/documentation
