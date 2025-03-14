@@ -32,6 +32,8 @@ class DynabenchIterator:
         Location where the data is stored. Defaults to "data".
     lookback : int
         Number of timesteps to use for the input data. Defaults to 1.
+    squeeze_lookback_dim: bool
+        Whether to squeeze the lookback dimension. Defaults to False. If lookback > 1 has no effect.
     rollout : int
         Number of timesteps to use for the target data. Defaults to 1.
     download: int
@@ -45,6 +47,7 @@ class DynabenchIterator:
         resolution: str="low",
         base_path: str="data",
         lookback: int=1,
+        squeeze_lookback_dim: bool=False,
         rollout: int=1,
         download: bool=False,
         *args,
@@ -63,6 +66,7 @@ class DynabenchIterator:
         self.structure = structure
         self.resolution = resolution
         self.base_path = base_path
+        self.squeeze_lookback_dim = squeeze_lookback_dim
         self.lookback = lookback
         self.rollout = rollout
 
@@ -108,6 +112,8 @@ class DynabenchIterator:
             data_y = f['data'][simulation_idx, temporal_idx+self.lookback:temporal_idx+self.lookback+self.rollout]
             points = f['points'][simulation_idx]
 
+        if self.squeeze_lookback_dim and self.lookback == 1:
+            data_x = np.squeeze(data_x, axis=0)
 
         return data_x, data_y, points
 
