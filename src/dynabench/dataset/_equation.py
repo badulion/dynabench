@@ -23,10 +23,12 @@ class EquationMovingWindowIterator:
             data_path: str,
             lookback: int,
             rollout: int,
+            dtype: np.dtype=np.float32,
     ):
         self.data_path = data_path
         self.lookback = lookback
         self.rollout = rollout
+        self.dtype = dtype
 
 
     def __len__(self):
@@ -57,6 +59,11 @@ class EquationMovingWindowIterator:
         
         X, Y = np.meshgrid(x_coords, y_coords)
         points = np.stack([X, Y], axis=-1)
+        
+        if self.dtype is not None:
+            data_input = data_input.astype(self.dtype)
+            data_target = data_target.astype(self.dtype)
+            points = points.astype(self.dtype)
 
         return data_input, data_target, points
     
