@@ -49,6 +49,7 @@ class DynabenchIterator:
         lookback: int=1,
         squeeze_lookback_dim: bool=False,
         rollout: int=1,
+        dtype: np.dtype=np.float32,
         download: bool=False,
         *args,
         **kwargs,
@@ -69,6 +70,8 @@ class DynabenchIterator:
         self.squeeze_lookback_dim = squeeze_lookback_dim
         self.lookback = lookback
         self.rollout = rollout
+        self.dtype = dtype
+        self.download = download
 
         # get the shapes of the simulations
         self.file_list = glob.glob(os.path.join(base_path, equation, structure, resolution, f"*{split}*.h5"))
@@ -115,6 +118,11 @@ class DynabenchIterator:
         if self.squeeze_lookback_dim and self.lookback == 1:
             data_x = np.squeeze(data_x, axis=0)
 
+        if self.dtype is not None:
+            data_x = data_x.astype(self.dtype)
+            data_y = data_y.astype(self.dtype)
+            points = points.astype(self.dtype)
+        
         return data_x, data_y, points
 
     def __len__(self):

@@ -97,7 +97,6 @@ Now we will train the model on the training dataset using PyTorch. We will use t
         for epoch in range(10):
             model.train()
             for i, (x, y, p) in enumerate(train_loader):
-                x, y, p = x.float(), y.float(), p.float() # only use the first channel and convert to float32
                 optimizer.zero_grad()
                 y_pred = model(x, p)
                 loss = criterion(y_pred, y)
@@ -135,7 +134,6 @@ We can specify this in the forward pass of the model by passing the t_eval param
 
     loss_values = []
     for i, (x, y, p) in enumerate(test_loader):
-        x, y, p = x.float(), y.float(), p.float() # only use the first channel and convert to float32
         y_pred = model(x, p, t_eval=range(17))
         loss = criterion(y_pred, y)
         loss_values.append(loss.item())
@@ -184,7 +182,6 @@ Overall the code for training the NeuralPDE model on the Burgers' equation is as
     for epoch in range(10):
         model.train()
         for i, (x, y, p) in enumerate(train_loader):
-            x, y, p = x.float(), y.float(), p.float() # only use the first channel and convert to float32
             optimizer.zero_grad()
             y_pred = model(x, p)
             loss = criterion(y_pred, y)
@@ -208,7 +205,6 @@ Overall the code for training the NeuralPDE model on the Burgers' equation is as
 
     loss_values = []
     for i, (x, y, p) in enumerate(test_loader):
-        x, y, p = x.float(), y.float(), p.float() # only use the first channel and convert to float32
         y_pred = model(x, p, t_eval=range(17))
         loss = criterion(y_pred, y)
         loss_values.append(loss.item())
