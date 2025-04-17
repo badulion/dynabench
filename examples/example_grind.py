@@ -30,7 +30,6 @@ criterion = nn.MSELoss()
 for epoch in range(10):
     model.train()
     for i, (x, y, p) in enumerate(train_loader):
-        x, y, p = x.float(), y.float(), p.float() # only use the first channel and convert to float32
         optimizer.zero_grad()
         y_pred = model(x, p)
         loss = criterion(y_pred, y)

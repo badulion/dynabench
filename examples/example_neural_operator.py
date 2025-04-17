@@ -28,7 +28,6 @@ criterion = nn.MSELoss()
 for epoch in range(1):
     model.train()
     for i, (x, y, p) in enumerate(train_loader):
-        x, y = x.float(), y.float() # only use the first channel and convert to float32
         optimizer.zero_grad()
         y_pred = model(x)
         loss = criterion(y_pred, y)
@@ -50,7 +49,6 @@ model.eval()
 
 loss_values = []
 for i, (x, y, p) in enumerate(test_loader):
-    x, y = x.float(), y.float() # only use the first channel and convert to float32
     y_pred = model(x, t_eval=range(1,17))
     loss = criterion(y_pred, y)
     loss_values.append(loss.item())
