@@ -165,6 +165,7 @@ class PointTransformerV1(nn.Module):
     """
     def __init__(self, 
                  input_dim, 
+                 output_dim,
                  num_points, 
                  num_blocks: int = 4, 
                  num_neighbors: int = 16,
@@ -192,7 +193,7 @@ class PointTransformerV1(nn.Module):
             nn.ReLU(),
             nn.Linear(64, 64),
             nn.ReLU(),
-            nn.Linear(64, input_dim)
+            nn.Linear(64, output_dim)
         )
     
     def forward(self, x, p):
