@@ -22,6 +22,7 @@ torch = "^2.3.0"
 torchdiffeq = "^0.2.3"
 py-pde = "^0.44.0"
 sympy = "^1.12"
+einops = "^0.8.1"
 
 [tool.poetry.group.dev.dependencies]
 Sphinx = "^7.2.6"
