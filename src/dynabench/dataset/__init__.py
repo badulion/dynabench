@@ -5,5 +5,6 @@ Module for loading the data.
 from ._download import download_equation
 from ._dynabench import DynabenchIterator, DynabenchSimulationIterator
 from ._equation import EquationMovingWindowIterator
+from ._transforms import MakeKNNGraph, Grid2Cloud, Compose
 
-__all__ = ["download_equation", "DynabenchIterator", "DynabenchSimulationIterator", "EquationMovingWindowIterator"]
+__all__ = ["download_equation", "DynabenchIterator", "DynabenchSimulationIterator", "EquationMovingWindowIterator", "MakeKNNGraph", "Grid2Cloud", "Compose"]

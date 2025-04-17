@@ -5,6 +5,8 @@ import h5py
 import numpy as np
 
 from ._download import download_equation
+from ._data_items import DataItem, CloudItem, GridItem
+from ._transforms import BaseTransform, DefaultTransform
 from warnings import warn
 
 class DynabenchIterator:
@@ -51,6 +53,7 @@ class DynabenchIterator:
         rollout: int=1,
         dtype: np.dtype=np.float32,
         download: bool=False,
+        transforms: BaseTransform=DefaultTransform(),
         *args,
         **kwargs,
     ) -> None:
@@ -72,6 +75,7 @@ class DynabenchIterator:
         self.rollout = rollout
         self.dtype = dtype
         self.download = download
+        self.transform = transforms
 
         # get the shapes of the simulations
         self.file_list = glob.glob(os.path.join(base_path, equation, structure, resolution, f"*{split}*.h5"))
@@ -93,15 +97,8 @@ class DynabenchIterator:
 
     def _check_exists(self):
         return len(self.file_list) > 0
-
-    def __getitem__(self, index):
-        if index < 0:
-            index += len(self)
-        if index > len(self) or index < 0:
-            raise IndexError("Index out of bounds")
-        
-        
-        
+    
+    def __get_data__(self, index: int) -> DataItem:
         # select appropriate file and indices
         file_selector = [i for i, starting_index in enumerate(self.starting_indices) if starting_index <= index][-1]
         raw_idx_within_file = index - self.starting_indices[file_selector]
@@ -115,15 +112,34 @@ class DynabenchIterator:
             data_y = f['data'][simulation_idx, temporal_idx+self.lookback:temporal_idx+self.lookback+self.rollout]
             points = f['points'][simulation_idx]
 
-        if self.squeeze_lookback_dim and self.lookback == 1:
-            data_x = np.squeeze(data_x, axis=0)
-
         if self.dtype is not None:
             data_x = data_x.astype(self.dtype)
             data_y = data_y.astype(self.dtype)
             points = points.astype(self.dtype)
+
+        if self.structure == 'cloud':
+            return CloudItem(data_x, data_y, points)
+        elif self.structure == 'grid':
+            return GridItem(data_x, data_y, points)
+        else:
+            raise ValueError(f"Unknown structure {self.structure}. Please use 'cloud' or 'grid'.")
+
+    def __getitem__(self, index: int) -> DataItem:
+        if index < 0:
+            index += len(self)
+        if index > len(self) or index < 0:
+            raise IndexError("Index out of bounds")
         
-        return data_x, data_y, points
+        data_item = self.transform(self.__get_data__(index))
+
+        if self.squeeze_lookback_dim and self.lookback == 1:
+            data_item.x = np.squeeze(data_item.x, axis=0)
+        
+        if hasattr(data_item, 'knn_graph') and data_item.knn_graph is not None:
+            return (data_item.x, data_item.y, data_item.pos, data_item.knn_graph)
+        else:
+            return (data_item.x, data_item.y, data_item.pos)
+        
 
     def __len__(self):
         return sum(self.datapoints_per_file)
