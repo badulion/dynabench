@@ -1,7 +1,7 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
 from dynabench.model.point.point_transformer import PointTransformerV3
-from dynabench.model.utils import PointIterativeWrapper
+from dynabench.model.utils import CloudRolloutWrapper
 
 import torch.optim as optim
 import torch.nn as nn
@@ -23,8 +23,7 @@ train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 ## without flash_attn --> enable_flash=False enc_patch_size and dec_patch_size reduced to 128
 ## in_channels=1 for advection + change decoder output channels to 1
 net = PointTransformerV3(in_channels=1, dec_channels=(1, 64, 128, 256), dec_num_head=(1, 4, 8, 16), enable_flash=False, enc_patch_size=(128,128,128,128,128), dec_patch_size=(128,128,128,128))
-
-model = PointIterativeWrapper(net)
+model = CloudRolloutWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.MSELoss()
