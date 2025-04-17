@@ -1,7 +1,7 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
 from dynabench.model.point.point_transformer import PointTransformerV1
-from dynabench.model.utils import PointIterativeWrapper
+from dynabench.model.utils import PointIterativeWrapper, RolloutWrapper
 
 import torch.optim as optim
 import torch.nn as nn
@@ -23,7 +23,7 @@ train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 ## number of blocks=3 --> depends on num_points -> (low) - 3
 net = PointTransformerV1(input_dim=1, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=512)
 
-model = PointIterativeWrapper(net)
+model = RolloutWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.MSELoss()
