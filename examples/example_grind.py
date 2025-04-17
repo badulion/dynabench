@@ -36,8 +36,6 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
         print(f"Epoch: {epoch}, Batch: {i}, Loss: {loss.item()}")
-        break
-    break
 
 burgers_test_iterator = DynabenchIterator(split="test",
                                           equation='burgers',
