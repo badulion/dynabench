@@ -4,6 +4,7 @@ import dynabench.grid
 
 from typing import List
 from joblib import hash
+import pathlib
 
 class BaseSolver(object):
     """
@@ -36,11 +37,11 @@ class BaseSolver(object):
     def __str__(self):
         return "Base Equation Solver"
     
-    def generate_filename(self,
-                          t_span: List[float],
-                          dt_eval: float,
-                          random_state: int,
-                          hash_truncate: int = 8):
+    def generate_descriptors(self,
+                            t_span: List[float],
+                            dt_eval: float,
+                            random_state: int,
+                            hash_truncate: int = 8):
         eq_params = (
             self.equation,
             self.grid,
@@ -51,6 +52,22 @@ class BaseSolver(object):
         solver_descriptor = f"dt_{dt_eval}_trange_{t_span[0]}_{t_span[1]}"
         seed_descriptor = f"seed_{random_state}"
         return eq_descriptor, solver_descriptor, seed_descriptor
+    
+    def generate_filename(self,
+                          t_span: List[float],
+                          dt_eval: float,
+                          random_state: int,
+                          hash_truncate: int = 8,
+                          out_dir: str = "data/raw"):
+        eq_descriptor, solver_descriptor, seed_descriptor = self.generate_descriptors(
+            t_span=t_span,
+            dt_eval=dt_eval,
+            random_state=random_state,
+            hash_truncate=hash_truncate
+        )
+        out_dir = pathlib.Path(out_dir)
+        path = out_dir / eq_descriptor / solver_descriptor / f"{seed_descriptor}.h5"
+        return path
     
     def solve(self, 
               random_state: int = 42,

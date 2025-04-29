@@ -69,7 +69,7 @@ class PyPDESolver(BaseSolver):
 
         # Create tracker and file storage
         out_dir = pathlib.Path(out_dir)
-        eq_descriptor, solver_descriptor, seed_descriptor = self.generate_filename(t_span=t_span, dt_eval=dt_eval, random_state=random_state)
+        eq_descriptor, solver_descriptor, seed_descriptor = self.generate_descriptors(t_span=t_span, dt_eval=dt_eval, random_state=random_state)
         eq_name = f"{seed_descriptor}.h5"
         eq_dir = out_dir / eq_descriptor / solver_descriptor
         save_path = out_dir / eq_descriptor / solver_descriptor / eq_name
