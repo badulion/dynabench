@@ -83,3 +83,9 @@
 
 ## [0.4.1] -> March 4, 2025
 - Add squeeze_lookback_dim to DynabenchIterator and update examples/documentation
+
+## [0.4.2] -> 
+- Add support for generating multiple simulations in one batch
+- Add support for iterating over multiple simulations in one iterator
+- Add whole simulation iterator for custom equations
+- Move main iteration logic to base class (common for both Dynabench and CustomEquation)
