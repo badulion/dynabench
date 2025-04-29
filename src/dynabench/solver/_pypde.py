@@ -138,5 +138,8 @@ class PyPDESolver(BaseSolver):
         else:
             raise ValueError("random_state should be an int or a list of ints")
         
+        file_paths = []  # Initialize a list to store file paths
         for seed in random_state:
-            self.solve_single(random_state=seed, t_span=t_span, dt_eval=dt_eval, out_dir=out_dir)
+            file_path = self.solve_single(random_state=seed, t_span=t_span, dt_eval=dt_eval, out_dir=out_dir)
+            file_paths.append(file_path)  # Collect the returned file path
+        return file_paths  # Return the list of file paths
