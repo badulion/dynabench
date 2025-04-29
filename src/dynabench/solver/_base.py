@@ -46,7 +46,11 @@ class BaseSolver(object):
             self.grid,
             self.initial_generator
         )
-        return f"{self.equation.name}_{hash(eq_params)[:hash_truncate]}_dt_{dt_eval}_trange_{t_span[0]}_{t_span[1]}_seed_{random_state}.h5"
+        #
+        eq_descriptor = f"{self.equation.name}_{hash(eq_params)[:hash_truncate]}"
+        solver_descriptor = f"dt_{dt_eval}_trange_{t_span[0]}_{t_span[1]}"
+        seed_descriptor = f"seed_{random_state}"
+        return eq_descriptor, solver_descriptor, seed_descriptor
     
     def solve(self, 
               random_state: int = 42,
