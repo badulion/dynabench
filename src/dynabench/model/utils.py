@@ -53,8 +53,10 @@ class RolloutWrapper(torch.nn.Module):
         for t in t_eval:
             x_stacked_lookback = einops.rearrange(x, self._einops_stack_lookback_expr()) # Merge lookback with the feature dimension
             
-            args = (x_stacked_lookback,) if self.structure=="grid" else (x_stacked_lookback, p)
-            x_single = self.model(*args)
+            if p is not None:
+                x_single = self.model(x_stacked_lookback, p)
+            else:
+                x_single = self.model(x_stacked_lookback)
             
             x_single_unstacked_loockback = einops.rearrange(x_single, "batch ... -> batch () ...") # add dummy dim for lookback in pred
             x = torch.cat([x[:, 1:], x_single_unstacked_loockback], dim=self.lookback_dim)
