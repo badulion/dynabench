@@ -83,3 +83,9 @@
 
 ## [0.4.1] -> March 4, 2025
 - Add squeeze_lookback_dim to DynabenchIterator and update examples/documentation
+
+## [0.4.2] -> 
+- Updated tests for Rollout wrappers
+- Implemented RolloutWrapper with lookback support; added helper methods.
+- Adjusted PTV3, PTV1, FNO and GeoFNO to use both input and output channels
+- Updated examples to call the appropriate rollout wrapper and parameters.
