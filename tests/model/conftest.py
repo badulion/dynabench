@@ -96,35 +96,35 @@ def default_resnet_channel():
 
 @pytest.fixture
 def default_point_transformer_v1_low():
-    return PointTransformerV1(input_dim=1, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=512)
+    return PointTransformerV1(input_dim=1, output_dim=1, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=512)
 
 @pytest.fixture
 def default_point_transformer_v1_low_channel():
-    return PointTransformerV1(input_dim=4, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=512)
+    return PointTransformerV1(input_dim=4, output_dim=4, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=512)
 
 @pytest.fixture
 def default_point_transformer_v1_med():
-    return PointTransformerV1(input_dim=1, num_points=484, num_neighbors=16, num_blocks=3, transformer_dim=512)
+    return PointTransformerV1(input_dim=1, output_dim=1, num_points=484, num_neighbors=16, num_blocks=3, transformer_dim=512)
 
 @pytest.fixture
 def default_point_transformer_v1_high():
-    return PointTransformerV1(input_dim=1, num_points=900, num_neighbors=16, num_blocks=3, transformer_dim=512)
+    return PointTransformerV1(input_dim=1, output_dim=1, num_points=900, num_neighbors=16, num_blocks=3, transformer_dim=512)
 
 @pytest.fixture
 def default_neural_operator():
-    return FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, channels=1)
+    return FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, in_channels=1, out_channels=1)
 
 @pytest.fixture
 def default_neural_operator_channel():
-    return FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, channels=4)
+    return FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, in_channels=4, out_channels=4)
 
 @pytest.fixture
 def default_fno_geo():
-    return Geo_FNO(width=32, modes=(8,8), channels=1, grid_size=(20,20), num_blocks=3)
+    return Geo_FNO(in_channels=1, out_channels=1, width=32, modes=(8,8), grid_size=(20,20), num_blocks=3)
 
 @pytest.fixture
 def default_fno_geo_channel():
-    return Geo_FNO(width=32, modes=(8,8), channels=4, grid_size=(20,20), num_blocks=3)
+    return Geo_FNO(in_channels=4, out_channels=4, width=32, modes=(8,8), grid_size=(20,20), num_blocks=3)
 
 @pytest.fixture
 def default_neuralpde():
