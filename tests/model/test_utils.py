@@ -58,3 +58,50 @@ def test_cloud_rollout_wrapper_output(dummy_model):
 def test_invalid_structure(dummy_model):
     with pytest.raises(ValueError, match="Structure must be either 'grid' or 'cloud'"):
         RolloutWrapper(model=dummy_model, structure="invalid")
+
+
+@pytest.mark.parametrize("input,model",
+                        [
+                            ('batched_input_grid_low', 'default_cnn'),
+                            ('batched_input_grid_low', 'default_resnet'),
+                            ('batched_input_grid_low', 'default_neural_operator'),
+                        ])
+def test_output_shape_grid(input, model, request):
+    x, t_eval = request.getfixturevalue(input)
+    model = request.getfixturevalue(model)
+    grid_wrapper = GridRolloutWrapper(model=model, is_lookback_squeezed=True)
+    output = grid_wrapper(x, t_eval=t_eval)
+    assert output.shape == (16, 2, 1, 15, 15)
+
+
+@pytest.mark.parametrize("input,model",
+                        [
+                            ('batched_input_point_low', 'default_point_transformer_v1_low'),
+                        ])
+def test_output_shape_point(input, model, request):
+    x, p, t_eval = request.getfixturevalue(input)
+    model = request.getfixturevalue(model)
+    point_wrapper = CloudRolloutWrapper(model=model, is_lookback_squeezed=True)
+    output = point_wrapper(x, p, t_eval=t_eval)
+    assert output.shape == (16, 2, 225, 1)
+
+
+@pytest.mark.parametrize("input,model",
+                        [
+                            ('batched_input_grid_low', 'default_cnn'),
+                            ('batched_input_grid_low', 'default_resnet'),
+                            ('batched_input_grid_low', 'default_neural_operator'),
+                            ('batched_input_point_low', 'default_point_transformer_v1_low'),
+                        ])
+def test_cuda_copy_grid(input, model, request):
+    if torch.cuda.is_available():
+        x, t_eval = request.getfixturevalue(input)
+        model = request.getfixturevalue(model)
+        grid_wrapper = GridRolloutWrapper(model=model)
+        output = grid_wrapper(x, t_eval=t_eval)
+        grid_wrapper.cuda()
+        input = input.cuda()
+        output = model(input)
+        assert output.device.type == "cuda"
+    else:
+        pytest.skip("CUDA not available")

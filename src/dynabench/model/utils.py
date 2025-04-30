@@ -20,6 +20,10 @@ class RolloutWrapper(torch.nn.Module):
         The id of the feature dimension. 
     lookback_dim: int, default 1
         The id of the lookback dimension. 
+    structure : str, default 'grid'
+        The structure of the input data. Can be either 'grid' or 'cloud'.
+    is_lookback_squeezed : bool, default False
+        If True, the lookback dimension is squeezed. If True, the lookback dimension parameter is ignored.
 
 
     Methods
@@ -31,7 +35,8 @@ class RolloutWrapper(torch.nn.Module):
                  model,
                  structure: str = 'grid',
                  batch_first: bool = True,
-                 lookback_dim: int = 1):
+                 lookback_dim: int = 1,
+                 is_lookback_squeezed: bool = False):
         super().__init__()
         if structure not in ['grid', 'cloud']:
             raise ValueError("Structure must be either 'grid' or 'cloud'")
@@ -42,6 +47,7 @@ class RolloutWrapper(torch.nn.Module):
         self.feature_dim = 2 if structure == 'grid' else -1
         
         self.lookback_dim = lookback_dim
+        self.is_lookback_squeezed = is_lookback_squeezed
         self.alphabet = 'abcdefghijklmnopqrstuvwxyz'
         
     def forward(self, 
@@ -51,15 +57,11 @@ class RolloutWrapper(torch.nn.Module):
         
         rollout = []
         for t in t_eval:
-            x_stacked_lookback = einops.rearrange(x, self._einops_stack_lookback_expr()) # Merge lookback with the feature dimension
+            x_stacked_lookback = self._stack_lookback(x) # Merge lookback with the feature dimension
             
-            if p is not None:
-                x_single = self.model(x_stacked_lookback, p)
-            else:
-                x_single = self.model(x_stacked_lookback)
+            x_single = self._single_step(x_stacked_lookback, p) # Call the model once
             
-            x_single_unstacked_loockback = einops.rearrange(x_single, "batch ... -> batch () ...") # add dummy dim for lookback in pred
-            x = torch.cat([x[:, 1:], x_single_unstacked_loockback], dim=self.lookback_dim)
+            x = self._wrap_input_with_lookback(x, x_single) # Wrap the input with the new prediction
             
             rollout.append(x_single)
             
@@ -67,7 +69,7 @@ class RolloutWrapper(torch.nn.Module):
         rollout_dim = 1 if self.batch_first else 0
         return torch.stack(rollout, dim=rollout_dim)
             
-    def _einops_stack_lookback_expr(self):
+    def _stack_lookback(self, x):
         if self.structure == "grid":
             expr = 'batch lookback feature ... -> batch (lookback feature) ...'
         elif self.structure == "cloud":
@@ -75,19 +77,27 @@ class RolloutWrapper(torch.nn.Module):
             expr = 'batch lookback points feature -> batch points (lookback feature)'
         else:
             raise ValueError("Structure must be either 'grid' or 'cloud'")    
-        return expr
-
-    def _einops_unstack_loockback_expr(self):
-        if self.structure == "grid":
-            expr = 'batch (lookback feature) ... -> batch lookback feature ...'
-        elif self.structure == "cloud":
-            # Generate einops expression for cloud structure
-            expr = 'batch points (lookback feature) -> batch lookback points feature'
+        
+        if not self.is_lookback_squeezed:
+            return einops.rearrange(x, expr)
         else:
-            raise ValueError("Structure must be either 'grid' or 'cloud'")    
-        
-        return expr
-        
+            return x 
+    
+    def _single_step(self, x, p):
+        if p is not None:
+            x_single = self.model(x, p)
+        else:
+            x_single = self.model(x)
+        return x_single
+                
+
+    def _wrap_input_with_lookback(self, x_previous, x_pred_single):
+        if not self.is_lookback_squeezed:
+            x_single_unstacked_loockback = einops.rearrange(x_pred_single, "batch ... -> batch () ...") # add dummy dim for lookback in pred
+            x_next = torch.cat([x_previous[:, 1:], x_single_unstacked_loockback], dim=self.lookback_dim)
+        else:
+            x_next = x_pred_single
+        return x_next
 
 class CloudRolloutWrapper(RolloutWrapper):
     """
@@ -96,11 +106,13 @@ class CloudRolloutWrapper(RolloutWrapper):
     def __init__(self,
                  model,
                  batch_first: bool = True,
-                 lookback_dim: int = 1):
+                 lookback_dim: int = 1,
+                 is_lookback_squeezed: bool = False):
         super().__init__(model=model, 
                          structure="cloud", 
                          batch_first=batch_first,
-                         lookback_dim=lookback_dim)
+                         lookback_dim=lookback_dim,
+                         is_lookback_squeezed=is_lookback_squeezed)
         
 class GridRolloutWrapper(RolloutWrapper):
     """
@@ -109,8 +121,10 @@ class GridRolloutWrapper(RolloutWrapper):
     def __init__(self,
                  model,
                  batch_first: bool = True,
-                 lookback_dim: int = 1):
+                 lookback_dim: int = 1,
+                 is_lookback_squeezed: bool = False):
         super().__init__(model=model, 
                          structure="grid", 
                          batch_first=batch_first,
-                         lookback_dim=lookback_dim)
+                         lookback_dim=lookback_dim,
+                         is_lookback_squeezed=is_lookback_squeezed)
