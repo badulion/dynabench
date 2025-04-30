@@ -241,9 +241,10 @@ class Geo_FNO (nn.Module):
     """
 
     def __init__ (self, 
+                  in_channels,
+                  out_channels,
                   width: int = 32,
                   modes: tuple = (12, 12),
-                  channels: int = 1,
                   grid_size: tuple = (15, 15),
                   num_blocks: int = 3,
         ):
@@ -266,7 +267,7 @@ class Geo_FNO (nn.Module):
         ### Diffeomorphism for GeoFNO iphi
         self.model_iphi = IPHI()    # Will be moved to same device as rest of model
 
-        self.fc0 = nn.Linear(channels, self.width)
+        self.fc0 = nn.Linear(in_channels, self.width)
 
         self.conv_in = SpectralConv2d(self.width, self.width, self.modes1, self.modes2, self.s1, self.s2)
         self.conv = [SpectralConv2d(self.width, self.width, self.modes1, self.modes2) for i in range(num_blocks)]
@@ -277,7 +278,7 @@ class Geo_FNO (nn.Module):
         self.b_out = nn.Conv1d(2, self.width, 1)
 
         self.fc1 = nn.Linear(self.width, 128)
-        self.fc2 = nn.Linear(128, channels)
+        self.fc2 = nn.Linear(128, out_channels)
 
     def forward (self, x, p):
         # u (batch, Nx, d) the input value (xy)

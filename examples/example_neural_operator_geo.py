@@ -1,7 +1,7 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
 from dynabench.model.point._fno import Geo_FNO
-from dynabench.model.utils import PointIterativeWrapper
+from dynabench.model.utils import CloudRolloutWrapper
 
 import torch.optim as optim
 import torch.nn as nn
@@ -13,15 +13,15 @@ advection_train_iterator = DynabenchIterator(split="train",
                                            structure='cloud',
                                            resolution='low',
                                            lookback=1,
-                                           squeeze_lookback_dim=True,
+                                           squeeze_lookback_dim=False,
                                            rollout=1)
 
 train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 
 ## width -> number of channels in convolution layers
 ## for an NxN grid -> max n_modes = [N//2 + 1, N//2 + 1], channels depends on equation
-net = Geo_FNO(width=32, modes=(8,8), channels=1, grid_size=(20,20), num_blocks=3)
-model = PointIterativeWrapper(net)
+net = Geo_FNO(in_channels=8, out_channels=1, width=32, modes=(8,8), grid_size=(20,20), num_blocks=3)
+model = CloudRolloutWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.MSELoss()
