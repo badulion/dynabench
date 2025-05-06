@@ -9,20 +9,21 @@ class DataItem:
     Base class for data items.
     """
     x: npt.NDArray
-    y: npt.NDArray
-    pos: npt.NDArray
+    y: Optional[npt.NDArray] = None
+    pos: Optional[npt.NDArray] = None
 
 
 @dataclass
-class GridItem(DataItem):
+class GridDataItem(DataItem):
     """
     Data class for grid data.
     """
 
 
 @dataclass
-class CloudItem(DataItem):
+class CloudDataItem(DataItem):
     """
     Data class for 2D grid data.
     """
+    pos : npt.NDArray # no longer optional
     knn_graph: Optional[npt.NDArray] = None

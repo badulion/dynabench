@@ -1,7 +1,9 @@
 import h5py
 import numpy as np
 
-from typing import List
+from typing import List, Optional
+from ._dataitems import DataItem
+from ._transforms import BaseTransform, DefaultTransform
 
 class BaseListMovingWindowIterator:
     """
@@ -31,6 +33,7 @@ class BaseListMovingWindowIterator:
             rollout: int,
             squeeze_lookback_dim: bool = True,
             is_batched: bool = False,
+            transforms: Optional[BaseTransform] = None,
             dtype: np.dtype=np.float32,
             ) -> None:
 
@@ -38,6 +41,7 @@ class BaseListMovingWindowIterator:
         self.rollout = rollout
         self.squeeze_lookback_dim = squeeze_lookback_dim
         self.is_batched = is_batched
+        self.transforms = transforms
         self.dtype = dtype
         
 
@@ -62,10 +66,10 @@ class BaseListMovingWindowIterator:
         self.datapoints_per_file = [length * number for length, number in zip(self.usable_simulation_lengths, self.number_of_simulations)]
         self.starting_indices = np.cumsum(self.datapoints_per_file) - self.datapoints_per_file[0]
 
-    def _check_exists(self):
+    def _check_exists(self) -> bool:
         return len(self.file_list) > 0
-
-    def __getitem__(self, index):
+    
+    def _load_dataitem_at_index(self, index) -> DataItem:
         if index < 0:
             index += len(self)
         if index > len(self) or index < 0:
@@ -97,9 +101,15 @@ class BaseListMovingWindowIterator:
             data_y = data_y.astype(self.dtype)
             points = points.astype(self.dtype)
         
-        return data_x, data_y, points
+        return DataItem(data_x, data_y, points)
 
-    def __len__(self):
+    def __getitem__(self, index) -> DataItem:
+        dataitem = self._load_dataitem_at_index(index)
+        if self.transforms is None:
+            return dataitem
+        return self.transforms(dataitem)
+        
+    def __len__(self) -> int:
         return sum(self.datapoints_per_file)
     
     
@@ -123,10 +133,12 @@ class BaseListSimulationIterator:
         self,
         data_paths: List[str],
         is_batched: bool = False,
+        transforms: Optional[BaseTransform] = None,
         dtype: np.dtype=np.float32,
     ) -> None:
         
         self.is_batched = is_batched
+        self.transforms = transforms
         self.dtype = dtype
 
         # get the shapes of the simulations
@@ -150,28 +162,25 @@ class BaseListSimulationIterator:
         self.file_index_mapping = np.cumsum(self.number_of_simulations) - self.number_of_simulations[0]
 
 
-    def _check_exists(self):
+    def _check_exists(self) -> bool:
         return len(self.file_list) > 0
     
-    def __getitem__(self, index):
+    def _load_dataitem_at_index(self, index) -> DataItem:
         if index < 0:
             index += len(self)
         if index > len(self) or index < 0:
             raise IndexError("Index out of bounds")
         
-        
-        
         # select appropriate file and indices
         file_selector = [i for i, starting_index in enumerate(self.file_index_mapping) if starting_index <= index][-1]
-
+        raw_idx_within_file = index - self.file_index_mapping[file_selector]
         file = self.file_list[file_selector]
-        index = index - self.file_index_mapping[file_selector]
 
         # select data
         with h5py.File(file, "r") as f:
             if self.is_batched:
-                data = f['data'][index]
-                points = f['points'][index]
+                data = f['data'][raw_idx_within_file]
+                points = f['points'][raw_idx_within_file]
             else:
                 data = f['data'][:]
                 points = f['points'][:]   
@@ -180,7 +189,13 @@ class BaseListSimulationIterator:
             data = data.astype(self.dtype)
             points = points.astype(self.dtype)
 
-        return data, points
+        return DataItem(data, None, points)
+    
+    def __getitem__(self, index) -> DataItem:
+        dataitem = self._load_dataitem_at_index(index)
+        if self.transforms is None:
+            return dataitem
+        return self.transforms(dataitem)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum(self.number_of_simulations)

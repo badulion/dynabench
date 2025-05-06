@@ -4,9 +4,9 @@ from typing import List
 from copy import copy
 import einops
 import numpy as np
-from ._data_items import GridItem, CloudItem, DataItem
+from ._dataitems import GridDataItem, CloudDataItem, DataItem
 
-from sklearn.neighbors import NearestNeighbors
+from scipy.spatial import KDTree
 
 
 
@@ -117,7 +117,7 @@ class Grid2Cloud(BaseTransform):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, data_item: GridItem) -> CloudItem:
+    def __call__(self, data_item: DataItem) -> CloudDataItem:
         """
         Default transformation for a data item. Does not modify the data.
 
@@ -132,15 +132,13 @@ class Grid2Cloud(BaseTransform):
         """
         self._check_data(data_item)
 
-        assert isinstance(data_item, GridItem)
+        cloud_x = einops.rearrange(data_item.x, '... c w h -> ... (w h) c')
 
-        cloud_x = einops.rearrange(data_item.x, 'l c w h -> l (w h) c')
-
-        cloud_y = einops.rearrange(data_item.y, 'r c w h -> r (w h) c')
+        cloud_y = einops.rearrange(data_item.y, '... c w h -> ... (w h) c')
 
         cloud_pos = einops.rearrange(data_item.pos, 'w h d -> (w h) d')
 
-        return CloudItem(
+        return CloudDataItem(
             x=cloud_x,
             y=cloud_y,
             pos=cloud_pos
@@ -148,8 +146,41 @@ class Grid2Cloud(BaseTransform):
     
     def check_if_valid(self):
         return True
+    
+class ToDict(BaseTransform):
+    """
+    Convert the data item to a dictionary.
 
-class MakeKNNGraph(BaseTransform):
+    Parameters
+    ----------
+    data_item : DataItem
+
+    Returns
+    -------
+    dict
+        data_item as a dictionary
+    """
+    def __init__(self):
+        super().__init__()
+
+    def __call__(self, data_item: DataItem) -> dict:
+        """
+        Default transformation for a data item. Does not modify the data.
+
+        Parameters
+        ----------
+        data_item : DataItem
+
+        Returns
+        -------
+        DataItem
+            transformed data_item
+        """
+        self._check_data(data_item)
+
+        return data_item.__dict__
+
+class KNNGraph(BaseTransform):
     """
     Create a KNN graph from the cloud data.
 
@@ -166,7 +197,7 @@ class MakeKNNGraph(BaseTransform):
         super().__init__()
         self.k = k
 
-    def __call__(self, data_item: CloudItem) -> CloudItem:
+    def __call__(self, data_item: CloudDataItem) -> CloudDataItem:
         """
         Default transformation for a data item. Does not modify the data.
 
@@ -181,30 +212,94 @@ class MakeKNNGraph(BaseTransform):
         """
         self._check_data(data_item)
 
-        points_padded = np.concatenate((data_item.pos,
-                data_item.pos + np.array([0, 1]),
-                data_item.pos + np.array([1, 0]), 
-                data_item.pos + np.array([1, 1]), 
-                data_item.pos + np.array([0, -1]),
-                data_item.pos + np.array([-1, 0]),
-                data_item.pos + np.array([-1, -1]),
-                data_item.pos + np.array([1, -1]),
-                data_item.pos + np.array([-1, 1]),
+        points = data_item.pos
+        points_padded = np.concatenate(
+               (points,
+                points + np.array([0, 1]),
+                points + np.array([1, 0]), 
+                points + np.array([1, 1]), 
+                points + np.array([0, -1]),
+                points + np.array([-1, 0]),
+                points + np.array([-1, -1]),
+                points + np.array([1, -1]),
+                points + np.array([-1, 1]),
                 ), axis=0)
 
-        nbrs = NearestNeighbors(n_neighbors=self.k + 1, algorithm='auto').fit(points_padded)
-        indices = nbrs.kneighbors(points_padded, return_distance=False)
-        N = data_item.pos.shape[0]
-        src = np.repeat(np.arange(N), self.k)
-        dst = (indices[:N,1:]%N).flatten()
-        knn_graph = np.stack([dst, src], axis=0)
+        tree = KDTree(points_padded)
+        distances, n = tree.query(points, k=self.k+1)
+        n = n[:, 1:] # remove the first column, which is the point itself
+        n = n % points.shape[0]
 
-        return CloudItem(
+        return CloudDataItem(
             x=data_item.x,
             y=data_item.y,
             pos=data_item.pos,
-            knn_graph=knn_graph,
+            knn_graph=n,
         )
     
     def check_if_valid(self):
         return True
+    
+class EdgeListFromKNN(BaseTransform):
+    """
+    Create an edge list from the KNN graph.
+
+    Parameters
+    ----------
+    data_item : CloudItem
+
+    Returns
+    -------
+    CloudItem
+        data_item with knn_graph
+    """
+    def __init__(self):
+        super().__init__()
+
+    def __call__(self, data_item: CloudDataItem) -> CloudDataItem:
+        """
+        Default transformation for a data item. Does not modify the data.
+
+        Parameters
+        ----------
+        data_item : DataItem
+
+        Returns
+        -------
+        DataItem
+            transformed data_item
+        """
+        self._check_data(data_item)
+
+        knn_graph = data_item.knn_graph
+        num_points = knn_graph.shape[0]
+        k = knn_graph.shape[-1]
+        src = np.repeat(np.arange(num_points), k)
+        dst = knn_graph.flatten()
+        edge_list = np.stack((src, dst), axis=0)
+        
+        return CloudDataItem(
+            x=data_item.x,
+            y=data_item.y,
+            pos=data_item.pos,
+            knn_graph=edge_list,
+        )
+    
+    def check_if_valid(self):
+        return True
+    
+class EdgeList(Compose):
+    """
+    Create an edge list graph (src, dst) to use with PyG.
+
+    Parameters
+    ----------
+    data_item : CloudItem
+
+    Returns
+    -------
+    CloudItem
+        data_item with edge_list as knn_graph
+    """
+    def __init__(self, k: int):
+        super().__init__(transforms=[KNNGraph(k=k), EdgeListFromKNN()])
