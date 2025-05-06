@@ -24,12 +24,6 @@ class RolloutWrapper(torch.nn.Module):
         The structure of the input data. Can be either 'grid' or 'cloud'.
     is_lookback_squeezed : bool, default False
         If True, the lookback dimension is squeezed. If True, the lookback dimension parameter is ignored.
-
-
-    Methods
-    -------
-    forward(x: torch.Tensor, p: torch.Tensor, t_eval: List[float] = [1]) -> torch.Tensor
-        Perform iterative evaluation of the model at specified time points.
     """
     def __init__(self, 
                  model,
@@ -101,7 +95,7 @@ class RolloutWrapper(torch.nn.Module):
 
 class CloudRolloutWrapper(RolloutWrapper):
     """
-        Alias for `dynabench.model.utils.RolloutWrapper with structure="cloud"
+        Alias for `dynabench.model.utils.RolloutWrapper` with structure="cloud"
     """
     def __init__(self,
                  model,
@@ -116,7 +110,7 @@ class CloudRolloutWrapper(RolloutWrapper):
         
 class GridRolloutWrapper(RolloutWrapper):
     """
-        Alias for `dynabench.model.utils.RolloutWrapper with structure="grid"
+        Alias for `dynabench.model.utils.RolloutWrapper` with structure="grid"
     """
     def __init__(self,
                  model,

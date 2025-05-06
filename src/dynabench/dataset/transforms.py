@@ -29,6 +29,7 @@ class BaseTransform(ABC):
 class Compose(BaseTransform):
     """
     Compose function for combining multiple transforms.
+    Iterates over transformations and applies them to the data item.
 
     Parameters
     ----------
@@ -51,19 +52,6 @@ class Compose(BaseTransform):
         self.transforms = transforms
 
     def __call__(self, data_item: DataItem) -> DataItem:
-        """
-        The method iterates over transformations and applies them to the data item.
-
-        Parameters
-        ----------
-        data_item : DataItem
-            The input data item to be transformed.
-
-        Returns
-        -------
-        DataItem
-            The transformed data item.
-        """
         self._check_data(data_item)
         result = copy(data_item)
         for aug in self.transforms:
@@ -76,30 +64,24 @@ class Compose(BaseTransform):
 
 class DefaultTransform(BaseTransform):
     """
+    Default transformation for a data item. Does not modify the data.
 
+    Parameters
+    ----------
+    data_item : DataItem
+
+    Returns
+    -------
+    DataItem
+        transformed data_item
     """
     def __init__(self):
         super().__init__()
 
     def __call__(self, data_item: DataItem) -> DataItem:
-        """
-        Default transformation for a data item. Does not modify the data.
-
-        Parameters
-        ----------
-        data_item : DataItem
-
-        Returns
-        -------
-        DataItem
-            transformed data_item
-        """
         self._check_data(data_item)
 
         return data_item
-    
-    def check_if_valid(self):
-        return True
     
 class Grid2Cloud(BaseTransform):
     """
@@ -118,18 +100,6 @@ class Grid2Cloud(BaseTransform):
         super().__init__()
 
     def __call__(self, data_item: DataItem) -> CloudDataItem:
-        """
-        Default transformation for a data item. Does not modify the data.
-
-        Parameters
-        ----------
-        data_item : DataItem
-
-        Returns
-        -------
-        DataItem
-            transformed data_item
-        """
         self._check_data(data_item)
 
         cloud_x = einops.rearrange(data_item.x, '... c w h -> ... (w h) c')
@@ -143,9 +113,6 @@ class Grid2Cloud(BaseTransform):
             y=cloud_y,
             pos=cloud_pos
         )
-    
-    def check_if_valid(self):
-        return True
     
 class ToDict(BaseTransform):
     """
@@ -164,18 +131,6 @@ class ToDict(BaseTransform):
         super().__init__()
 
     def __call__(self, data_item: DataItem) -> dict:
-        """
-        Default transformation for a data item. Does not modify the data.
-
-        Parameters
-        ----------
-        data_item : DataItem
-
-        Returns
-        -------
-        DataItem
-            transformed data_item
-        """
         self._check_data(data_item)
 
         return data_item.__dict__
@@ -198,18 +153,6 @@ class KNNGraph(BaseTransform):
         self.k = k
 
     def __call__(self, data_item: CloudDataItem) -> CloudDataItem:
-        """
-        Default transformation for a data item. Does not modify the data.
-
-        Parameters
-        ----------
-        data_item : DataItem
-
-        Returns
-        -------
-        DataItem
-            transformed data_item
-        """
         self._check_data(data_item)
 
         points = data_item.pos
