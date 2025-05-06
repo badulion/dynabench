@@ -84,7 +84,7 @@
 ## [0.4.1] -> March 4, 2025
 - Add squeeze_lookback_dim to DynabenchIterator and update examples/documentation
 
-## [0.4.2] -> 
+## [0.4.2] -> May 6, 2025
 - Updated tests for Rollout wrappers
 - Implemented RolloutWrapper with lookback support; added helper methods.
 - Adjusted PTV3, PTV1, FNO and GeoFNO to use both input and output channels
@@ -93,3 +93,6 @@
 - Add support for iterating over multiple simulations in one iterator
 - Add whole simulation iterator for custom equations
 - Move main iteration logic to base class (common for both Dynabench and CustomEquation)
+- Added tests for the new transforms and iterators.
+- Updated iterators and equation/dynabench modules to accept transform parameters.
+- Refined CI configurations, dependency versions, and provided an example usage.
