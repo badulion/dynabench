@@ -52,17 +52,17 @@ class Compose(BaseTransform):
 
     def __call__(self, data_item: DataItem) -> DataItem:
         """
-        The method iterates over transformations and apply them to the simulation data.
+        The method iterates over transformations and applies them to the data item.
 
         Parameters
         ----------
-        simulation : DataItem
-            simulation data
+        data_item : DataItem
+            The input data item to be transformed.
 
         Returns
         -------
         DataItem
-            augmented simulation data
+            The transformed data item.
         """
         self._check_data(data_item)
         result = copy(data_item)
