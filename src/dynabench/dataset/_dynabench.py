@@ -7,7 +7,7 @@ import numpy as np
 from ._base import BaseListMovingWindowIterator
 from ._download import download_equation
 from ._dataitems import DataItem, GridDataItem, CloudDataItem
-from ._transforms import BaseTransform, DefaultTransform
+from .transforms import BaseTransform, DefaultTransform
 from warnings import warn
 
 class DynabenchIterator(BaseListMovingWindowIterator):

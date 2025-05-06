@@ -3,7 +3,7 @@ import numpy as np
 
 from typing import List, Optional
 from ._dataitems import DataItem
-from ._transforms import BaseTransform, DefaultTransform
+from .transforms import BaseTransform, DefaultTransform
 
 class BaseListMovingWindowIterator:
     """

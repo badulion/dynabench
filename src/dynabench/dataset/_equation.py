@@ -3,7 +3,7 @@ import numpy as np
 import pathlib
 
 from ._base import BaseListMovingWindowIterator, BaseListSimulationIterator
-from ._transforms import BaseTransform
+from .transforms import BaseTransform
 from typing import List, Optional
 
 

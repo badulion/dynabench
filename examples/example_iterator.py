@@ -1,6 +1,6 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
-from dynabench.dataset._transforms import EdgeList, Grid2Cloud, Compose, ToDict
+from dynabench.dataset.transforms import EdgeList, Grid2Cloud, Compose, ToDict
 
 import torch.optim as optim
 import torch.nn as nn

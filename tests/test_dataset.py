@@ -4,7 +4,7 @@ import numpy as np
 import h5py
 from dynabench.dataset._base import BaseListMovingWindowIterator, BaseListSimulationIterator
 from dynabench.dataset._dataitems import DataItem, GridDataItem, CloudDataItem
-from dynabench.dataset._transforms import DefaultTransform, Grid2Cloud, KNNGraph, EdgeList
+from dynabench.dataset.transforms import DefaultTransform, Grid2Cloud, KNNGraph, EdgeList
 
 @pytest.fixture
 def mock_data_paths(tmp_path):
