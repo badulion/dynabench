@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        poetry-version: ["1.8.2"]
+        poetry-version: ["2.1.1"]
         python-version: ["3.12"]
         os: [ubuntu-latest, windows-latest] # , macos-latest
     runs-on: ${{ matrix.os }}
