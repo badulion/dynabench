@@ -96,3 +96,8 @@
 - Added tests for the new transforms and iterators.
 - Updated iterators and equation/dynabench modules to accept transform parameters.
 - Refined CI configurations, dependency versions, and provided an example usage.
+
+## [0.4.3] -> May 6, 2025
+- Move transforms to separate module
+
+## [0.4.4] ->
