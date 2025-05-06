@@ -6,6 +6,8 @@ import numpy as np
 
 from ._base import BaseListMovingWindowIterator
 from ._download import download_equation
+from ._dataitems import DataItem, GridDataItem, CloudDataItem
+from ._transforms import BaseTransform, DefaultTransform
 from warnings import warn
 
 class DynabenchIterator(BaseListMovingWindowIterator):
@@ -50,13 +52,12 @@ class DynabenchIterator(BaseListMovingWindowIterator):
         lookback: int=1,
         squeeze_lookback_dim: bool=False,
         rollout: int=1,
+        transforms: BaseTransform=DefaultTransform(),
         dtype: np.dtype=np.float32,
         download: bool=False,
         *args,
         **kwargs,
     ) -> None:
-        # deprecation
-        warn(f'{self.__class__.__name__} will be deprecated. Please use DynabechGridIterator and DynabenchCloudIterator.', DeprecationWarning, stacklevel=2)
 
         # download
         if download:
@@ -68,10 +69,6 @@ class DynabenchIterator(BaseListMovingWindowIterator):
         self.structure = structure
         self.resolution = resolution
         self.base_path = base_path
-        self.squeeze_lookback_dim = squeeze_lookback_dim
-        self.lookback = lookback
-        self.rollout = rollout
-        self.dtype = dtype
         self.download = download
 
         # get the shapes of the simulations
@@ -83,6 +80,7 @@ class DynabenchIterator(BaseListMovingWindowIterator):
             rollout = rollout,
             squeeze_lookback_dim = squeeze_lookback_dim,
             is_batched = True,
+            transforms = transforms,
             dtype = dtype,
         )
 
@@ -119,6 +117,7 @@ class DynabenchSimulationIterator:
         equation: str="wave",
         structure: str="cloud",
         resolution: str="low",
+        transforms: BaseTransform=DefaultTransform(),
         base_path: str="data",
         download: bool=False,
         dtype: np.dtype=np.float32,
@@ -144,6 +143,7 @@ class DynabenchSimulationIterator:
         super().__init__(
             data_paths = self.file_list,
             is_batched = True,
+            transforms = transforms,
             dtype = dtype,
         )
         

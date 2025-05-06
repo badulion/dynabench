@@ -3,6 +3,7 @@ import numpy as np
 import pathlib
 
 from ._base import BaseListMovingWindowIterator, BaseListSimulationIterator
+from ._transforms import BaseTransform
 from typing import List, Optional
 
 
@@ -37,6 +38,7 @@ class EquationMovingWindowIterator(BaseListMovingWindowIterator):
             selected_simulations: Optional[List[str]] = None,
             squeeze_lookback_dim: bool = True,
             is_batched: bool = True,
+            transforms: Optional[BaseTransform] = None,
             dtype: np.dtype=np.float32,
             ) -> None:
         eq_dir = pathlib.Path(eq_dir)
@@ -53,6 +55,7 @@ class EquationMovingWindowIterator(BaseListMovingWindowIterator):
             rollout = rollout,
             squeeze_lookback_dim = squeeze_lookback_dim,
             is_batched = False,
+            transforms = transforms,
             dtype = dtype
         )
         
@@ -78,6 +81,7 @@ class EquationSimulationIterator(BaseListSimulationIterator):
             eq_dir: str,
             selected_simulations: Optional[List[str]] = None,
             is_batched: bool = True,
+            transforms: Optional[BaseTransform] = None,
             dtype: np.dtype=np.float32,
             ) -> None:
         eq_dir = pathlib.Path(eq_dir)
@@ -91,6 +95,7 @@ class EquationSimulationIterator(BaseListSimulationIterator):
         super().__init__(
             data_paths = data_paths,
             is_batched = False,
+            transforms = transforms,
             dtype = dtype
         )
     
