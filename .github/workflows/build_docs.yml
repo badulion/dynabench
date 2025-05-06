@@ -35,7 +35,19 @@ jobs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        # Clone the target repository into a clean directory
+        git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/dynabench/dynabench.github.io.git target-repo
+        cd target-repo
+        
+        # Remove all existing files in the target repository
+        git rm -rf .
+    
+        # Copy the built documentation to the root of the target repository
+        cp -r ../docs/build/html/* .
+    
+        # Add and commit the changes
         git add .
         git commit -m "Update docs"
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/dynabench/dynabench.github.io.git HEAD:master
+        git push origin master
       working-directory: docs/build/html
