@@ -35,10 +35,8 @@ jobs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        cp -r . ../../ # Move content to the root of the repository
-        cd ../../ # Change the directory to the root
-        git add -f . # Force add all files
+        # Move contents of docs/build/html to the root
+        rsync -a docs/build/html/ .
+        git add -f .
         git commit -m "Update docs"
         git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/dynabench/dynabench.github.io.git HEAD:master
-      working-directory: docs/build/html
-
