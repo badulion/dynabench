@@ -1,29 +1,29 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
 from dynabench.model.point.point_transformer import PointTransformerV1
-from dynabench.model.utils import PointIterativeWrapper
+from dynabench.model.utils import CloudRolloutWrapper
 
 import torch.optim as optim
 import torch.nn as nn
 
-#download_equation('advection', structure='cloud', resolution='low')
+download_equation('advection', structure='cloud', resolution='low')
 
 advection_train_iterator = DynabenchIterator(split="train",
-                                           equation='advection',
-                                           structure='cloud',
-                                           resolution='low',
-                                           lookback=1,
-                                           squeeze_lookback_dim=True,
-                                           rollout=1)
+                                             equation='advection',
+                                             structure='cloud',
+                                             resolution='low',
+                                             lookback=1,
+                                             squeeze_lookback_dim=False,
+                                             rollout=1)
 
 train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 
 
 ## number of knn=16 --> best found in ablation study in paper
 ## number of blocks=3 --> depends on num_points -> (low) - 3
-net = PointTransformerV1(input_dim=1, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=512)
+net = PointTransformerV1(input_dim=1, output_dim=1, num_points=225, num_neighbors=16, num_blocks=3, transformer_dim=16)
 
-model = PointIterativeWrapper(net)
+model = CloudRolloutWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.MSELoss()
@@ -32,7 +32,7 @@ for epoch in range(10):
     model.train()
     for i, (x, y, p) in enumerate(train_loader):
         optimizer.zero_grad()
-        y_pred = model(x, p)
+        y_pred = model(x, p, t_eval=range(1,5))
         loss = criterion(y_pred, y)
         loss.backward()
         optimizer.step()

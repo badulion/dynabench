@@ -119,7 +119,13 @@ class NeuralFourierBlock2d(nn.Module):
 
 
 class FourierNeuralOperator(nn.Module):
-    def __init__(self, n_layers: int, n_modes: tuple, width: int, channels: int, pad: tuple = None, **kwargs):
+    def __init__(self, 
+                 n_layers: int, 
+                 n_modes: tuple, 
+                 width: int, 
+                 in_channels: int, 
+                 out_channels: int, 
+                 pad: tuple = None, **kwargs):
         '''
         Neural Operator model from the Paper [Fourier Neural Operator](https://arxiv.org/abs/2010.08895).
         Implementation of Fourier model for 2D data in [Git](https://github.com/alexander-telepov/fourier-neural-operator/tree/main).
@@ -145,7 +151,7 @@ class FourierNeuralOperator(nn.Module):
         self.pad = pad
 
         # Embedding layer
-        self.fc0 = nn.Linear(channels, width)
+        self.fc0 = nn.Linear(in_channels, width)
 
         # Fourier Blocks
         layers = [NeuralFourierBlock2d(width, n_modes, activation=True) for i in range(n_layers - 1)]
@@ -154,7 +160,7 @@ class FourierNeuralOperator(nn.Module):
 
         # Reduce to output dimension
         self.fc1 = nn.Linear(width, 128)
-        self.fc2 = nn.Linear(128, channels)
+        self.fc2 = nn.Linear(128, out_channels)
 
     def forward(self, x: torch.Tensor):
         # batching

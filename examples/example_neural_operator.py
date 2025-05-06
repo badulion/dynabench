@@ -1,26 +1,26 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
 from dynabench.model._grid._neural_operator import FourierNeuralOperator
-from dynabench.model.utils import GridIterativeWrapper
+from dynabench.model.utils import GridRolloutWrapper
 
 import torch.optim as optim
 import torch.nn as nn
 
-#download_equation('advection', structure='cloud', resolution='low')
+download_equation('advection', structure='cloud', resolution='low')
 
 advection_train_iterator = DynabenchIterator(split="train",
-                                           equation='advection',
+                                           equation='burgers',
                                            structure='grid',
                                            resolution='low',
                                            lookback=1,
-                                           squeeze_lookback_dim=True,
+                                           squeeze_lookback_dim=False,
                                            rollout=1)
 
 train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 
 # for an NxN grid -> max n_modes = [N//2 + 1, N//2 + 1], channels depends on equation, padding e.g. pad=(8,8,8,8)
-net = FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, channels=1)
-model = GridIterativeWrapper(net)
+net = FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, in_channels=2, out_channels=2)
+model = GridRolloutWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.MSELoss()

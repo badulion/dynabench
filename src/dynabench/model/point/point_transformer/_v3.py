@@ -791,7 +791,8 @@ class Embedding(PointModule):
 class PointTransformerV3(PointModule):
     def __init__(
         self,
-        in_channels=1,
+        in_channels,
+        out_channels,
         order=("z", "z-trans", "hilbert", "hilbert-trans"),
         stride=(2, 2, 2, 2),
         enc_depths=(2, 2, 2, 6, 2),
@@ -827,6 +828,9 @@ class PointTransformerV3(PointModule):
         self.order = [order] if isinstance(order, str) else order
         self.cls_mode = cls_mode
         self.shuffle_orders = shuffle_orders
+        
+        ## TODO Find a better way to do this
+        dec_channels[0] = out_channels
 
         assert self.num_stages == len(stride) + 1
         assert self.num_stages == len(enc_depths)

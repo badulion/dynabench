@@ -11,31 +11,34 @@ def test_str(base_solver):
     assert str(base_solver) == "Base Equation Solver"
 
 def test_generate_filename(base_solver):
-    filename = base_solver.generate_filename(
+    eq_descriptor, solver_descriptor, seed_descriptor = base_solver.generate_descriptors(
         t_span=[0, 10],
         dt_eval=0.1,
         random_state=42,
         hash_truncate=8
     )
-    assert filename.startswith("base_")
-    assert filename.endswith("_dt_0.1_trange_0_10_seed_42.h5")
+    assert eq_descriptor.startswith("base_")
+    assert solver_descriptor == ("dt_0.1_trange_0_10")
+    assert seed_descriptor == "seed_42"
 
 def test_generate_filename_different_seeds(base_solver):
-    filename1 = base_solver.generate_filename(
+    eq_descriptor1, solver_descriptor1, seed_descriptor1 = base_solver.generate_descriptors(
         t_span=[0, 100],
         dt_eval=0.1,
         random_state=42,
         hash_truncate=8
     )
-    filename2 = base_solver.generate_filename(
+    eq_descriptor2, solver_descriptor2, seed_descriptor2 = base_solver.generate_descriptors(
         t_span=[0, 10],
         dt_eval=0.01,
         random_state=43,
         hash_truncate=8
     )
-    assert filename1 != filename2
-    # Check that the hash is the same
-    assert filename1.split("_")[1] == filename2.split("_")[1]
+    assert eq_descriptor1 == eq_descriptor2
+    assert solver_descriptor1 != solver_descriptor2
+    
+    # Check that the seed descriptors are different
+    assert seed_descriptor1 != seed_descriptor2
 
 def test_base_solver(base_solver):
     with pytest.raises(NotImplementedError):
