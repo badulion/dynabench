@@ -26,5 +26,6 @@ class CloudDataItem(DataItem):
     """
     Data class for 2D grid data.
     """
-    pos : npt.NDArray # no longer optional
+    #pos : npt.NDArray # no longer optional
+    y: Optional[npt.NDArray] = field(default_factory=lambda: np.array([], dtype=np.float32))
     knn_graph: Optional[npt.NDArray] = field(default_factory=lambda: np.array([], dtype=np.float32))
