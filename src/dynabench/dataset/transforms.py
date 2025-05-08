@@ -132,8 +132,11 @@ class ToDict(BaseTransform):
 
     def __call__(self, data_item: DataItem) -> dict:
         self._check_data(data_item)
+        
+        # filter out fields that are None
+        data_item_dict = {k: v for k, v in data_item.__dict__.items() if v is not None}
 
-        return data_item.__dict__
+        return data_item_dict
 
 class KNNGraph(BaseTransform):
     """
