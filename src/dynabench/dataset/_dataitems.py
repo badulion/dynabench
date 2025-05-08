@@ -1,5 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy.typing as npt
+import numpy as np
 
 from typing import Optional, Any
 
@@ -9,8 +10,8 @@ class DataItem:
     Base class for data items.
     """
     x: npt.NDArray
-    y: Optional[npt.NDArray] = None
-    pos: Optional[npt.NDArray] = None
+    y: Optional[npt.NDArray] = field(default_factory=lambda: np.array([], dtype=np.float32))
+    pos: Optional[npt.NDArray] = field(default_factory=lambda: np.array([], dtype=np.float32))
 
 
 @dataclass
@@ -25,5 +26,6 @@ class CloudDataItem(DataItem):
     """
     Data class for 2D grid data.
     """
-    pos : npt.NDArray # no longer optional
-    knn_graph: Optional[npt.NDArray] = None
+    #pos : npt.NDArray # no longer optional
+    y: Optional[npt.NDArray] = field(default_factory=lambda: np.array([], dtype=np.float32))
+    knn_graph: Optional[npt.NDArray] = field(default_factory=lambda: np.array([], dtype=np.float32))
