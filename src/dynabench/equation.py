@@ -107,6 +107,9 @@ class BaseEquation(object):
                  consts=self.parameters)
         return eq
     
+    def export_as_dedalus_equation(self):
+        raise NotImplementedError("Dedalus export needs to be implemented for each equation separately (for now).")
+    
     def simplify_equation(self, eq: str) -> str:
         """
             Simplify the equation.
@@ -242,6 +245,64 @@ class AdvectionEquation(BaseEquation):
         parameters = {'c_x': c_x, 'c_y': c_y}
         super().__init__(equations=["dt(u) = -c_x*d_dx(u)-c_y*d_dy(u)"], parameters=parameters, evolution_rate=evolution_rate, **kwargs)
 
+    def export_as_dedalus_equation(self):
+        """
+            Export the equation as a Dedalus equation.
+
+            Returns
+            -------
+            Tuple[List[str], List[str]]
+                The LHS and RHS of the equations with Dedalus-compatible operators.
+        """
+
+        lhs_dedalus = ["dt(u) + c_x*dx(u) + c_y*dy(u)"]
+        rhs_dedalus = ["0"]
+        return lhs_dedalus, rhs_dedalus
+
+class AdvectionDiffusionEquation(BaseEquation):
+    """
+        Advection-Diffusion Equation in 2D. The equation is given by:
+
+        .. math::
+            \\frac{\\partial u}{\\partial t} = c_x \\frac{\\partial u}{\\partial x} + c_y \\frac{\\partial u}{\\partial y} + D_x \\frac{\\partial^2 u}{\\partial x^2} + D_y \\frac{\\partial^2 u}{\\partial y^2}
+
+        where D is the diffusion coefficient.
+
+        Parameters
+        ----------
+        parameters : dict, default {D: 1}
+            Dictionary of parameters for the equations.
+
+    """
+    def __init__(self, 
+                 c_x: float = 1.0,
+                 c_y: float = 1.0,
+                 D_x: float = 1.0,
+                 D_y: float = 1.0,
+                 evolution_rate: float = 1.0, 
+                 **kwargs):
+        parameters = {
+            "c_x": c_x,
+            "c_y": c_y,
+            "D_x": D_x,
+            "D_y": D_y
+        }
+        super().__init__(equations=["dt(u) = c_x * d_dx(u) + c_y * d_dy(u) + D_x * d2_dx2(u) + D_y * d2_dy2(u)"], parameters=parameters, evolution_rate=evolution_rate, **kwargs)
+
+    def export_as_dedalus_equation(self):
+        """
+        Export the equation as a Dedalus-compatible equation.
+
+        Returns
+        -------
+        Tuple[List[str], List[str]]
+            The LHS and RHS of the equations with Dedalus-compatible operators.
+        """
+
+        lhs_dedalus = ["dt(u) - c_x*dx(u) - c_y*dy(u) - D_x*dx(dx(u)) - D_y*dy(dy(u))"]
+        rhs_dedalus = ["0"]
+        return lhs_dedalus, rhs_dedalus
+
 class WaveEquation(BaseEquation):
     """
         Wave equation in 2D. The equation is given by:
@@ -371,6 +432,20 @@ class SimpleBurgersEquation(BaseEquation):
     def __init__(self, nu: float = 1.0, evolution_rate: float = 1.0, **kwargs):
         parameters = {'nu': nu}
         super().__init__(equations=["dt(u) = -u*(d_dx(u)+d_dy(u))+nu*laplace(u)"], parameters=parameters, evolution_rate=evolution_rate, **kwargs)
+
+    def export_as_dedalus_equation(self):
+        """
+            Export the equation as a Dedalus-compatible equation.
+
+            Returns
+            -------
+            Tuple[List[str], List[str]]
+                The LHS and RHS of the equations with Dedalus-compatible operators.
+        """
+
+        lhs_dedalus = ["dt(u) - nu*(dx(dx(u)) + dy(dy(u)))"]
+        rhs_dedalus = ["u*dx(u) + u*dy(u)"]
+        return lhs_dedalus, rhs_dedalus
 
 
 class KuramotoSivashinskyEquation(BaseEquation):
