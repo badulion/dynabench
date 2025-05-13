@@ -228,7 +228,7 @@ class WrappedGaussians(InitialCondition):
 
         for i in range(self.components):
 
-            std = np.random.uniform(0.01, 1) * std_scale
+            std = np.random.uniform(0.01, 0.1) * std_scale
 
             component = self._wrapped_gaussian_2d(x, y, m[i], std, limits_x, limits_y)
 
