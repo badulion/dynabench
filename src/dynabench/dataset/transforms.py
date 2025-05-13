@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import List
+from typing import List, Tuple
 from copy import copy
 import einops
 import numpy as np
@@ -133,7 +133,7 @@ class ToDict(BaseTransform):
     def __call__(self, data_item: DataItem) -> dict:
         self._check_data(data_item)
 
-        return data_item.__dict__
+        return {key: value for key, value in data_item.__dict__.items() if value is not None}
 
 class KNNGraph(BaseTransform):
     """
@@ -148,36 +148,45 @@ class KNNGraph(BaseTransform):
     CloudItem
         data_item with knn_graph
     """
-    def __init__(self, k: int):
+    def __init__(self, k: int, grid_limits: Tuple[float] = (1.0, 1.0)):
         super().__init__()
         self.k = k
+        self.grid_limits = grid_limits
 
     def __call__(self, data_item: CloudDataItem) -> CloudDataItem:
         self._check_data(data_item)
 
         points = data_item.pos
+        self.grid_limits = np.array(self.grid_limits, dtype=np.float32)
         points_padded = np.concatenate(
                (points,
-                points + np.array([0, 1]),
-                points + np.array([1, 0]), 
-                points + np.array([1, 1]), 
-                points + np.array([0, -1]),
-                points + np.array([-1, 0]),
-                points + np.array([-1, -1]),
-                points + np.array([1, -1]),
-                points + np.array([-1, 1]),
+                points + np.array([0, 1]) * self.grid_limits,
+                points + np.array([1, 0]) * self.grid_limits,
+                points + np.array([1, 1]) * self.grid_limits,
+                points + np.array([0, -1]) * self.grid_limits,
+                points + np.array([-1, 0]) * self.grid_limits,
+                points + np.array([-1, -1]) * self.grid_limits,
+                points + np.array([1, -1]) * self.grid_limits,
+                points + np.array([-1, 1]) * self.grid_limits,
                 ), axis=0)
 
         tree = KDTree(points_padded)
-        distances, n = tree.query(points, k=self.k+1)
-        n = n[:, 1:] # remove the first column, which is the point itself
-        n = n % points.shape[0]
+        _, neighbors = tree.query(points, k=self.k+1)
+        neighbors = neighbors[:, 1:] # remove the first column, which is the point itself
+        
+        # calculate distances
+        neighbor_points = points_padded[neighbors]
+        points_unsqueezed = np.expand_dims(points, axis=1)
+        distances = neighbor_points - points_unsqueezed
+        
+        neighbors = neighbors % points.shape[0]
 
         return CloudDataItem(
             x=data_item.x,
             y=data_item.y,
             pos=data_item.pos,
-            knn_graph=n,
+            neighbors=neighbors,
+            distances=distances,
         )
     
     def check_if_valid(self):
@@ -214,18 +223,20 @@ class EdgeListFromKNN(BaseTransform):
         """
         self._check_data(data_item)
 
-        knn_graph = data_item.knn_graph
-        num_points = knn_graph.shape[0]
-        k = knn_graph.shape[-1]
+        neighbors = data_item.neighbors
+        num_points = neighbors.shape[0]
+        k = neighbors.shape[-1]
         src = np.repeat(np.arange(num_points), k)
-        dst = knn_graph.flatten()
+        dst = neighbors.flatten()
         edge_list = np.stack((src, dst), axis=0)
         
         return CloudDataItem(
             x=data_item.x,
             y=data_item.y,
             pos=data_item.pos,
-            knn_graph=edge_list,
+            neighbors=data_item.neighbors,
+            distances=data_item.distances,
+            edgelist=edge_list,
         )
     
     def check_if_valid(self):
@@ -246,3 +257,142 @@ class EdgeList(Compose):
     """
     def __init__(self, k: int):
         super().__init__(transforms=[KNNGraph(k=k), EdgeListFromKNN()])
+
+class TypeCaster(BaseTransform):
+    """
+    Cast the data item to the correct type. (In place!!!)
+    """
+    def __init__(self, dtype: np.dtype = np.float32):        
+        super().__init__()
+        self.dtype = dtype
+
+    def __call__(self, data_item: DataItem) -> DataItem:
+        self._check_data(data_item)
+        data_item.x = data_item.x.astype(self.dtype)
+        data_item.y = data_item.y.astype(self.dtype)
+        if hasattr(data_item, 'pos') and data_item.pos is not None:
+            data_item.pos = data_item.pos.astype(self.dtype)
+            
+        if hasattr(data_item, 'distances') and data_item.distances is not None:
+            data_item.distances = data_item.distances.astype(self.dtype)
+
+        return data_item
+    
+class GridDownsampleFactor(BaseTransform):
+    """
+        Downsample the grid by a factor.
+
+        Parameters
+        ----------
+        factor : int
+            Factor by which to downsample the grid.
+    """
+
+    def __init__(self, factor: int = 2):
+        super().__init__()
+        self.factor = factor
+
+    def __call__(self, data_item: DataItem) -> DataItem:
+        self._check_data(data_item)
+
+        # Downsample the grid
+        if data_item.x.ndim == 3:
+            downsampled_x = data_item.x[:, ::self.factor, ::self.factor]
+        else:
+            downsampled_x = data_item.x[:, :, ::self.factor, ::self.factor]
+        
+        if hasattr(data_item, 'y') and data_item.y is not None:
+            downsampled_y = data_item.y[:, :, ::self.factor, ::self.factor]
+        else:
+            downsampled_y = None
+
+        if hasattr(data_item, 'pos') and data_item.pos is not None:
+            downsampled_pos = data_item.pos[::self.factor, ::self.factor]
+
+        data_item = DataItem(
+            x=downsampled_x,
+            y=downsampled_y,
+            pos=downsampled_pos,
+        )
+
+        return data_item
+    
+class GridDownsampleFFT(BaseTransform):
+    """
+        Downsample the grid to a smaller size using FFT.
+
+        Parameters
+        ----------
+        target_size : Tuple[int, int]
+            Target size of the grid.
+    """
+
+    def __init__(self, target_size: Tuple[int, int] = (1.0, 1.0)):
+        super().__init__()
+        self.target_size = target_size
+
+    def __call__(self, data_item: DataItem) -> DataItem:
+        self._check_data(data_item)
+
+        # Get the original grid size
+        original_size = data_item.x.shape[-2:]
+
+        # Downsample using FFT
+        downsampled_x = np.fft.rfft2(data_item.x, s=self.target_size)
+        downsampled_x = np.fft.irfft2(downsampled_x)
+        
+        if hasattr(data_item, 'y') and data_item.y is not None:
+            downsampled_y = np.fft.rfft2(data_item.y, s=self.target_size)
+            downsampled_y = np.fft.irfft2(downsampled_y)
+        else:
+            downsampled_y = None
+
+        if hasattr(data_item, 'pos') and data_item.pos is not None:
+            downsampled_pos = np.fft.rfft2(data_item.pos, s=self.target_size)
+            downsampled_pos = np.fft.irfft2(downsampled_pos)
+
+        data_item = DataItem(
+            x=downsampled_x,
+            y=downsampled_y,
+            pos=downsampled_pos,
+        )
+
+        return data_item
+    
+class PointSampling(BaseTransform):
+    """
+        Point sampling transform for the dataset.
+
+        Parameters
+        ----------
+        num_points : int
+            Number of points to sample.
+        k : int
+            Number of nearest neighbors to use for the KNN graph.
+    """
+
+    def __init__(self, num_points: int = 900):
+        super().__init__()
+        self.num_points = num_points
+        
+        
+
+    def __call__(self, data_item: CloudDataItem) -> CloudDataItem:
+        self._check_data(data_item)
+        
+        total_points = data_item.pos.shape[0]
+        indices = np.random.choice(total_points, self.num_points, replace=False)
+
+        points = data_item.pos[indices]
+        y = data_item.y[:, indices]
+        if data_item.x.ndim == 3:
+            x = data_item.x[:, indices]
+        else:
+            x = data_item.x[indices]
+        
+
+        return CloudDataItem(
+            x=x,
+            y=y,
+            pos=points
+        )
