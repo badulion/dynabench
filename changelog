@@ -68,11 +68,36 @@
 - Add link to grind original github
 - Add paper list to website
 
-## [0.3.8] -> 
+## [0.4.0] -> March 3, 2025
 - Add tests for initial condition generators
 - Add tests for grid class
 - Add tests for equation handlers
 - PointTransformerV1 implemented
+- PointTransformerV3 implemented
+- FNO implemented
+- Non-uniform FNO implemented
 - Wrapper for iterative predictions for point clouds implemented
 - Deprecated sum of gaussians
 - Fix: Wrapped gaussians now work for any limits
+- Update requirements to work with python3.13
+
+## [0.4.1] -> March 4, 2025
+- Add squeeze_lookback_dim to DynabenchIterator and update examples/documentation
+
+## [0.4.2] -> May 6, 2025
+- Updated tests for Rollout wrappers
+- Implemented RolloutWrapper with lookback support; added helper methods.
+- Adjusted PTV3, PTV1, FNO and GeoFNO to use both input and output channels
+- Updated examples to call the appropriate rollout wrapper and parameters.
+- Add support for generating multiple simulations in one batch
+- Add support for iterating over multiple simulations in one iterator
+- Add whole simulation iterator for custom equations
+- Move main iteration logic to base class (common for both Dynabench and CustomEquation)
+- Added tests for the new transforms and iterators.
+- Updated iterators and equation/dynabench modules to accept transform parameters.
+- Refined CI configurations, dependency versions, and provided an example usage.
+
+## [0.4.3] -> May 6, 2025
+- Move transforms to separate module
+
+## [0.4.4] ->

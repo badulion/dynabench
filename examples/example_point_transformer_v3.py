@@ -1,35 +1,38 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
-from dynabench.model._grid._neural_operator import FourierNeuralOperator
-from dynabench.model.utils import GridRolloutWrapper
+from dynabench.model.point.point_transformer import PointTransformerV3
+from dynabench.model.utils import CloudRolloutWrapper
 
 import torch.optim as optim
 import torch.nn as nn
+import torch
 
-download_equation('advection', structure='cloud', resolution='low')
+#download_equation('advection', structure='cloud', resolution='low')
 
 advection_train_iterator = DynabenchIterator(split="train",
-                                           equation='burgers',
-                                           structure='grid',
+                                           equation='advection',
+                                           structure='cloud',
                                            resolution='low',
                                            lookback=1,
-                                           squeeze_lookback_dim=False,
+                                           squeeze_lookback_dim=True,
                                            rollout=1)
 
 train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 
-# for an NxN grid -> max n_modes = [N//2 + 1, N//2 + 1], channels depends on equation, padding e.g. pad=(8,8,8,8)
-net = FourierNeuralOperator(n_layers=5, n_modes=[8,8], width=64, in_channels=2, out_channels=2)
-model = GridRolloutWrapper(net)
+## additional packages need to be installed (addict, spconv, torch_scatter)
+## without flash_attn --> enable_flash=False enc_patch_size and dec_patch_size reduced to 128
+## in_channels=1 for advection + change decoder output channels to 1
+net = PointTransformerV3(in_channels=1, dec_channels=(1, 64, 128, 256), dec_num_head=(1, 4, 8, 16), enable_flash=False, enc_patch_size=(128,128,128,128,128), dec_patch_size=(128,128,128,128))
+model = CloudRolloutWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.MSELoss()
 
-for epoch in range(1):
+for epoch in range(10):
     model.train()
     for i, (x, y, p) in enumerate(train_loader):
         optimizer.zero_grad()
-        y_pred = model(x)
+        y_pred = model(x, p)
         loss = criterion(y_pred, y)
         loss.backward()
         optimizer.step()
@@ -37,7 +40,7 @@ for epoch in range(1):
 
 advection_test_iterator = DynabenchIterator(split="test",
                                           equation='advection',
-                                          structure='grid',
+                                          structure='cloud',
                                           resolution='low',
                                           lookback=1,
                                           squeeze_lookback_dim=True,
@@ -49,7 +52,7 @@ model.eval()
 
 loss_values = []
 for i, (x, y, p) in enumerate(test_loader):
-    y_pred = model(x, t_eval=range(1,17))
+    y_pred = model(x, p, t_eval=range(1,17))
     loss = criterion(y_pred, y)
     loss_values.append(loss.item())
 

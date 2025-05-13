@@ -1,25 +1,27 @@
 from dynabench.dataset import DynabenchIterator, download_equation
 from torch.utils.data import DataLoader
-from dynabench.model import NeuralPDE
+from dynabench.model.point._fno import Geo_FNO
+from dynabench.model.utils import CloudRolloutWrapper
 
 import torch.optim as optim
 import torch.nn as nn
 
-download_equation('burgers', structure='grid', resolution='low')
+#download_equation('advection', structure='cloud', resolution='low')
 
-burgers_train_iterator = DynabenchIterator(split="train",
-                                           equation='burgers',
-                                           structure='grid',
+advection_train_iterator = DynabenchIterator(split="train",
+                                           equation='advection',
+                                           structure='cloud',
                                            resolution='low',
                                            lookback=1,
-                                           squeeze_lookback_dim=True,
+                                           squeeze_lookback_dim=False,
                                            rollout=1)
 
-train_loader = DataLoader(burgers_train_iterator, batch_size=32, shuffle=True)
+train_loader = DataLoader(advection_train_iterator, batch_size=16, shuffle=True)
 
-model = NeuralPDE(input_dim=2, hidden_channels=64, hidden_layers=3,
-                solver={'method': 'euler', 'options': {'step_size': 0.1}},
-                use_adjoint=False)
+## width -> number of channels in convolution layers
+## for an NxN grid -> max n_modes = [N//2 + 1, N//2 + 1], channels depends on equation
+net = Geo_FNO(in_channels=8, out_channels=1, width=32, modes=(8,8), grid_size=(20,20), num_blocks=3)
+model = CloudRolloutWrapper(net)
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.MSELoss()
@@ -28,27 +30,27 @@ for epoch in range(10):
     model.train()
     for i, (x, y, p) in enumerate(train_loader):
         optimizer.zero_grad()
-        y_pred = model(x)
+        y_pred = model(x, p)
         loss = criterion(y_pred, y)
         loss.backward()
         optimizer.step()
         print(f"Epoch: {epoch}, Batch: {i}, Loss: {loss.item()}")
 
-burgers_test_iterator = DynabenchIterator(split="test",
-                                          equation='burgers',
-                                          structure='grid',
+advection_test_iterator = DynabenchIterator(split="test",
+                                          equation='advection',
+                                          structure='cloud',
                                           resolution='low',
                                           lookback=1,
                                           squeeze_lookback_dim=True,
                                           rollout=16)
 
-test_loader = DataLoader(burgers_test_iterator, batch_size=32, shuffle=False)
+test_loader = DataLoader(advection_test_iterator, batch_size=1, shuffle=False)
 
 model.eval()
 
 loss_values = []
 for i, (x, y, p) in enumerate(test_loader):
-    y_pred = model(x, t_eval=range(17))
+    y_pred = model(x, p, t_eval=range(1,17))
     loss = criterion(y_pred, y)
     loss_values.append(loss.item())
 

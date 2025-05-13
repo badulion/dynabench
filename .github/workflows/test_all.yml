@@ -6,9 +6,9 @@ jobs:
   build:
     strategy:
       matrix:
-        poetry-version: ["1.8.2"]
+        poetry-version: ["2.1.1"]
         python-version: ["3.11"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest] # , macos-latest
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
 
