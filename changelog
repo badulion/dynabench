@@ -100,4 +100,10 @@
 ## [0.4.3] -> May 6, 2025
 - Move transforms to separate module
 
-## [0.4.4] ->
+## [0.4.4] ->May 13, 2025
+- Add dedalus as a backend solver
+- Add AdvectionDiffusion equation and its support in dedalus
+- Add support for Burgers equation in dedalus
+- Fix init condition scaling
+- Add additional transforms, fix existing transforms
+- Fix tests for new transforms
