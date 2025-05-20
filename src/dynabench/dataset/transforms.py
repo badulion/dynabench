@@ -330,26 +330,32 @@ class GridDownsampleFFT(BaseTransform):
     def __init__(self, target_size: Tuple[int, int] = (1.0, 1.0)):
         super().__init__()
         self.target_size = target_size
+    
+    def _fft_downsample_2d(self, data, axes=(-2,-1)):
+        frequency = np.fft.fftshift(np.fft.fft2(data, norm='forward'), axes=axes)
+        shift_x = (data.shape[axes[0]]-self.target_size[0])//2
+        shift_y = (data.shape[axes[1]]-self.target_size[1])//2
+        crop_slice = [slice(None)] * data.ndim
+        crop_slice[axes[0]] = slice(shift_x, -shift_x)
+        crop_slice[axes[1]] = slice(shift_y, -shift_y)
+        frequency = frequency[tuple(crop_slice)]
+        return np.fft.ifft2(np.fft.ifftshift(frequency, axes=axes), norm='forward').real
 
     def __call__(self, data_item: DataItem) -> DataItem:
         self._check_data(data_item)
 
-        # Get the original grid size
-        original_size = data_item.x.shape[-2:]
-
         # Downsample using FFT
-        downsampled_x = np.fft.rfft2(data_item.x, s=self.target_size)
-        downsampled_x = np.fft.irfft2(downsampled_x)
+        downsampled_x = self._fft_downsample_2d(data_item.x)
         
         if hasattr(data_item, 'y') and data_item.y is not None:
-            downsampled_y = np.fft.rfft2(data_item.y, s=self.target_size)
-            downsampled_y = np.fft.irfft2(downsampled_y)
+            downsampled_y = self._fft_downsample_2d(data_item.y)
         else:
             downsampled_y = None
 
         if hasattr(data_item, 'pos') and data_item.pos is not None:
-            downsampled_pos = np.fft.rfft2(data_item.pos, s=self.target_size)
-            downsampled_pos = np.fft.irfft2(downsampled_pos)
+            downsampled_pos = self._fft_downsample_2d(data_item.pos, axes=[0,1])
+        else:
+            downsampled_pos = None
 
         data_item = DataItem(
             x=downsampled_x,
