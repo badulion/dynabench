@@ -124,7 +124,7 @@ def test_grid_downsample_fft_transform():
     downsampled_data = transform(grid_data)
     assert downsampled_data.x.shape[-2:] == (32, 32)
     assert downsampled_data.y.shape[-2:] == (32, 32)
-    assert downsampled_data.pos.shape[-2:] == (32, 32)
+    assert downsampled_data.pos.shape[:2] == (32, 32)
 
 def test_point_sampling_transform():
     cloud_data = CloudDataItem(

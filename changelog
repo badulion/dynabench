@@ -107,3 +107,6 @@
 - Fix init condition scaling
 - Add additional transforms, fix existing transforms
 - Fix tests for new transforms
+
+## [0.4.5] ->
+- Fix FFT Downsample Transform
